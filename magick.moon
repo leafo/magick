@@ -1,0 +1,1 @@
+require "magick.init"
