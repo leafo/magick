@@ -157,7 +157,7 @@ class Image
     handle_result @, lib.MagickWriteImage @wand, fname
 
   destroy: =>
-    lib.DestroyMagickWand @wand
+    lib.DestroyMagickWand @wand if @wand
     @wand = nil
 
   __tostring: =>

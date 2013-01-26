@@ -174,7 +174,9 @@ do
       return handle_result(self, lib.MagickWriteImage(self.wand, fname))
     end,
     destroy = function(self)
-      lib.DestroyMagickWand(self.wand)
+      if self.wand then
+        lib.DestroyMagickWand(self.wand)
+      end
       self.wand = nil
     end,
     __tostring = function(self)
