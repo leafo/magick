@@ -30,6 +30,10 @@ elseif "blob" == _exp_0 then
 elseif "thumb" == _exp_0 then
   thumb("hi.png", "150x200", "out.png")
   return thumb("hi.png", "150x200#", "out2.png")
+elseif "format" == _exp_0 then
+  local img = load_image("hi.png")
+  print(img:set_format("bmp"))
+  return print(img:get_format())
 else
   return error("don't know what to do")
 end

@@ -36,5 +36,10 @@ switch ...
     thumb "hi.png", "150x200", "out.png"
     thumb "hi.png", "150x200#", "out2.png"
 
+  when "format"
+    img = load_image "hi.png"
+    print img\set_format "bmp"
+    print img\get_format!
+
   else
     error "don't know what to do"

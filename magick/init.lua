@@ -67,6 +67,9 @@ ffi.cdef([[  typedef void MagickWand;
     const size_t, const size_t, const ssize_t, const ssize_t);
 
   MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
+
+  MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
+  const char* MagickGetImageFormat(MagickWand* wand);
 ]])
 local lib = ffi.load("MagickWand")
 local filter
@@ -98,6 +101,12 @@ do
     end,
     get_height = function(self)
       return lib.MagickGetImageHeight(self.wand)
+    end,
+    get_format = function(self)
+      return ffi.string(lib.MagickGetImageFormat(self.wand)):lower()
+    end,
+    set_format = function(self, format)
+      return handle_result(self, lib.MagickSetImageFormat(self.wand, format))
     end,
     _keep_aspect = function(self, w, h)
       if not w and h then

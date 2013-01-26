@@ -70,6 +70,9 @@ ffi.cdef [[
     const size_t, const size_t, const ssize_t, const ssize_t);
 
   MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
+
+  MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
+  const char* MagickGetImageFormat(MagickWand* wand);
 ]]
 
 lib = ffi.load "MagickWand"
@@ -93,6 +96,10 @@ class Image
   new: (@wand, @path) =>
   get_width: => lib.MagickGetImageWidth @wand
   get_height: => lib.MagickGetImageHeight @wand
+  get_format: => ffi.string(lib.MagickGetImageFormat @wand)\lower!
+  set_format: (format) =>
+    handle_result @,
+      lib.MagickSetImageFormat @wand, format
 
   _keep_aspect: (w,h) =>
     if not w and h
