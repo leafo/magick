@@ -174,5 +174,81 @@ load_image_from_blob = (blob) ->
 
   Image wand, "<from_blob>"
 
-{ :load_image, :load_image_from_blob, :Image }
+tonumber = tonumber
+parse_size_str = (str, src_w, src_h) ->
+  w, h, rest = str\match "^(%d*%%?)x(%d*%%?)(.*)$"
+  return nil, "failed to parse string (#{str})" if not w
+
+  if p = w\match "(%d+)%%"
+    w = tonumber(p) / 100 * src_w
+  else
+    w = tonumber w
+
+  if p = h\match "(%d+)%%"
+    h = tonumber(p) / 100 * src_h
+  else
+    h = tonumber h
+
+  center_crop = rest\match"#" and true
+
+  -- by default we use the dimensions as max sizes
+  if w and h and not center_crop
+    unless rest\match"!"
+      if src_w/src_h > w/h
+        h = nil
+      else
+        w = nil
+
+  crop_x, crop_y = rest\match "%+(%d+)%+(%d+)"
+  if crop_x
+    crop_x = tonumber crop_x
+    crop_y = tonumber crop_y
+
+  {
+    :w, :h
+    :crop_x, :crop_y
+    :center_crop
+  }
+
+thumb = (img, size_str, output) ->
+  if type(img) == "string"
+    img = assert load_image img
+
+  src_w, src_h = img\get_width!, img\get_height!
+  opts = parse_size_str size_str, src_w, src_h
+
+  if opts.center_crop
+    img\resize_and_crop opts.w, opts.h
+  elseif opts.crop_x
+    img\crop opts.w, opts.h, opts.crop_x, opts.crop_y
+  else
+    img\resize opts.w, opts.h
+
+  ret = if output
+    img\write output
+  else
+    img\get_blob!
+
+  img\destroy!
+  ret
+
+if ... == "test"
+  w,h = 500,300
+  D = (t) -> print table.concat ["#{k}: #{v}" for k,v in pairs t], ", "
+
+  D parse_size_str "10x10", w,h
+
+  D parse_size_str "50%x50%", w,h
+  D parse_size_str "50%x50%!", w,h
+
+  D parse_size_str "x10", w,h
+  D parse_size_str "10x%", w,h
+  D parse_size_str "10x10%#", w,h
+
+  D parse_size_str "200x300", w,h
+  D parse_size_str "200x300!", w,h
+  D parse_size_str "200x300+10+10", w,h
+
+
+{ :load_image, :load_image_from_blob, :thumb, :Image }
 

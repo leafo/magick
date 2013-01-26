@@ -1,5 +1,5 @@
 
-import load_image, load_image_from_blob from require "magick"
+import load_image, load_image_from_blob, thumb from require "magick"
 
 switch ...
   when "resize"
@@ -31,6 +31,10 @@ switch ...
 
     img2 = load_image_from_blob blob
     print img2, img2\get_width!, img2\get_height!
+
+  when "thumb"
+    thumb "hi.png", "150x200", "out.png"
+    thumb "hi.png", "150x200#", "out2.png"
 
   else
     error "don't know what to do"

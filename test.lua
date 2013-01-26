@@ -1,7 +1,7 @@
-local load_image, load_image_from_blob
+local load_image, load_image_from_blob, thumb
 do
   local _table_0 = require("magick")
-  load_image, load_image_from_blob = _table_0.load_image, _table_0.load_image_from_blob
+  load_image, load_image_from_blob, thumb = _table_0.load_image, _table_0.load_image_from_blob, _table_0.thumb
 end
 local _exp_0 = ...
 if "resize" == _exp_0 then
@@ -27,6 +27,9 @@ elseif "blob" == _exp_0 then
   local blob = img:get_blob()
   local img2 = load_image_from_blob(blob)
   return print(img2, img2:get_width(), img2:get_height())
+elseif "thumb" == _exp_0 then
+  thumb("hi.png", "150x200", "out.png")
+  return thumb("hi.png", "150x200#", "out2.png")
 else
   return error("don't know what to do")
 end
