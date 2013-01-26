@@ -4,6 +4,11 @@ import load_image, load_image_from_blob from require "magick"
 switch ...
   when "resize"
     img = load_image "hi.png"
+    img\resize nil, 80
+    img\write "out.png"
+
+  when "resize2"
+    img = load_image "hi.png"
     img\resize_and_crop 500,1000
     img\write "out.png"
 

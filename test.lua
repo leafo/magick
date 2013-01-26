@@ -6,6 +6,10 @@ end
 local _exp_0 = ...
 if "resize" == _exp_0 then
   local img = load_image("hi.png")
+  img:resize(nil, 80)
+  return img:write("out.png")
+elseif "resize2" == _exp_0 then
+  local img = load_image("hi.png")
   img:resize_and_crop(500, 1000)
   return img:write("out.png")
 elseif "blur" == _exp_0 then

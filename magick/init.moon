@@ -94,14 +94,28 @@ class Image
   get_width: => lib.MagickGetImageWidth @wand
   get_height: => lib.MagickGetImageHeight @wand
 
+  _keep_aspect: (w,h) =>
+    if not w and h
+      @get_width! / @get_height! * h, h
+    elseif w and not h
+      w, @get_height! / @get_height! * w
+    else
+      w,h
+
   clone: =>
     wand = lib.NewMagickWand!
     lib.MagickAddImage wand, @wand
     Image wand, @path
 
   resize: (w,h, f="Lanczos2", sharp=1.0) =>
+    w, h = @_keep_aspect w,h
     handle_result @,
       lib.MagickResizeImage @wand, w, h, filter(f), sharp
+
+  adaptive_resize: (w,h) =>
+    w, h = @_keep_aspect w,h
+    handle_result @,
+      lib.MagickAdaptiveResizeImage @wand, w, h
 
   crop: (w,h, x=0, y=0) =>
     handle_result @,
@@ -126,10 +140,6 @@ class Image
       new_width = h * ar_src
       @resize new_width, h
       @crop w, h, (new_width - w) / 2, 0
-
-  adaptive_resize: (w,h) =>
-    handle_result @,
-      lib.MagickAdaptiveResizeImage @wand, w, h
 
   get_blob: =>
     len = ffi.new "size_t[1]", 0

@@ -99,6 +99,15 @@ do
     get_height = function(self)
       return lib.MagickGetImageHeight(self.wand)
     end,
+    _keep_aspect = function(self, w, h)
+      if not w and h then
+        return self:get_width() / self:get_height() * h, h
+      elseif w and not h then
+        return w, self:get_height() / self:get_height() * w
+      else
+        return w, h
+      end
+    end,
     clone = function(self)
       local wand = lib.NewMagickWand()
       lib.MagickAddImage(wand, self.wand)
@@ -111,7 +120,12 @@ do
       if sharp == nil then
         sharp = 1.0
       end
+      w, h = self:_keep_aspect(w, h)
       return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), sharp))
+    end,
+    adaptive_resize = function(self, w, h)
+      w, h = self:_keep_aspect(w, h)
+      return handle_result(self, lib.MagickAdaptiveResizeImage(self.wand, w, h))
     end,
     crop = function(self, w, h, x, y)
       if x == nil then
@@ -141,9 +155,6 @@ do
         self:resize(new_width, h)
         return self:crop(w, h, (new_width - w) / 2, 0)
       end
-    end,
-    adaptive_resize = function(self, w, h)
-      return handle_result(self, lib.MagickAdaptiveResizeImage(self.wand, w, h))
     end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)
