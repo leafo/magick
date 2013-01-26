@@ -3,6 +3,7 @@ ffi.cdef([[  typedef void MagickWand;
 
   typedef int MagickBooleanType;
   typedef int ExceptionType;
+  typedef int ssize_t;
 
   typedef enum
   {
@@ -58,6 +59,9 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickWriteImage(MagickWand*, const char*);
 
   unsigned char* MagickGetImageBlob(MagickWand*, size_t*);
+
+  MagickBooleanType MagickCropImage(MagickWand*,
+    const size_t, const size_t, const ssize_t, const ssize_t);
 ]])
 local lib = ffi.load("MagickWand")
 local filter
@@ -98,6 +102,31 @@ do
         sharp = 1.0
       end
       return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), sharp))
+    end,
+    crop = function(self, w, h, x, y)
+      if x == nil then
+        x = 0
+      end
+      if y == nil then
+        y = 0
+      end
+      return handle_result(self, lib.MagickCropImage(self.wand, w, h, x, y))
+    end,
+    resize_and_crop = function(self, w, h)
+      local src_w, src_h = self:get_width(), self:get_height()
+      local ar_src = src_w / src_h
+      local ar_dest = w / h
+      if ar_dest > ar_src then
+        print("dest is wider")
+        local new_height = w / ar_src
+        self:resize(w, new_height)
+        return self:crop(w, h, 0, (new_height - h) / 2)
+      else
+        print("src is wider")
+        local new_width = h * ar_src
+        self:resize(new_width, h)
+        return self:crop(w, h, (new_width - w) / 2, 0)
+      end
     end,
     adaptive_resize = function(self, w, h)
       return handle_result(self, lib.MagickAdaptiveResizeImage(self.wand, w, h))

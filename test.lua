@@ -5,11 +5,6 @@ do
 end
 do
   local img = load_image("hi.png")
-  img:resize(600, 600)
-  img:write("resized.png")
-end
-do
-  local img = load_image("hi.png")
-  img:adaptive_resize(600, 600)
-  return img:write("adaptive.png")
+  img:resize_and_crop(500, 1000)
+  return img:write("out.png")
 end

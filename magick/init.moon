@@ -6,6 +6,7 @@ ffi.cdef [[
 
   typedef int MagickBooleanType;
   typedef int ExceptionType;
+  typedef int ssize_t;
 
   typedef enum
   {
@@ -61,6 +62,9 @@ ffi.cdef [[
   MagickBooleanType MagickWriteImage(MagickWand*, const char*);
 
   unsigned char* MagickGetImageBlob(MagickWand*, size_t*);
+
+  MagickBooleanType MagickCropImage(MagickWand*,
+    const size_t, const size_t, const ssize_t, const ssize_t);
 ]]
 
 lib = ffi.load "MagickWand"
@@ -88,6 +92,28 @@ class Image
   resize: (w,h, f="Lanczos2", sharp=1.0) =>
     handle_result @,
       lib.MagickResizeImage @wand, w, h, filter(f), sharp
+
+  crop: (w,h, x=0, y=0) =>
+    handle_result @,
+      lib.MagickCropImage @wand, w, h, x, y
+
+  -- resize but crop image to maintain aspect ratio
+  resize_and_crop: (w,h) =>
+    src_w, src_h = @get_width!, @get_height!
+
+    ar_src = src_w / src_h
+    ar_dest = w / h
+
+    if ar_dest > ar_src
+      print "dest is wider"
+      new_height = w / ar_src
+      @resize w, new_height
+      @crop w, h, 0, (new_height - h) / 2
+    else
+      print "src is wider"
+      new_width = h * ar_src
+      @resize new_width, h
+      @crop w, h, (new_width - w) / 2, 0
 
   adaptive_resize: (w,h) =>
     handle_result @,
