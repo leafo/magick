@@ -53,6 +53,8 @@ ffi.cdef([[  typedef void MagickWand;
     const size_t, const size_t,
     const FilterTypes, const double);
 
+  MagickBooleanType MagickAdaptiveResizeImage(MagickWand*, const size_t, const size_t);
+
   MagickBooleanType MagickWriteImage(MagickWand*, const char*);
 
   unsigned char* MagickGetImageBlob(MagickWand*, size_t*);
@@ -96,6 +98,9 @@ do
         sharp = 1.0
       end
       return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), sharp))
+    end,
+    adaptive_resize = function(self, w, h)
+      return handle_result(self, lib.MagickAdaptiveResizeImage(self.wand, w, h))
     end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)

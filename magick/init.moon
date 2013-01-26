@@ -56,6 +56,8 @@ ffi.cdef [[
     const size_t, const size_t,
     const FilterTypes, const double);
 
+  MagickBooleanType MagickAdaptiveResizeImage(MagickWand*, const size_t, const size_t);
+
   MagickBooleanType MagickWriteImage(MagickWand*, const char*);
 
   unsigned char* MagickGetImageBlob(MagickWand*, size_t*);
@@ -86,7 +88,11 @@ class Image
   resize: (w,h, f="Lanczos2", sharp=1.0) =>
     handle_result @,
       lib.MagickResizeImage @wand, w, h, filter(f), sharp
-  
+
+  adaptive_resize: (w,h) =>
+    handle_result @,
+      lib.MagickAdaptiveResizeImage @wand, w, h
+
   get_blob: =>
     len = ffi.new "size_t[1]", 0
     blob = lib.MagickGetImageBlob @wand, len

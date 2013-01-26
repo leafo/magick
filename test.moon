@@ -1,10 +1,13 @@
 
 import load_image from require "magick"
 
-img = load_image "hi.png"
-img\resize 600,600
-print img
+do
+  img = load_image "hi.png"
+  img\resize 600,600
+  img\write "resized.png"
 
-blob = img\get_blob!
-print #blob
+do
+  img = load_image "hi.png"
+  img\adaptive_resize 600,600
+  img\write "adaptive.png"
 
