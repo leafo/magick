@@ -47,11 +47,14 @@ ffi.cdef [[
   MagickWand* NewMagickWand();
   MagickWand* DestroyMagickWand(MagickWand*);
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
+  MagickBooleanType MagickReadImageBlob(MagickWand*, const void*, const size_t);
+
   const char* MagickGetException(const MagickWand*, ExceptionType*);
 
   int MagickGetImageWidth(MagickWand*);
   int MagickGetImageHeight(MagickWand*);
 
+  MagickBooleanType MagickAddImage(MagickWand*, const MagickWand*);
 
   MagickBooleanType MagickResizeImage(MagickWand*,
     const size_t, const size_t,
@@ -65,6 +68,8 @@ ffi.cdef [[
 
   MagickBooleanType MagickCropImage(MagickWand*,
     const size_t, const size_t, const ssize_t, const ssize_t);
+
+  MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
 ]]
 
 lib = ffi.load "MagickWand"
@@ -89,6 +94,11 @@ class Image
   get_width: => lib.MagickGetImageWidth @wand
   get_height: => lib.MagickGetImageHeight @wand
 
+  clone: =>
+    wand = lib.NewMagickWand!
+    lib.MagickAddImage wand, @wand
+    Image wand, @path
+
   resize: (w,h, f="Lanczos2", sharp=1.0) =>
     handle_result @,
       lib.MagickResizeImage @wand, w, h, filter(f), sharp
@@ -96,6 +106,10 @@ class Image
   crop: (w,h, x=0, y=0) =>
     handle_result @,
       lib.MagickCropImage @wand, w, h, x, y
+
+  blur: (sigma, radius=0) =>
+    handle_result @,
+      lib.MagickBlurImage @wand, radius, sigma
 
   -- resize but crop image to maintain aspect ratio
   resize_and_crop: (w,h) =>
@@ -105,12 +119,10 @@ class Image
     ar_dest = w / h
 
     if ar_dest > ar_src
-      print "dest is wider"
       new_height = w / ar_src
       @resize w, new_height
       @crop w, h, 0, (new_height - h) / 2
     else
-      print "src is wider"
       new_width = h * ar_src
       @resize new_width, h
       @crop w, h, (new_width - w) / 2, 0
@@ -136,13 +148,21 @@ class Image
 
 load_image = (path) ->
   wand = lib.NewMagickWand!
-  status = lib.MagickReadImage wand, path
-  if status == 0
+  if 0 == lib.MagickReadImage wand, path
     code, msg = get_exception wand
     lib.DestroyMagickWand wand
     return nil, msg, code
   
   Image wand, path
 
-{ :load_image, :Image }
+load_image_from_blob = (blob) ->
+  wand = lib.NewMagickWand!
+  if 0 == lib.MagickReadImageBlob wand, blob, #blob
+    code, msg = get_exception wand
+    lib.DestroyMagickWand wand
+    return nil, msg, code
+
+  Image wand, "<from_blob>"
+
+{ :load_image, :load_image_from_blob, :Image }
 

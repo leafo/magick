@@ -44,11 +44,14 @@ ffi.cdef([[  typedef void MagickWand;
   MagickWand* NewMagickWand();
   MagickWand* DestroyMagickWand(MagickWand*);
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
+  MagickBooleanType MagickReadImageBlob(MagickWand*, const void*, const size_t);
+
   const char* MagickGetException(const MagickWand*, ExceptionType*);
 
   int MagickGetImageWidth(MagickWand*);
   int MagickGetImageHeight(MagickWand*);
 
+  MagickBooleanType MagickAddImage(MagickWand*, const MagickWand*);
 
   MagickBooleanType MagickResizeImage(MagickWand*,
     const size_t, const size_t,
@@ -62,6 +65,8 @@ ffi.cdef([[  typedef void MagickWand;
 
   MagickBooleanType MagickCropImage(MagickWand*,
     const size_t, const size_t, const ssize_t, const ssize_t);
+
+  MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
 ]])
 local lib = ffi.load("MagickWand")
 local filter
@@ -94,6 +99,11 @@ do
     get_height = function(self)
       return lib.MagickGetImageHeight(self.wand)
     end,
+    clone = function(self)
+      local wand = lib.NewMagickWand()
+      lib.MagickAddImage(wand, self.wand)
+      return Image(wand, self.path)
+    end,
     resize = function(self, w, h, f, sharp)
       if f == nil then
         f = "Lanczos2"
@@ -112,17 +122,21 @@ do
       end
       return handle_result(self, lib.MagickCropImage(self.wand, w, h, x, y))
     end,
+    blur = function(self, sigma, radius)
+      if radius == nil then
+        radius = 0
+      end
+      return handle_result(self, lib.MagickBlurImage(self.wand, radius, sigma))
+    end,
     resize_and_crop = function(self, w, h)
       local src_w, src_h = self:get_width(), self:get_height()
       local ar_src = src_w / src_h
       local ar_dest = w / h
       if ar_dest > ar_src then
-        print("dest is wider")
         local new_height = w / ar_src
         self:resize(w, new_height)
         return self:crop(w, h, 0, (new_height - h) / 2)
       else
-        print("src is wider")
         local new_width = h * ar_src
         self:resize(new_width, h)
         return self:crop(w, h, (new_width - w) / 2, 0)
@@ -182,15 +196,25 @@ end
 local load_image
 load_image = function(path)
   local wand = lib.NewMagickWand()
-  local status = lib.MagickReadImage(wand, path)
-  if status == 0 then
+  if 0 == lib.MagickReadImage(wand, path) then
     local code, msg = get_exception(wand)
     lib.DestroyMagickWand(wand)
     return nil, msg, code
   end
   return Image(wand, path)
 end
+local load_image_from_blob
+load_image_from_blob = function(blob)
+  local wand = lib.NewMagickWand()
+  if 0 == lib.MagickReadImageBlob(wand, blob, #blob) then
+    local code, msg = get_exception(wand)
+    lib.DestroyMagickWand(wand)
+    return nil, msg, code
+  end
+  return Image(wand, "<from_blob>")
+end
 return {
   load_image = load_image,
+  load_image_from_blob = load_image_from_blob,
   Image = Image
 }
