@@ -8,7 +8,7 @@ source = {
 description = {
   summary = "Lua bindings to ImageMagick for LuaJIT using FFI",
   license = "MIT",
-	maintainer = "Leaf Corcoran <leafot@gmail.com>",
+  maintainer = "Leaf Corcoran <leafot@gmail.com>",
 }
 
 dependencies = {
@@ -16,8 +16,8 @@ dependencies = {
 }
 
 build = {
-	type = "builtin",
-	modules = {
-		["magick"] = "magick/init.lua",
-	}
+  type = "builtin",
+  modules = {
+    ["magick"] = "magick/init.lua",
+  }
 }
