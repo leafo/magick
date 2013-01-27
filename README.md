@@ -129,7 +129,7 @@ calling this method
 
 # Contact
 
-Author: Leaf Corcoran (leafo) ([@moonscript](http://twitter.com/moonscript))
-Email: leafot@gmail.com
-Homepage: <http://leafo.net>
+Author: Leaf Corcoran (leafo) ([@moonscript](http://twitter.com/moonscript))  
+Email: leafot@gmail.com  
+Homepage: <http://leafo.net>  
 
