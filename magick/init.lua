@@ -41,6 +41,7 @@ ffi.cdef([[  typedef void MagickWand;
     SentinelFilter
   } FilterTypes;
 
+  void MagickWandGenesis();
   MagickWand* NewMagickWand();
   MagickWand* DestroyMagickWand(MagickWand*);
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
@@ -71,7 +72,24 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   const char* MagickGetImageFormat(MagickWand* wand);
 ]])
-local lib = ffi.load("MagickWand")
+local try_to_load
+try_to_load = function(...)
+  local out
+  local _list_0 = {
+    ...
+  }
+  for _index_0 = 1, #_list_0 do
+    local name = _list_0[_index_0]
+    if pcall(function()
+      out = ffi.load(name)
+    end) then
+      return out
+    end
+  end
+  return error("Failed to load ImageMagick (" .. tostring(...) .. ")")
+end
+local lib = try_to_load("MagickWand", "MagickWand-Q16")
+lib.MagickWandGenesis()
 local filter
 filter = function(name)
   return lib[name .. "Filter"]

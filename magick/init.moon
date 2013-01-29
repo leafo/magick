@@ -44,6 +44,7 @@ ffi.cdef [[
     SentinelFilter
   } FilterTypes;
 
+  void MagickWandGenesis();
   MagickWand* NewMagickWand();
   MagickWand* DestroyMagickWand(MagickWand*);
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
@@ -75,7 +76,16 @@ ffi.cdef [[
   const char* MagickGetImageFormat(MagickWand* wand);
 ]]
 
-lib = ffi.load "MagickWand"
+try_to_load = (...) ->
+  local out
+  for name in *{...}
+    return out if pcall ->
+      out = ffi.load name
+
+  error "Failed to load ImageMagick (#{...})"
+
+lib = try_to_load "MagickWand", "MagickWand-Q16"
+lib.MagickWandGenesis!
 
 filter = (name) -> lib[name .. "Filter"]
 
