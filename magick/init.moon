@@ -115,7 +115,7 @@ class Image
     if not w and h
       @get_width! / @get_height! * h, h
     elseif w and not h
-      w, @get_height! / @get_height! * w
+      w, @get_height! / @get_width! * w
     else
       w,h
 

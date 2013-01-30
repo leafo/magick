@@ -130,7 +130,7 @@ do
       if not w and h then
         return self:get_width() / self:get_height() * h, h
       elseif w and not h then
-        return w, self:get_height() / self:get_height() * w
+        return w, self:get_height() / self:get_width() * w
       else
         return w, h
       end
