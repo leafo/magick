@@ -112,7 +112,7 @@ class Image
     lib.MagickAddImage wand, @wand
     Image wand, @path
 
-  resize: (w,h, f="Lanczos2", sharp=1.0) =>
+  resize: (w,h, f="Lanczos", sharp=1.0) =>
     error "Failed to load filter list, can't resize" unless can_resize
     w, h = @_keep_aspect w,h
     handle_result @,

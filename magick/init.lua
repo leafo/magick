@@ -140,7 +140,7 @@ do
     end,
     resize = function(self, w, h, f, sharp)
       if f == nil then
-        f = "Lanczos2"
+        f = "Lanczos"
       end
       if sharp == nil then
         sharp = 1.0
