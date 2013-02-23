@@ -5,42 +5,6 @@ ffi.cdef([[  typedef void MagickWand;
   typedef int ExceptionType;
   typedef int ssize_t;
 
-  typedef enum
-  {
-    UndefinedFilter,
-    PointFilter,
-    BoxFilter,
-    TriangleFilter,
-    HermiteFilter,
-    HanningFilter,
-    HammingFilter,
-    BlackmanFilter,
-    GaussianFilter,
-    QuadraticFilter,
-    CubicFilter,
-    CatromFilter,
-    MitchellFilter,
-    JincFilter,
-    SincFilter,
-    SincFastFilter,
-    KaiserFilter,
-    WelshFilter,
-    ParzenFilter,
-    BohmanFilter,
-    BartlettFilter,
-    LagrangeFilter,
-    LanczosFilter,
-    LanczosSharpFilter,
-    Lanczos2Filter,
-    Lanczos2SharpFilter,
-    RobidouxFilter,
-    RobidouxSharpFilter,
-    CosineFilter,
-    SplineFilter,
-    LanczosRadiusFilter,
-    SentinelFilter
-  } FilterTypes;
-
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
   MagickWand* DestroyMagickWand(MagickWand*);
@@ -53,10 +17,6 @@ ffi.cdef([[  typedef void MagickWand;
   int MagickGetImageHeight(MagickWand*);
 
   MagickBooleanType MagickAddImage(MagickWand*, const MagickWand*);
-
-  MagickBooleanType MagickResizeImage(MagickWand*,
-    const size_t, const size_t,
-    const FilterTypes, const double);
 
   MagickBooleanType MagickAdaptiveResizeImage(MagickWand*, const size_t, const size_t);
 
@@ -72,6 +32,36 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   const char* MagickGetImageFormat(MagickWand* wand);
 ]])
+local get_filters
+get_filters = function()
+  local fname = "magick/resample.h"
+  local prefixes = {
+    "/usr/include/ImageMagick/",
+    "/usr/local/include/ImageMagick/"
+  }
+  local _list_0 = prefixes
+  for _index_0 = 1, #_list_0 do
+    local p = _list_0[_index_0]
+    local full = tostring(p) .. tostring(fname)
+    do
+      local f = io.open(full)
+      if f then
+        local content
+        do
+          local _with_0 = f:read("*a")
+          f:close()
+          content = _with_0
+        end
+        local filter_types = content:match("(typedef enum.-FilterTypes;)")
+        if filter_types then
+          ffi.cdef(filter_types)
+          return true
+        end
+      end
+    end
+  end
+  return false
+end
 local try_to_load
 try_to_load = function(...)
   local out
@@ -89,6 +79,14 @@ try_to_load = function(...)
   return error("Failed to load ImageMagick (" .. tostring(...) .. ")")
 end
 local lib = try_to_load("MagickWand", "MagickWand-Q16")
+local can_resize
+if get_filters() then
+  ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
+      const size_t, const size_t,
+      const FilterTypes, const double);
+  ]])
+  can_resize = true
+end
 lib.MagickWandGenesis()
 local filter
 filter = function(name)
@@ -146,6 +144,9 @@ do
       end
       if sharp == nil then
         sharp = 1.0
+      end
+      if not (can_resize) then
+        error("Failed to load filter list, can't resize")
       end
       w, h = self:_keep_aspect(w, h)
       return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), sharp))

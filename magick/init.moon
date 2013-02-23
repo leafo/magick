@@ -8,42 +8,6 @@ ffi.cdef [[
   typedef int ExceptionType;
   typedef int ssize_t;
 
-  typedef enum
-  {
-    UndefinedFilter,
-    PointFilter,
-    BoxFilter,
-    TriangleFilter,
-    HermiteFilter,
-    HanningFilter,
-    HammingFilter,
-    BlackmanFilter,
-    GaussianFilter,
-    QuadraticFilter,
-    CubicFilter,
-    CatromFilter,
-    MitchellFilter,
-    JincFilter,
-    SincFilter,
-    SincFastFilter,
-    KaiserFilter,
-    WelshFilter,
-    ParzenFilter,
-    BohmanFilter,
-    BartlettFilter,
-    LagrangeFilter,
-    LanczosFilter,
-    LanczosSharpFilter,
-    Lanczos2Filter,
-    Lanczos2SharpFilter,
-    RobidouxFilter,
-    RobidouxSharpFilter,
-    CosineFilter,
-    SplineFilter,
-    LanczosRadiusFilter,
-    SentinelFilter
-  } FilterTypes;
-
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
   MagickWand* DestroyMagickWand(MagickWand*);
@@ -56,10 +20,6 @@ ffi.cdef [[
   int MagickGetImageHeight(MagickWand*);
 
   MagickBooleanType MagickAddImage(MagickWand*, const MagickWand*);
-
-  MagickBooleanType MagickResizeImage(MagickWand*,
-    const size_t, const size_t,
-    const FilterTypes, const double);
 
   MagickBooleanType MagickAdaptiveResizeImage(MagickWand*, const size_t, const size_t);
 
@@ -76,6 +36,25 @@ ffi.cdef [[
   const char* MagickGetImageFormat(MagickWand* wand);
 ]]
 
+get_filters = ->
+  fname = "magick/resample.h"
+  prefixes = {
+    "/usr/include/ImageMagick/"
+    "/usr/local/include/ImageMagick/"
+  }
+
+  for p in *prefixes
+    full = "#{p}#{fname}"
+    if f = io.open full
+      content = with f\read "*a" do f\close!
+      filter_types = content\match "(typedef enum.-FilterTypes;)"
+      if filter_types
+        ffi.cdef filter_types
+        return true
+
+  false
+
+
 try_to_load = (...) ->
   local out
   for name in *{...}
@@ -85,6 +64,15 @@ try_to_load = (...) ->
   error "Failed to load ImageMagick (#{...})"
 
 lib = try_to_load "MagickWand", "MagickWand-Q16"
+
+can_resize = if get_filters!
+  ffi.cdef [[
+    MagickBooleanType MagickResizeImage(MagickWand*,
+      const size_t, const size_t,
+      const FilterTypes, const double);
+  ]]
+  true
+
 lib.MagickWandGenesis!
 
 filter = (name) -> lib[name .. "Filter"]
@@ -125,6 +113,7 @@ class Image
     Image wand, @path
 
   resize: (w,h, f="Lanczos2", sharp=1.0) =>
+    error "Failed to load filter list, can't resize" unless can_resize
     w, h = @_keep_aspect w,h
     handle_result @,
       lib.MagickResizeImage @wand, w, h, filter(f), sharp
