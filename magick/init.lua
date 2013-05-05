@@ -32,32 +32,59 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   const char* MagickGetImageFormat(MagickWand* wand);
 ]])
+local get_flags
+get_flags = function()
+  local proc = io.popen("MagickWand-config --cflags --libs", "r")
+  local flags = proc:read("*a")
+  get_flags = function()
+    return flags
+  end
+  proc:close()
+  return flags
+end
 local get_filters
 get_filters = function()
   local fname = "magick/resample.h"
   local prefixes = {
-    "/usr/include/ImageMagick/",
-    "/usr/local/include/ImageMagick/"
+    "/usr/include/ImageMagick",
+    "/usr/local/include/ImageMagick",
+    function()
+      return get_flags():match("-I([^%s]+)")
+    end
   }
   local _list_0 = prefixes
   for _index_0 = 1, #_list_0 do
-    local p = _list_0[_index_0]
-    local full = tostring(p) .. tostring(fname)
-    do
-      local f = io.open(full)
-      if f then
-        local content
-        do
-          local _with_0 = f:read("*a")
-          f:close()
-          content = _with_0
-        end
-        local filter_types = content:match("(typedef enum.-FilterTypes;)")
-        if filter_types then
-          ffi.cdef(filter_types)
-          return true
+    local _continue_0 = false
+    repeat
+      local p = _list_0[_index_0]
+      if "function" == type(p) then
+        p = p()
+        if not (p) then
+          _continue_0 = true
+          break
         end
       end
+      local full = tostring(p) .. "/" .. tostring(fname)
+      do
+        local f = io.open(full)
+        if f then
+          local content
+          do
+            local _with_0 = f:read("*a")
+            f:close()
+            content = _with_0
+          end
+          local filter_types = content:match("(typedef enum.-FilterTypes;)")
+          if filter_types then
+            ffi.cdef(filter_types)
+            return true
+          end
+        end
+      end
+      _continue_0 = true
+    until true
+    if not _continue_0 then
+      break
     end
   end
   return false
@@ -69,16 +96,33 @@ try_to_load = function(...)
     ...
   }
   for _index_0 = 1, #_list_0 do
-    local name = _list_0[_index_0]
-    if pcall(function()
-      out = ffi.load(name)
-    end) then
-      return out
+    local _continue_0 = false
+    repeat
+      local name = _list_0[_index_0]
+      if "function" == type(name) then
+        name = name()
+        if not (name) then
+          _continue_0 = true
+          break
+        end
+      end
+      if pcall(function()
+        out = ffi.load(name)
+      end) then
+        return out
+      end
+      _continue_0 = true
+    until true
+    if not _continue_0 then
+      break
     end
   end
   return error("Failed to load ImageMagick (" .. tostring(...) .. ")")
 end
-local lib = try_to_load("MagickWand", "MagickWand-Q16")
+local lib = try_to_load("MagickWand", function()
+  local lname = get_flags():match("-l(MagickWand[^%s]*)")
+  return lname and "lib" .. lname .. ".so"
+end)
 local can_resize
 if get_filters() then
   ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
@@ -140,7 +184,7 @@ do
     end,
     resize = function(self, w, h, f, sharp)
       if f == nil then
-        f = "Lanczos"
+        f = "Lanczos2"
       end
       if sharp == nil then
         sharp = 1.0

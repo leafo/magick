@@ -36,15 +36,27 @@ ffi.cdef [[
   const char* MagickGetImageFormat(MagickWand* wand);
 ]]
 
+get_flags = ->
+  proc = io.popen "MagickWand-config --cflags --libs", "r"
+  flags = proc\read "*a"
+  get_flags = -> flags
+  proc\close!
+  flags
+
 get_filters = ->
   fname = "magick/resample.h"
   prefixes = {
-    "/usr/include/ImageMagick/"
-    "/usr/local/include/ImageMagick/"
+    "/usr/include/ImageMagick"
+    "/usr/local/include/ImageMagick"
+    -> get_flags!\match("-I([^%s]+)")
   }
 
   for p in *prefixes
-    full = "#{p}#{fname}"
+    if "function" == type p
+      p = p!
+      continue unless p
+
+    full = "#{p}/#{fname}"
     if f = io.open full
       content = with f\read "*a" do f\close!
       filter_types = content\match "(typedef enum.-FilterTypes;)"
@@ -54,16 +66,21 @@ get_filters = ->
 
   false
 
-
 try_to_load = (...) ->
   local out
   for name in *{...}
+    if "function" == type name
+      name = name!
+      continue unless name
+
     return out if pcall ->
       out = ffi.load name
 
   error "Failed to load ImageMagick (#{...})"
 
-lib = try_to_load "MagickWand", "MagickWand-Q16"
+lib = try_to_load "MagickWand", ->
+  lname = get_flags!\match "-l(MagickWand[^%s]*)"
+  lname and "lib" .. lname .. ".so"
 
 can_resize = if get_filters!
   ffi.cdef [[
@@ -112,7 +129,7 @@ class Image
     lib.MagickAddImage wand, @wand
     Image wand, @path
 
-  resize: (w,h, f="Lanczos", sharp=1.0) =>
+  resize: (w,h, f="Lanczos2", sharp=1.0) =>
     error "Failed to load filter list, can't resize" unless can_resize
     w, h = @_keep_aspect w,h
     handle_result @,
