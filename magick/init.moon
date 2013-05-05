@@ -27,6 +27,8 @@ ffi.cdef [[
 
   unsigned char* MagickGetImageBlob(MagickWand*, size_t*);
 
+  void* MagickRelinquishMemory(void*);
+
   MagickBooleanType MagickCropImage(MagickWand*,
     const size_t, const size_t, const ssize_t, const ssize_t);
 
@@ -167,7 +169,8 @@ class Image
   get_blob: =>
     len = ffi.new "size_t[1]", 0
     blob = lib.MagickGetImageBlob @wand, len
-    ffi.string blob, len[0]
+    with ffi.string blob, len[0]
+      lib.MagickRelinquishMemory blob
 
   write: (fname) =>
     handle_result @, lib.MagickWriteImage @wand, fname

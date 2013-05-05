@@ -24,6 +24,8 @@ ffi.cdef([[  typedef void MagickWand;
 
   unsigned char* MagickGetImageBlob(MagickWand*, size_t*);
 
+  void* MagickRelinquishMemory(void*);
+
   MagickBooleanType MagickCropImage(MagickWand*,
     const size_t, const size_t, const ssize_t, const ssize_t);
 
@@ -231,7 +233,11 @@ do
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)
       local blob = lib.MagickGetImageBlob(self.wand, len)
-      return ffi.string(blob, len[0])
+      do
+        local _with_0 = ffi.string(blob, len[0])
+        lib.MagickRelinquishMemory(blob)
+        return _with_0
+      end
     end,
     write = function(self, fname)
       return handle_result(self, lib.MagickWriteImage(self.wand, fname))
