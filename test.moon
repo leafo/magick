@@ -41,5 +41,20 @@ switch ...
     print img\set_format "bmp"
     print img\get_format!
 
+  when "set_quality"
+    img = load_image "hi.png"
+    img\set_quality 90
+    img\write "out.png"
+
+  when "get_quality"
+    img = load_image "hi.png"
+    img\set_quality 90
+    print "quality of hi.png is #{img\get_quality()}"
+
+  when "sharpen"
+    img = load_image "hi.png"
+    img\sharpen 1
+    img\write "out.png"
+
   else
     error "don't know what to do"

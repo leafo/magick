@@ -36,6 +36,14 @@ ffi.cdef [[
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   const char* MagickGetImageFormat(MagickWand* wand);
+
+  size_t MagickGetImageCompressionQuality(MagickWand * wand);
+  MagickBooleanType MagickSetImageCompressionQuality(MagickWand *wand,
+  const size_t quality);
+
+  MagickBooleanType MagickSharpenImage(MagickWand *wand,
+    const double radius,const double sigma);
+
 ]]
 
 get_flags = ->
@@ -118,6 +126,11 @@ class Image
     handle_result @,
       lib.MagickSetImageFormat @wand, format
 
+  get_quality: => lib.MagickGetImageCompressionQuality @wand
+  set_quality: (quality) => 
+    handle_result @,
+      lib.MagickSetImageCompressionQuality @wand, quality
+
   _keep_aspect: (w,h) =>
     if not w and h
       @get_width! / @get_height! * h, h
@@ -131,11 +144,11 @@ class Image
     lib.MagickAddImage wand, @wand
     Image wand, @path
 
-  resize: (w,h, f="Lanczos2", sharp=1.0) =>
+  resize: (w,h, f="Lanczos2", blur=1.0) =>
     error "Failed to load filter list, can't resize" unless can_resize
     w, h = @_keep_aspect w,h
     handle_result @,
-      lib.MagickResizeImage @wand, w, h, filter(f), sharp
+      lib.MagickResizeImage @wand, w, h, filter(f), blur
 
   adaptive_resize: (w,h) =>
     w, h = @_keep_aspect w,h
@@ -149,6 +162,10 @@ class Image
   blur: (sigma, radius=0) =>
     handle_result @,
       lib.MagickBlurImage @wand, radius, sigma
+
+  sharpen: (sigma, radius=0) =>
+    handle_result @,
+      lib.MagickSharpenImage @wand, radius, sigma
 
   -- resize but crop image to maintain aspect ratio
   resize_and_crop: (w,h) =>
