@@ -33,6 +33,11 @@ ffi.cdef([[  typedef void MagickWand;
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   const char* MagickGetImageFormat(MagickWand* wand);
+
+  size_t MagickGetImageCompressionQuality(MagickWand * wand);
+  MagickBooleanType MagickSetImageCompressionQuality(MagickWand *wand,
+const size_t quality);
+
 ]])
 local get_flags
 get_flags = function()
@@ -229,6 +234,12 @@ do
         self:resize(new_width, h)
         return self:crop(w, h, (new_width - w) / 2, 0)
       end
+    end,
+    get_quality = function(self, q)
+       return lib.MagickGetImageCompressionQuality(self.wand)
+    end,
+    set_quality = function(self, q)
+       return handle_result(self, lib.MagickSetImageCompressionQuality(self.wand, q))
     end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)

@@ -117,6 +117,14 @@ get the current format of image
 
 set the format of the image, takes a file extension like `"png"` or `"bmp"`
 
+#### `img:get_quality()`
+
+get the image compression quality.
+
+#### `img:set_quality(quality)`
+
+set the image compression quality.
+
 #### `img:clone()`
 
 returns a copy of the image
