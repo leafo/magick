@@ -34,6 +34,14 @@ elseif "format" == _exp_0 then
   local img = load_image("hi.png")
   print(img:set_format("bmp"))
   return print(img:get_format())
+elseif "set_quality" == _exp_0 then
+   local img = load_image("hi.png")
+   img:set_quality(90)
+   return img:write("out.png")
+elseif "get_quality" == _exp_0 then
+   local img = load_image("hi.png")
+   img:set_quality(90)
+   return print("quality of hi.png is " .. tostring(img:get_quality()))
 else
   return error("don't know what to do")
 end
