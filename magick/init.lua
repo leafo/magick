@@ -33,6 +33,14 @@ ffi.cdef([[  typedef void MagickWand;
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   const char* MagickGetImageFormat(MagickWand* wand);
+
+  size_t MagickGetImageCompressionQuality(MagickWand * wand);
+  MagickBooleanType MagickSetImageCompressionQuality(MagickWand *wand,
+  const size_t quality);
+
+  MagickBooleanType MagickSharpenImage(MagickWand *wand,
+    const double radius,const double sigma);
+
 ]])
 local get_flags
 get_flags = function()
@@ -170,6 +178,12 @@ do
     set_format = function(self, format)
       return handle_result(self, lib.MagickSetImageFormat(self.wand, format))
     end,
+    get_quality = function(self)
+      return lib.MagickGetImageCompressionQuality(self.wand)
+    end,
+    set_quality = function(self, quality)
+      return handle_result(self, lib.MagickSetImageCompressionQuality(self.wand, quality))
+    end,
     _keep_aspect = function(self, w, h)
       if not w and h then
         return self:get_width() / self:get_height() * h, h
@@ -184,18 +198,18 @@ do
       lib.MagickAddImage(wand, self.wand)
       return Image(wand, self.path)
     end,
-    resize = function(self, w, h, f, sharp)
+    resize = function(self, w, h, f, blur)
       if f == nil then
         f = "Lanczos2"
       end
-      if sharp == nil then
-        sharp = 1.0
+      if blur == nil then
+        blur = 1.0
       end
       if not (can_resize) then
         error("Failed to load filter list, can't resize")
       end
       w, h = self:_keep_aspect(w, h)
-      return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), sharp))
+      return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), blur))
     end,
     adaptive_resize = function(self, w, h)
       w, h = self:_keep_aspect(w, h)
@@ -215,6 +229,12 @@ do
         radius = 0
       end
       return handle_result(self, lib.MagickBlurImage(self.wand, radius, sigma))
+    end,
+    sharpen = function(self, sigma, radius)
+      if radius == nil then
+        radius = 0
+      end
+      return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
     end,
     resize_and_crop = function(self, w, h)
       local src_w, src_h = self:get_width(), self:get_height()

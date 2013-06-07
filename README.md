@@ -72,7 +72,7 @@ img:destroy()
 Methods mutate the current image when appropriate. Use `clone` to get an
 independent copy.
 
-#### `img:resize(w,h, f="Lanczos2", sharp=1.0)`
+#### `img:resize(w,h, f="Lanczos2", blur=1.0)`
 
 resize the image, `f` is resize function, see [Filer Types](http://www.imagemagick.org/api/MagickCore/resample_8h.html#a12be80da7313b1cc5a7e1061c0c108ea)
 
@@ -88,6 +88,10 @@ crop image to `w`,`h` where the top left is `x`, `y`
 #### `img:blur(sigma, radius=0)`
 
 blur image
+
+#### `img:sharpen(sigma, radius=0)`
+
+sharpen image
 
 #### `img:resize_and_crop(w,h)`
 
@@ -116,6 +120,14 @@ get the current format of image
 #### `img:set_format(format)`
 
 set the format of the image, takes a file extension like `"png"` or `"bmp"`
+
+#### `img:get_quality()`
+
+get the image compression quality.
+
+#### `img:set_quality(quality)`
+
+set the image compression quality.
 
 #### `img:clone()`
 
