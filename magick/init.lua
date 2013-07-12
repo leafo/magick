@@ -4,6 +4,8 @@ ffi.cdef([[  typedef void MagickWand;
   typedef int MagickBooleanType;
   typedef int ExceptionType;
   typedef int ssize_t;
+  typedef int CompositeOperator;
+  typedef int GravityType;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
@@ -41,6 +43,20 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSharpenImage(MagickWand *wand,
     const double radius,const double sigma);
 
+  MagickBooleanType MagickScaleImage(MagickWand *wand,
+    const size_t columns,const size_t rows);
+
+  MagickBooleanType MagickSetOption(MagickWand *,const char *,const char *);
+  char* MagickGetOption(MagickWand *,const char *);
+
+  MagickBooleanType MagickCompositeImage(MagickWand *wand,
+    const MagickWand *source_wand,const CompositeOperator compose,
+    const ssize_t x,const ssize_t y);
+
+  GravityType MagickGetImageGravity(MagickWand *wand);
+  MagickBooleanType MagickSetImageGravity(MagickWand *wand,
+    const GravityType gravity);
+
 ]])
 local get_flags
 get_flags = function()
@@ -62,11 +78,10 @@ get_filters = function()
       return get_flags():match("-I([^%s]+)")
     end
   }
-  local _list_0 = prefixes
-  for _index_0 = 1, #_list_0 do
+  for _index_0 = 1, #prefixes do
     local _continue_0 = false
     repeat
-      local p = _list_0[_index_0]
+      local p = prefixes[_index_0]
       if "function" == type(p) then
         p = p()
         if not (p) then
@@ -131,7 +146,15 @@ try_to_load = function(...)
 end
 local lib = try_to_load("MagickWand", function()
   local lname = get_flags():match("-l(MagickWand[^%s]*)")
-  return lname and "lib" .. lname .. ".so"
+  local suffix
+  if ffi.os == "OSX" then
+    suffix = ".dylib"
+  elseif ffi.os == "Windows" then
+    suffix = ".dll"
+  else
+    suffix = ".so"
+  end
+  return lname and "lib" .. lname .. suffix
 end)
 local can_resize
 if get_filters() then
@@ -140,6 +163,93 @@ if get_filters() then
       const FilterTypes, const double);
   ]])
   can_resize = true
+end
+local composite_op = {
+  ["UndefinedCompositeOp"] = 0,
+  ["NoCompositeOp"] = 1,
+  ["ModulusAddCompositeOp"] = 2,
+  ["AtopCompositeOp"] = 3,
+  ["BlendCompositeOp"] = 4,
+  ["BumpmapCompositeOp"] = 5,
+  ["ChangeMaskCompositeOp"] = 6,
+  ["ClearCompositeOp"] = 7,
+  ["ColorBurnCompositeOp"] = 8,
+  ["ColorDodgeCompositeOp"] = 9,
+  ["ColorizeCompositeOp"] = 10,
+  ["CopyBlackCompositeOp"] = 11,
+  ["CopyBlueCompositeOp"] = 12,
+  ["CopyCompositeOp"] = 13,
+  ["CopyCyanCompositeOp"] = 14,
+  ["CopyGreenCompositeOp"] = 15,
+  ["CopyMagentaCompositeOp"] = 16,
+  ["CopyOpacityCompositeOp"] = 17,
+  ["CopyRedCompositeOp"] = 18,
+  ["CopyYellowCompositeOp"] = 19,
+  ["DarkenCompositeOp"] = 20,
+  ["DstAtopCompositeOp"] = 21,
+  ["DstCompositeOp"] = 22,
+  ["DstInCompositeOp"] = 23,
+  ["DstOutCompositeOp"] = 24,
+  ["DstOverCompositeOp"] = 25,
+  ["DifferenceCompositeOp"] = 26,
+  ["DisplaceCompositeOp"] = 27,
+  ["DissolveCompositeOp"] = 28,
+  ["ExclusionCompositeOp"] = 29,
+  ["HardLightCompositeOp"] = 30,
+  ["HueCompositeOp"] = 31,
+  ["InCompositeOp"] = 32,
+  ["LightenCompositeOp"] = 33,
+  ["LinearLightCompositeOp"] = 34,
+  ["LuminizeCompositeOp"] = 35,
+  ["MinusDstCompositeOp"] = 36,
+  ["ModulateCompositeOp"] = 37,
+  ["MultiplyCompositeOp"] = 38,
+  ["OutCompositeOp"] = 39,
+  ["OverCompositeOp"] = 40,
+  ["OverlayCompositeOp"] = 41,
+  ["PlusCompositeOp"] = 42,
+  ["ReplaceCompositeOp"] = 43,
+  ["SaturateCompositeOp"] = 44,
+  ["ScreenCompositeOp"] = 45,
+  ["SoftLightCompositeOp"] = 46,
+  ["SrcAtopCompositeOp"] = 47,
+  ["SrcCompositeOp"] = 48,
+  ["SrcInCompositeOp"] = 49,
+  ["SrcOutCompositeOp"] = 50,
+  ["SrcOverCompositeOp"] = 51,
+  ["ModulusSubtractCompositeOp"] = 52,
+  ["ThresholdCompositeOp"] = 53,
+  ["XorCompositeOp"] = 54,
+  ["DivideDstCompositeOp"] = 55,
+  ["DistortCompositeOp"] = 56,
+  ["BlurCompositeOp"] = 57,
+  ["PegtopLightCompositeOp"] = 58,
+  ["VividLightCompositeOp"] = 59,
+  ["PinLightCompositeOp"] = 60,
+  ["LinearDodgeCompositeOp"] = 61,
+  ["LinearBurnCompositeOp"] = 62,
+  ["MathematicsCompositeOp"] = 63,
+  ["DivideSrcCompositeOp"] = 64,
+  ["MinusSrcCompositeOp"] = 65,
+  ["DarkenIntensityCompositeOp"] = 66,
+  ["LightenIntensityCompositeOp"] = 67
+}
+local gravity_str = {
+  "ForgetGravity",
+  "NorthWestGravity",
+  "NorthGravity",
+  "NorthEastGravity",
+  "WestGravity",
+  "CenterGravity",
+  "EastGravity",
+  "SouthWestGravity",
+  "SouthGravity",
+  "SouthEastGravity",
+  "StaticGravity"
+}
+local gravity_type = { }
+for i, t in ipairs(gravity_str) do
+  gravity_type[t] = i
 end
 lib.MagickWandGenesis()
 local filter
@@ -164,7 +274,6 @@ handle_result = function(img_or_wand, status)
 end
 local Image
 do
-  local _parent_0 = nil
   local _base_0 = {
     get_width = function(self)
       return lib.MagickGetImageWidth(self.wand)
@@ -183,6 +292,24 @@ do
     end,
     set_quality = function(self, quality)
       return handle_result(self, lib.MagickSetImageCompressionQuality(self.wand, quality))
+    end,
+    get_option = function(self, magick, key)
+      local format = magick .. ":" .. key
+      return ffi.string(lib.MagickGetOption(self.wand, format))
+    end,
+    set_option = function(self, magick, key, value)
+      local format = magick .. ":" .. key
+      return handle_result(self, lib.MagickSetOption(self.wand, format, value))
+    end,
+    get_gravity = function(self)
+      return gravity_str[lib.MagickGetImageGravity(self.wand)]
+    end,
+    set_gravity = function(self, typestr)
+      local type = gravity_type[typestr]
+      if not (type) then
+        error("invalid gravity type")
+      end
+      return lib.MagickSetImageGravity(self.wand, type)
     end,
     _keep_aspect = function(self, w, h)
       if not w and h then
@@ -215,6 +342,10 @@ do
       w, h = self:_keep_aspect(w, h)
       return handle_result(self, lib.MagickAdaptiveResizeImage(self.wand, w, h))
     end,
+    scale = function(self, w, h)
+      w, h = self:_keep_aspect(w, h)
+      return handle_result(self, lib.MagickScaleImage(self.wand, w, h))
+    end,
     crop = function(self, w, h, x, y)
       if x == nil then
         x = 0
@@ -236,6 +367,16 @@ do
       end
       return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
     end,
+    composite = function(self, blob, x, y, opstr)
+      if opstr == nil then
+        opstr = "OverCompositeOp"
+      end
+      local op = composite_op[opstr]
+      if not (op) then
+        error("invalid operator type")
+      end
+      return handle_result(self, lib.MagickCompositeImage(self.wand, blob, op, x, y))
+    end,
     resize_and_crop = function(self, w, h)
       local src_w, src_h = self:get_width(), self:get_height()
       local ar_src = src_w / src_h
@@ -248,6 +389,20 @@ do
         local new_width = h * ar_src
         self:resize(new_width, h)
         return self:crop(w, h, (new_width - w) / 2, 0)
+      end
+    end,
+    scale_and_crop = function(self, w, h)
+      local src_w, src_h = self:get_width(), self:get_height()
+      local ar_src = src_w / src_h
+      local ar_dest = w / h
+      if ar_dest > ar_src then
+        local new_height = w / ar_src
+        self:resize(w, new_height)
+        return self:scale(w, h)
+      else
+        local new_width = h * ar_src
+        self:resize(new_width, h)
+        return self:scale(w, h)
       end
     end,
     get_blob = function(self)
@@ -273,25 +428,14 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, wand, path)
       self.wand, self.path = wand, path
     end,
     __base = _base_0,
-    __name = "Image",
-    __parent = _parent_0
+    __name = "Image"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -299,9 +443,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Image = _class_0
 end
 local load_image

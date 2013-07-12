@@ -1,7 +1,7 @@
 local load_image, load_image_from_blob, thumb
 do
-  local _table_0 = require("magick")
-  load_image, load_image_from_blob, thumb = _table_0.load_image, _table_0.load_image_from_blob, _table_0.thumb
+  local _obj_0 = require("magick")
+  load_image, load_image_from_blob, thumb = _obj_0.load_image, _obj_0.load_image_from_blob, _obj_0.thumb
 end
 local _exp_0 = ...
 if "resize" == _exp_0 then
@@ -45,6 +45,33 @@ elseif "get_quality" == _exp_0 then
 elseif "sharpen" == _exp_0 then
   local img = load_image("hi.png")
   img:sharpen(1)
+  return img:write("out.png")
+elseif "set_gravity" == _exp_0 then
+  local img = load_image("hi.png")
+  img:set_gravity("SouthEastGravity")
+  return img:write("out.png")
+elseif "get_gravity" == _exp_0 then
+  local img = load_image("hi.png")
+  img:set_gravity("SouthEastGravity")
+  return print(img:get_gravity())
+elseif "set_option" == _exp_0 then
+  local img = load_image("hi.png")
+  img:set_option("webp", "lossless", "0")
+  return img:write("out.png")
+elseif "get_option" == _exp_0 then
+  local img = load_image("hi.png")
+  img:set_option("webp", "lossless", "0")
+  local o = img:get_option("webp", "lossless")
+  return print("webp(lossless) option of hi.png is " .. tostring(o))
+elseif "scale" == _exp_0 then
+  local img = load_image("hi.png")
+  img:scale(80)
+  return img:write("out.png")
+elseif "composite" == _exp_0 then
+  local img = load_image("hi.png")
+  local img1 = load_image("hi2.png")
+  local rt = img:composite(img1.wand, 0, 0)
+  print(rt)
   return img:write("out.png")
 else
   return error("don't know what to do")

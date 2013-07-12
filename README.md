@@ -129,6 +129,116 @@ get the image compression quality.
 
 set the image compression quality.
 
+#### `img:get_gravity(quality)`
+
+get the image gravity type.
+
+#### `img:set_gravity(quality)`
+
+set the image gravity type.
+
+gravity type include:
+
+	"ForgetGravity",
+	"NorthWestGravity",
+	"NorthGravity",
+	"NorthEastGravity",
+	"WestGravity", 
+	"CenterGravity",
+	"EastGravity",
+	"SouthWestGravity",
+	"SouthGravity",
+	"SouthEastGravity",
+	"StaticGravity" 
+	
+
+#### `img:get_option(magick, key)`
+
+returns all the option names that match the specified pattern associated with a image
+(.e.g img:get_option("webp", "lossless") )
+
+#### `img:set_option(magick, key, value)`
+
+associates one or options with the img (.e.g img:set_option("webp", "lossless", "0") )
+
+#### `img:scale(w, h)`
+
+scale the size of an image to the given dimensions.
+
+#### `img:composite(source, compose, x, y)`
+
+composite one image onto another at the specified offset.
+
+compose methods  include:
+
+	"NoCompositeOp"
+	"ModulusAddCompositeOp"
+	"AtopCompositeOp"
+	"BlendCompositeOp"
+	"BumpmapCompositeOp"
+	"ChangeMaskCompositeOp"
+	"ClearCompositeOp"
+	"ColorBurnCompositeOp"
+	"ColorDodgeCompositeOp"
+	"ColorizeCompositeOp"
+	"CopyBlackCompositeOp"
+	"CopyBlueCompositeOp"
+	"CopyCompositeOp"
+	"CopyCyanCompositeOp"
+	"CopyGreenCompositeOp"
+	"CopyMagentaCompositeOp"
+	"CopyOpacityCompositeOp"
+	"CopyRedCompositeOp"
+	"CopyYellowCompositeOp"
+	"DarkenCompositeOp"
+	"DstAtopCompositeOp"
+	"DstCompositeOp"
+	"DstInCompositeOp"
+	"DstOutCompositeOp"
+	"DstOverCompositeOp"
+	"DifferenceCompositeOp"
+	"DisplaceCompositeOp"
+	"DissolveCompositeOp"
+	"ExclusionCompositeOp"
+	"HardLightCompositeOp"
+	"HueCompositeOp"
+	"InCompositeOp"
+	"LightenCompositeOp"
+	"LinearLightCompositeOp"
+	"LuminizeCompositeOp"
+	"MinusDstCompositeOp"
+	"ModulateCompositeOp"
+	"MultiplyCompositeOp"
+	"OutCompositeOp"
+	"OverCompositeOp"
+	"OverlayCompositeOp"
+	"PlusCompositeOp"
+	"ReplaceCompositeOp"
+	"SaturateCompositeOp"
+	"ScreenCompositeOp"
+	"SoftLightCompositeOp"
+	"SrcAtopCompositeOp"
+	"SrcCompositeOp"
+	"SrcInCompositeOp"
+	"SrcOutCompositeOp"
+	"SrcOverCompositeOp"
+	"ModulusSubtractCompositeOp"
+	"ThresholdCompositeOp"
+	"XorCompositeOp"
+	"DivideDstCompositeOp"
+	"DistortCompositeOp"
+	"BlurCompositeOp"
+	"PegtopLightCompositeOp"
+	"VividLightCompositeOp"
+	"PinLightCompositeOp"
+	"LinearDodgeCompositeOp"
+	"LinearBurnCompositeOp"
+	"MathematicsCompositeOp"
+	"DivideSrcCompositeOp"
+	"MinusSrcCompositeOp"
+	"DarkenIntensityCompositeOp"
+	"LightenIntensityCompositeOp"
+
 #### `img:clone()`
 
 returns a copy of the image

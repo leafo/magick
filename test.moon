@@ -56,5 +56,38 @@ switch ...
     img\sharpen 1
     img\write "out.png"
 
+  when "set_gravity"
+    img = load_image "hi.png"
+    img\set_gravity "SouthEastGravity"
+    img\write "out.png"
+
+  when "get_gravity"
+    img = load_image "hi.png"
+    img\set_gravity "SouthEastGravity"
+    print(img\get_gravity!)
+
+  when "set_option"
+    img = load_image "hi.png"
+    img\set_option "webp", "lossless", "0"
+    img\write "out.png"
+
+  when "get_option"
+    img = load_image "hi.png"
+    img\set_option "webp", "lossless", "0"
+    o = img\get_option "webp", "lossless"
+    print "webp(lossless) option of hi.png is #{o}"
+
+  when "scale"
+    img = load_image "hi.png"
+    img\scale 80
+    img\write "out.png"
+
+  when "composite"
+    img = load_image "hi.png"
+    img1 = load_image "hi2.png"
+    rt = img\composite img1.wand, 0, 0
+    print(rt)
+    img\write "out.png"
+
   else
     error "don't know what to do"
