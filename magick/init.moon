@@ -7,6 +7,8 @@ ffi.cdef [[
   typedef int MagickBooleanType;
   typedef int ExceptionType;
   typedef int ssize_t;
+  typedef int CompositeOperator;
+  typedef int GravityType;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
@@ -43,6 +45,20 @@ ffi.cdef [[
 
   MagickBooleanType MagickSharpenImage(MagickWand *wand,
     const double radius,const double sigma);
+
+  MagickBooleanType MagickScaleImage(MagickWand *wand,
+    const size_t columns,const size_t rows);
+
+  MagickBooleanType MagickSetOption(MagickWand *,const char *,const char *);
+  char* MagickGetOption(MagickWand *,const char *);
+
+  MagickBooleanType MagickCompositeImage(MagickWand *wand,
+    const MagickWand *source_wand,const CompositeOperator compose,
+    const ssize_t x,const ssize_t y);
+
+  GravityType MagickGetImageGravity(MagickWand *wand);
+  MagickBooleanType MagickSetImageGravity(MagickWand *wand,
+    const GravityType gravity);
 
 ]]
 
@@ -90,7 +106,15 @@ try_to_load = (...) ->
 
 lib = try_to_load "MagickWand", ->
   lname = get_flags!\match "-l(MagickWand[^%s]*)"
-  lname and "lib" .. lname .. ".so"
+  local suffix
+  if ffi.os == "OSX"
+     suffix = ".dylib"
+  elseif ffi.os == "Windows"
+     suffix = ".dll"
+  else
+     suffix = ".so"
+
+  lname and "lib" .. lname .. suffix
 
 can_resize = if get_filters!
   ffi.cdef [[
@@ -99,6 +123,97 @@ can_resize = if get_filters!
       const FilterTypes, const double);
   ]]
   true
+
+composite_op = {
+   ["UndefinedCompositeOp"]: 0,
+   ["NoCompositeOp"]: 1,
+   ["ModulusAddCompositeOp"]: 2,
+   ["AtopCompositeOp"]: 3,
+   ["BlendCompositeOp"]: 4,
+   ["BumpmapCompositeOp"]: 5,
+   ["ChangeMaskCompositeOp"]: 6,
+   ["ClearCompositeOp"]: 7,
+   ["ColorBurnCompositeOp"]: 8,
+   ["ColorDodgeCompositeOp"]: 9,
+   ["ColorizeCompositeOp"]: 10,
+   ["CopyBlackCompositeOp"]: 11,
+   ["CopyBlueCompositeOp"]: 12,
+   ["CopyCompositeOp"]: 13,
+   ["CopyCyanCompositeOp"]: 14,
+   ["CopyGreenCompositeOp"]: 15,
+   ["CopyMagentaCompositeOp"]: 16,
+   ["CopyOpacityCompositeOp"]: 17,
+   ["CopyRedCompositeOp"]: 18,
+   ["CopyYellowCompositeOp"]: 19,
+   ["DarkenCompositeOp"]: 20,
+   ["DstAtopCompositeOp"]: 21,
+   ["DstCompositeOp"]: 22,
+   ["DstInCompositeOp"]: 23,
+   ["DstOutCompositeOp"]: 24,
+   ["DstOverCompositeOp"]: 25,
+   ["DifferenceCompositeOp"]: 26,
+   ["DisplaceCompositeOp"]: 27,
+   ["DissolveCompositeOp"]: 28,
+   ["ExclusionCompositeOp"]: 29,
+   ["HardLightCompositeOp"]: 30,
+   ["HueCompositeOp"]: 31,
+   ["InCompositeOp"]: 32,
+   ["LightenCompositeOp"]: 33,
+   ["LinearLightCompositeOp"]: 34,
+   ["LuminizeCompositeOp"]: 35,
+   ["MinusDstCompositeOp"]: 36,
+   ["ModulateCompositeOp"]: 37,
+   ["MultiplyCompositeOp"]: 38,
+   ["OutCompositeOp"]: 39,
+   ["OverCompositeOp"]: 40,
+   ["OverlayCompositeOp"]: 41,
+   ["PlusCompositeOp"]: 42,
+   ["ReplaceCompositeOp"]: 43,
+   ["SaturateCompositeOp"]: 44,
+   ["ScreenCompositeOp"]: 45,
+   ["SoftLightCompositeOp"]: 46,
+   ["SrcAtopCompositeOp"]: 47,
+   ["SrcCompositeOp"]: 48,
+   ["SrcInCompositeOp"]: 49,
+   ["SrcOutCompositeOp"]: 50,
+   ["SrcOverCompositeOp"]: 51,
+   ["ModulusSubtractCompositeOp"]: 52,
+   ["ThresholdCompositeOp"]: 53,
+   ["XorCompositeOp"]: 54,
+   ["DivideDstCompositeOp"]: 55,
+   ["DistortCompositeOp"]: 56,
+   ["BlurCompositeOp"]: 57,
+   ["PegtopLightCompositeOp"]: 58,
+   ["VividLightCompositeOp"]: 59,
+   ["PinLightCompositeOp"]: 60,
+   ["LinearDodgeCompositeOp"]: 61,
+   ["LinearBurnCompositeOp"]: 62,
+   ["MathematicsCompositeOp"]: 63,
+   ["DivideSrcCompositeOp"]: 64,
+   ["MinusSrcCompositeOp"]: 65,
+   ["DarkenIntensityCompositeOp"]: 66,
+   ["LightenIntensityCompositeOp"]: 67
+}
+
+gravity_str = {
+   "ForgetGravity",
+   "NorthWestGravity",
+   "NorthGravity",
+   "NorthEastGravity",
+   "WestGravity", 
+   "CenterGravity",
+   "EastGravity",
+   "SouthWestGravity",
+   "SouthGravity",
+   "SouthEastGravity",
+   "StaticGravity"
+}
+
+gravity_type = {}
+
+
+for i, t in ipairs gravity_str
+  gravity_type[t] = i
 
 lib.MagickWandGenesis!
 
@@ -131,6 +246,22 @@ class Image
     handle_result @,
       lib.MagickSetImageCompressionQuality @wand, quality
 
+  get_option: (magick, key) =>
+    format = magick .. ":" .. key
+    ffi.string lib.MagickGetOption @wand, format
+  set_option: (magick, key, value) =>
+    format = magick .. ":" .. key
+    handle_result @,
+      lib.MagickSetOption @wand, format, value
+
+  get_gravity: =>
+    gravity_str[lib.MagickGetImageGravity @wand]
+
+  set_gravity: (typestr) =>
+     type = gravity_type[typestr]
+     error "invalid gravity type" unless type
+     lib.MagickSetImageGravity @wand, type
+
   _keep_aspect: (w,h) =>
     if not w and h
       @get_width! / @get_height! * h, h
@@ -155,6 +286,11 @@ class Image
     handle_result @,
       lib.MagickAdaptiveResizeImage @wand, w, h
 
+  scale: (w,h) =>
+    w, h = @_keep_aspect w,h
+    handle_result @,
+      lib.MagickScaleImage @wand, w, h
+
   crop: (w,h, x=0, y=0) =>
     handle_result @,
       lib.MagickCropImage @wand, w, h, x, y
@@ -166,6 +302,12 @@ class Image
   sharpen: (sigma, radius=0) =>
     handle_result @,
       lib.MagickSharpenImage @wand, radius, sigma
+
+  composite: (blob, x, y, opstr="OverCompositeOp") =>
+    op = composite_op[opstr]
+    error "invalid operator type" unless op
+    handle_result @,
+      lib.MagickCompositeImage @wand, blob, op, x, y
 
   -- resize but crop image to maintain aspect ratio
   resize_and_crop: (w,h) =>
@@ -182,6 +324,21 @@ class Image
       new_width = h * ar_src
       @resize new_width, h
       @crop w, h, (new_width - w) / 2, 0
+
+  scale_and_crop: (w,h) =>
+    src_w, src_h = @get_width!, @get_height!
+
+    ar_src = src_w / src_h
+    ar_dest = w / h
+
+    if ar_dest > ar_src
+      new_height = w / ar_src
+      @resize w, new_height
+      @scale w, h
+    else
+      new_width = h * ar_src
+      @resize new_width, h
+      @scale w, h
 
   get_blob: =>
     len = ffi.new "size_t[1]", 0
