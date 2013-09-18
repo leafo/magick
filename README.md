@@ -1,4 +1,5 @@
 # magick
+#### Version 0.1.0
 
 Lua bindings to ImageMagick for LuaJIT using FFI
 
@@ -47,6 +48,9 @@ kinds of values:
                 --  or bottom to keep aspect ratio
 "500x300+10+20" -- Crop image to 500 by 300 at position 10,20
 ```
+
+If you need more advanced image operations, you'll need to work with the
+`Image` object. Read on.
 
 ## `Image` object
 
