@@ -489,19 +489,20 @@ parse_size_str = function(str, src_w, src_h)
     end
   end
   local center_crop = rest:match("#") and true
-  if w and h and not center_crop then
-    if not (rest:match("!")) then
-      if src_w / src_h > w / h then
-        h = nil
-      else
-        w = nil
-      end
-    end
-  end
   local crop_x, crop_y = rest:match("%+(%d+)%+(%d+)")
   if crop_x then
     crop_x = tonumber(crop_x)
     crop_y = tonumber(crop_y)
+  else
+    if w and h and not center_crop then
+      if not (rest:match("!")) then
+        if src_w / src_h > w / h then
+          h = nil
+        else
+          w = nil
+        end
+      end
+    end
   end
   return {
     w = w,

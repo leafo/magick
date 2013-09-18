@@ -4,7 +4,11 @@ do
   load_image, load_image_from_blob, thumb = _obj_0.load_image, _obj_0.load_image_from_blob, _obj_0.thumb
 end
 local _exp_0 = ...
-if "resize" == _exp_0 then
+if "icon" == _exp_0 then
+  local img = load_image("hi.png")
+  img:resize(16, 16)
+  return img:write("favicon.ico")
+elseif "resize" == _exp_0 then
   local img = load_image("hi.png")
   img:resize(nil, 80)
   return img:write("out.png")
@@ -29,7 +33,8 @@ elseif "blob" == _exp_0 then
   return print(img2, img2:get_width(), img2:get_height())
 elseif "thumb" == _exp_0 then
   thumb("hi.png", "150x200", "out.png")
-  return thumb("hi.png", "150x200#", "out2.png")
+  thumb("hi.png", "150x200#", "out2.png")
+  return thumb("hi.png", "30x30+20+20", "out3.png")
 elseif "format" == _exp_0 then
   local img = load_image("hi.png")
   print(img:set_format("bmp"))

@@ -2,6 +2,11 @@
 import load_image, load_image_from_blob, thumb from require "magick"
 
 switch ...
+  when "icon"
+    img = load_image "hi.png"
+    img\resize 16, 16
+    img\write "favicon.ico"
+
   when "resize"
     img = load_image "hi.png"
     img\resize nil, 80
@@ -35,6 +40,7 @@ switch ...
   when "thumb"
     thumb "hi.png", "150x200", "out.png"
     thumb "hi.png", "150x200#", "out2.png"
+    thumb "hi.png", "30x30+20+20", "out3.png"
 
   when "format"
     img = load_image "hi.png"

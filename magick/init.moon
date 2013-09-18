@@ -391,18 +391,18 @@ parse_size_str = (str, src_w, src_h) ->
 
   center_crop = rest\match"#" and true
 
-  -- by default we use the dimensions as max sizes
-  if w and h and not center_crop
-    unless rest\match"!"
-      if src_w/src_h > w/h
-        h = nil
-      else
-        w = nil
-
   crop_x, crop_y = rest\match "%+(%d+)%+(%d+)"
   if crop_x
     crop_x = tonumber crop_x
     crop_y = tonumber crop_y
+  else
+    -- by default we use the dimensions as max sizes
+    if w and h and not center_crop
+      unless rest\match"!"
+        if src_w/src_h > w/h
+          h = nil
+        else
+          w = nil
 
   {
     :w, :h
