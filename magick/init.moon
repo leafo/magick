@@ -200,7 +200,7 @@ gravity_str = {
    "NorthWestGravity",
    "NorthGravity",
    "NorthEastGravity",
-   "WestGravity", 
+   "WestGravity",
    "CenterGravity",
    "EastGravity",
    "SouthWestGravity",
@@ -242,7 +242,7 @@ class Image
       lib.MagickSetImageFormat @wand, format
 
   get_quality: => lib.MagickGetImageCompressionQuality @wand
-  set_quality: (quality) => 
+  set_quality: (quality) =>
     handle_result @,
       lib.MagickSetImageCompressionQuality @wand, quality
 
@@ -362,7 +362,7 @@ load_image = (path) ->
     code, msg = get_exception wand
     lib.DestroyMagickWand wand
     return nil, msg, code
-  
+
   Image wand, path
 
 load_image_from_blob = (blob) ->
