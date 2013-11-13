@@ -538,33 +538,10 @@ thumb = function(img, size_str, output)
   img:destroy()
   return ret
 end
-if ... == "test" then
-  local w, h = 500, 300
-  local D
-  D = function(t)
-    return print(table.concat((function()
-      local _accum_0 = { }
-      local _len_0 = 1
-      for k, v in pairs(t) do
-        _accum_0[_len_0] = tostring(k) .. ": " .. tostring(v)
-        _len_0 = _len_0 + 1
-      end
-      return _accum_0
-    end)(), ", "))
-  end
-  D(parse_size_str("10x10", w, h))
-  D(parse_size_str("50%x50%", w, h))
-  D(parse_size_str("50%x50%!", w, h))
-  D(parse_size_str("x10", w, h))
-  D(parse_size_str("10x%", w, h))
-  D(parse_size_str("10x10%#", w, h))
-  D(parse_size_str("200x300", w, h))
-  D(parse_size_str("200x300!", w, h))
-  D(parse_size_str("200x300+10+10", w, h))
-end
 return {
   load_image = load_image,
   load_image_from_blob = load_image_from_blob,
   thumb = thumb,
-  Image = Image
+  Image = Image,
+  parse_size_str = parse_size_str
 }

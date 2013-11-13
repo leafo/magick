@@ -436,23 +436,5 @@ thumb = (img, size_str, output) ->
   img\destroy!
   ret
 
-if ... == "test"
-  w,h = 500,300
-  D = (t) -> print table.concat ["#{k}: #{v}" for k,v in pairs t], ", "
-
-  D parse_size_str "10x10", w,h
-
-  D parse_size_str "50%x50%", w,h
-  D parse_size_str "50%x50%!", w,h
-
-  D parse_size_str "x10", w,h
-  D parse_size_str "10x%", w,h
-  D parse_size_str "10x10%#", w,h
-
-  D parse_size_str "200x300", w,h
-  D parse_size_str "200x300!", w,h
-  D parse_size_str "200x300+10+10", w,h
-
-
-{ :load_image, :load_image_from_blob, :thumb, :Image }
+{ :load_image, :load_image_from_blob, :thumb, :Image, :parse_size_str }
 
