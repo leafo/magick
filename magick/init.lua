@@ -371,6 +371,9 @@ do
       if opstr == nil then
         opstr = "OverCompositeOp"
       end
+      if type(blob) == "table" and blob.__class == Image then
+        blob = blob.wand
+      end
       local op = composite_op[opstr]
       if not (op) then
         error("invalid operator type")

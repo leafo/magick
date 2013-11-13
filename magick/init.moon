@@ -249,6 +249,7 @@ class Image
   get_option: (magick, key) =>
     format = magick .. ":" .. key
     ffi.string lib.MagickGetOption @wand, format
+
   set_option: (magick, key, value) =>
     format = magick .. ":" .. key
     handle_result @,
@@ -304,6 +305,9 @@ class Image
       lib.MagickSharpenImage @wand, radius, sigma
 
   composite: (blob, x, y, opstr="OverCompositeOp") =>
+    if type(blob) == "table" and blob.__class == Image
+      blob = blob.wand
+
     op = composite_op[opstr]
     error "invalid operator type" unless op
     handle_result @,
