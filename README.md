@@ -252,6 +252,15 @@ returns a copy of the image
 free the memory associated with image, it is invalid to use the image after
 calling this method
 
+# Tests
+
+Tests use [Busted](http://olivinelabs.com/busted). Install and execute the
+following command to run tests. You can check the output in
+`spec/output_images/`.
+
+```bash
+$ busted
+```
 
 # Contact
 
