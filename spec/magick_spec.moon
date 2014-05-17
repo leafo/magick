@@ -112,7 +112,7 @@ describe "magick", ->
     it "should strip exif data", ->
       import load_image, load_image_from_blob from magick
       img = load_image "spec/exif_test.jpg"
-      img\strip_image!
+      img\strip!
       img\write "spec/output_images/exif_test.jpg"
 
   describe "thumb", ->

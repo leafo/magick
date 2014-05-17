@@ -264,7 +264,7 @@ class Image
      error "invalid gravity type" unless type
      lib.MagickSetImageGravity @wand, type
 
-  strip_image: =>
+  strip: =>
      lib.MagickStripImage @wand
 
   _keep_aspect: (w,h) =>

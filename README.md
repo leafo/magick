@@ -244,7 +244,7 @@ compose methods  include:
 	"LightenIntensityCompositeOp"
 
 
-#### `img:strip_image()`
+#### `img:strip()`
 
 strips image of all profiles and comments, useful for removing exif and other data
 

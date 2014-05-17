@@ -312,7 +312,7 @@ do
       end
       return lib.MagickSetImageGravity(self.wand, type)
     end,
-    strip_image = function(self)
+    strip = function(self)
       return lib.MagickStripImage(self.wand)
     end,
     _keep_aspect = function(self, w, h)
