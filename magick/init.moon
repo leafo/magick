@@ -60,6 +60,7 @@ ffi.cdef [[
   MagickBooleanType MagickSetImageGravity(MagickWand *wand,
     const GravityType gravity);
 
+  MagickBooleanType MagickStripImage(MagickWand *wand);
 ]]
 
 get_flags = ->
@@ -262,6 +263,9 @@ class Image
      type = gravity_type[typestr]
      error "invalid gravity type" unless type
      lib.MagickSetImageGravity @wand, type
+
+  strip_image: =>
+     lib.MagickStripImage @wand
 
   _keep_aspect: (w,h) =>
     if not w and h

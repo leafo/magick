@@ -108,6 +108,13 @@ describe "magick", ->
       img\set_option "webp", "lossless", "0"
       assert.same "0", img\get_option "webp", "lossless"
 
+  describe "exif #exif", ->
+    it "should strip exif data", ->
+      import load_image, load_image_from_blob from magick
+      img = load_image "spec/exif_test.jpg"
+      img\strip_image!
+      img\write "spec/output_images/exif_test.jpg"
+
   describe "thumb", ->
     import thumb from magick
     sizes = {

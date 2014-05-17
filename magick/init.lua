@@ -57,6 +57,7 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageGravity(MagickWand *wand,
     const GravityType gravity);
 
+  MagickBooleanType MagickStripImage(MagickWand *wand);
 ]])
 local get_flags
 get_flags = function()
@@ -310,6 +311,9 @@ do
         error("invalid gravity type")
       end
       return lib.MagickSetImageGravity(self.wand, type)
+    end,
+    strip_image = function(self)
+      return lib.MagickStripImage(self.wand)
     end,
     _keep_aspect = function(self, w, h)
       if not w and h then

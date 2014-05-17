@@ -243,6 +243,11 @@ compose methods  include:
 	"DarkenIntensityCompositeOp"
 	"LightenIntensityCompositeOp"
 
+
+#### `img:strip_image()`
+
+strips image of all profiles and comments, useful for removing exif and other data
+
 #### `img:clone()`
 
 returns a copy of the image
