@@ -108,6 +108,38 @@ describe "magick", ->
       img\set_option "webp", "lossless", "0"
       assert.same "0", img\get_option "webp", "lossless"
 
+  describe "color_image", ->
+    import load_image from magick
+    local img
+
+    before_each ->
+      img = assert load_image "spec/color_test.png"
+
+    after_each ->
+      img\destroy!
+      img = nil
+
+    it "should get colors of pixels", ->
+      local r,g,b,a
+      assert_bytes = (er,eg,eb,ea) ->
+        assert.same er, math.floor r * 255
+        assert.same eg, math.floor g * 255
+        assert.same eb, math.floor b * 255
+        assert.same ea, math.floor a * 255
+
+      r,g,b,a = img\get_pixel 0, 0
+      assert_bytes 217, 70, 70, 255
+
+      r,g,b,a = img\get_pixel 1, 0
+      assert_bytes 152, 243, 174, 255
+
+      r,g,b,a = img\get_pixel 1, 1
+      assert_bytes 255, 240, 172, 255
+
+      r,g,b,a = img\get_pixel 0, 1
+      assert_bytes 152, 159, 243, 255
+
+
   describe "exif #exif", ->
     it "should strip exif data", ->
       import load_image, load_image_from_blob from magick

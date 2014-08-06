@@ -1,5 +1,6 @@
 local ffi = require("ffi")
 ffi.cdef([[  typedef void MagickWand;
+  typedef void PixelWand;
 
   typedef int MagickBooleanType;
   typedef int ExceptionType;
@@ -58,6 +59,17 @@ ffi.cdef([[  typedef void MagickWand;
     const GravityType gravity);
 
   MagickBooleanType MagickStripImage(MagickWand *wand);
+
+  MagickBooleanType MagickGetImagePixelColor(MagickWand *wand,
+    const ssize_t x,const ssize_t y,PixelWand *color);
+
+  PixelWand *NewPixelWand(void);
+  PixelWand *DestroyPixelWand(PixelWand *);
+
+  double PixelGetAlpha(const PixelWand *);
+  double PixelGetRed(const PixelWand *);
+  double PixelGetGreen(const PixelWand *);
+  double PixelGetBlue(const PixelWand *);
 ]])
 local get_flags
 get_flags = function()
@@ -429,6 +441,15 @@ do
         lib.DestroyMagickWand(self.wand)
       end
       self.wand = nil
+      if self.pixel_wand then
+        lib.DestroyPixelWand(self.pixel_wand)
+        self.pixel_wand = nil
+      end
+    end,
+    get_pixel = function(self, x, y)
+      self.pixel_wand = self.pixel_wand or lib.NewPixelWand()
+      assert(lib.MagickGetImagePixelColor(self.wand, x, y, self.pixel_wand), "failed to get pixel")
+      return lib.PixelGetRed(self.pixel_wand), lib.PixelGetGreen(self.pixel_wand), lib.PixelGetBlue(self.pixel_wand), lib.PixelGetAlpha(self.pixel_wand)
     end,
     __tostring = function(self)
       return "Image<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"

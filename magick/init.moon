@@ -3,6 +3,7 @@ ffi = require "ffi"
 
 ffi.cdef [[
   typedef void MagickWand;
+  typedef void PixelWand;
 
   typedef int MagickBooleanType;
   typedef int ExceptionType;
@@ -61,6 +62,17 @@ ffi.cdef [[
     const GravityType gravity);
 
   MagickBooleanType MagickStripImage(MagickWand *wand);
+
+  MagickBooleanType MagickGetImagePixelColor(MagickWand *wand,
+    const ssize_t x,const ssize_t y,PixelWand *color);
+
+  PixelWand *NewPixelWand(void);
+  PixelWand *DestroyPixelWand(PixelWand *);
+
+  double PixelGetAlpha(const PixelWand *);
+  double PixelGetRed(const PixelWand *);
+  double PixelGetGreen(const PixelWand *);
+  double PixelGetBlue(const PixelWand *);
 ]]
 
 get_flags = ->
@@ -360,6 +372,17 @@ class Image
   destroy: =>
     lib.DestroyMagickWand @wand if @wand
     @wand = nil
+
+    if @pixel_wand
+      lib.DestroyPixelWand @pixel_wand
+      @pixel_wand = nil
+
+  get_pixel: (x,y) =>
+    @pixel_wand or= lib.NewPixelWand!
+    assert lib.MagickGetImagePixelColor(@wand, x,y, @pixel_wand),
+      "failed to get pixel"
+
+    lib.PixelGetRed(@pixel_wand), lib.PixelGetGreen(@pixel_wand), lib.PixelGetBlue(@pixel_wand), lib.PixelGetAlpha(@pixel_wand)
 
   __tostring: =>
     "Image<#{@path}, #{@wand}>"
