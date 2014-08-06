@@ -248,6 +248,11 @@ compose methods  include:
 
 strips image of all profiles and comments, useful for removing exif and other data
 
+
+#### `r,g,b,a = img:get_pixel(x, y)`
+
+Get the r,g,b,a color components of a pixel in the image as doubles from 0 to 1
+
 #### `img:clone()`
 
 returns a copy of the image
