@@ -1,3 +1,4 @@
+local VERSION = "1.0.0"
 local ffi = require("ffi")
 ffi.cdef([[  typedef void MagickWand;
   typedef void PixelWand;
@@ -568,5 +569,6 @@ return {
   load_image_from_blob = load_image_from_blob,
   thumb = thumb,
   Image = Image,
-  parse_size_str = parse_size_str
+  parse_size_str = parse_size_str,
+  VERSION = VERSION
 }

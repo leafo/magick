@@ -1,4 +1,6 @@
 
+VERSION = "1.0.0"
+
 ffi = require "ffi"
 
 ffi.cdef [[
@@ -463,5 +465,5 @@ thumb = (img, size_str, output) ->
   img\destroy!
   ret
 
-{ :load_image, :load_image_from_blob, :thumb, :Image, :parse_size_str }
+{ :load_image, :load_image_from_blob, :thumb, :Image, :parse_size_str, :VERSION }
 
