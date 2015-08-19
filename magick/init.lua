@@ -74,7 +74,7 @@ ffi.cdef([[  typedef void MagickWand;
 ]])
 local get_flags
 get_flags = function()
-  local proc = io.popen("MagickWand-config --cflags --libs", "r")
+  local proc = io.popen("pkg-config --cflags --libs MagickWand", "r")
   local flags = proc:read("*a")
   get_flags = function()
     return flags

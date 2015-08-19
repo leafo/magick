@@ -78,7 +78,7 @@ ffi.cdef [[
 ]]
 
 get_flags = ->
-  proc = io.popen "MagickWand-config --cflags --libs", "r"
+  proc = io.popen "pkg-config --cflags --libs MagickWand", "r"
   flags = proc\read "*a"
   get_flags = -> flags
   proc\close!
