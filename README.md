@@ -133,11 +133,11 @@ get the image compression quality.
 
 set the image compression quality.
 
-#### `img:get_gravity(quality)`
+#### `img:get_gravity()`
 
 get the image gravity type.
 
-#### `img:set_gravity(quality)`
+#### `img:set_gravity(gravity)`
 
 set the image gravity type.
 
