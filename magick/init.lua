@@ -71,6 +71,8 @@ ffi.cdef([[  typedef void MagickWand;
   double PixelGetRed(const PixelWand *);
   double PixelGetGreen(const PixelWand *);
   double PixelGetBlue(const PixelWand *);
+
+  MagickWand* MagickCoalesceImages(MagickWand*);
 ]])
 local get_flags
 get_flags = function()
@@ -342,6 +344,9 @@ do
       lib.MagickAddImage(wand, self.wand)
       return Image(wand, self.path)
     end,
+    coalesce = function(self)
+      self.wand = lib.MagickCoalesceImages(self.wand)
+    end,
     resize = function(self, w, h, f, blur)
       if f == nil then
         f = "Lanczos2"
@@ -353,6 +358,7 @@ do
         error("Failed to load filter list, can't resize")
       end
       w, h = self:_keep_aspect(w, h)
+      self:coalesce()
       return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), blur))
     end,
     adaptive_resize = function(self, w, h)
