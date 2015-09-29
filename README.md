@@ -169,11 +169,11 @@ associates one or options with the img (.e.g img:set_option("webp", "lossless", 
 
 scale the size of an image to the given dimensions.
 
-#### `img:composite(source, compose, x, y)`
+#### `img:composite(source, x, y, compose)`
 
 composite one image onto another at the specified offset.
 
-compose methods  include:
+compose methods include:
 
 	"NoCompositeOp"
 	"ModulusAddCompositeOp"
