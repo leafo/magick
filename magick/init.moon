@@ -81,9 +81,13 @@ ffi.cdef [[
 
 get_flags = ->
   proc = io.popen "pkg-config --cflags --libs MagickWand", "r"
-  flags = proc\read "*a"
+  local flags
+  stime = os.time!
+  while flags == nil and proc ~= nil and (os.time! - stime) < 3
+    flags = proc\read "*a"
+  if proc
+    proc\close!
   get_flags = -> flags
-  proc\close!
   flags
 
 get_filters = ->
@@ -297,7 +301,9 @@ class Image
     Image wand, @path
 
   coalesce: =>
-    @wand = lib.MagickCoalesceImages @wand
+    old_wand = @wand
+    @wand = lib.MagickCoalesceImages old_wand
+    lib.DestroyMagickWand old_wand
 
   resize: (w,h, f="Lanczos2", blur=1.0) =>
     error "Failed to load filter list, can't resize" unless can_resize

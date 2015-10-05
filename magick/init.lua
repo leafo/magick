@@ -77,11 +77,17 @@ ffi.cdef([[  typedef void MagickWand;
 local get_flags
 get_flags = function()
   local proc = io.popen("pkg-config --cflags --libs MagickWand", "r")
-  local flags = proc:read("*a")
+  local flags
+  local stime = os.time()
+  while flags == nil and proc ~= nil and (os.time() - stime) < 3 do
+    flags = proc:read("*a")
+  end
+  if proc then
+    proc:close()
+  end
   get_flags = function()
     return flags
   end
-  proc:close()
   return flags
 end
 local get_filters
@@ -345,7 +351,9 @@ do
       return Image(wand, self.path)
     end,
     coalesce = function(self)
-      self.wand = lib.MagickCoalesceImages(self.wand)
+      local old_wand = self.wand
+      self.wand = lib.MagickCoalesceImages(old_wand)
+      return lib.DestroyMagickWand(old_wand)
     end,
     resize = function(self, w, h, f, blur)
       if f == nil then
