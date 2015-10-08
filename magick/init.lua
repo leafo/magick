@@ -85,45 +85,39 @@ end
 local get_filters
 get_filters = function()
   local fname = "magick/resample.h"
+  local has_support
+  has_support = function(p)
+    local full = tostring(p) .. "/" .. tostring(fname)
+    do
+      local f = io.open(full)
+      if f then
+        local content
+        do
+          local _with_0 = f:read("*a")
+          f:close()
+          content = _with_0
+        end
+        local filter_types = content:match("(typedef enum.-FilterTypes;)")
+        if filter_types then
+          ffi.cdef(filter_types)
+          return true
+        end
+      end
+    end
+  end
   local prefixes = {
     "/usr/include/ImageMagick",
-    "/usr/local/include/ImageMagick",
-    function()
-      return get_flags():match("-I([^%s]+)")
-    end
+    "/usr/local/include/ImageMagick"
   }
   for _index_0 = 1, #prefixes do
-    local _continue_0 = false
-    repeat
-      local p = prefixes[_index_0]
-      if "function" == type(p) then
-        p = p()
-        if not (p) then
-          _continue_0 = true
-          break
-        end
-      end
-      local full = tostring(p) .. "/" .. tostring(fname)
-      do
-        local f = io.open(full)
-        if f then
-          local content
-          do
-            local _with_0 = f:read("*a")
-            f:close()
-            content = _with_0
-          end
-          local filter_types = content:match("(typedef enum.-FilterTypes;)")
-          if filter_types then
-            ffi.cdef(filter_types)
-            return true
-          end
-        end
-      end
-      _continue_0 = true
-    until true
-    if not _continue_0 then
-      break
+    local p = prefixes[_index_0]
+    if has_support(p) then
+      return true
+    end
+  end
+  for p in get_flags():gmatch("-I([^%s]+)") do
+    if has_support(p) then
+      return true
     end
   end
   return false
