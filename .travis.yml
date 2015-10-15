@@ -4,6 +4,7 @@ install:
   - sudo apt-get install luajit
   - sudo apt-get install luarocks
   - sudo apt-get install libmagickwand-dev
+  - sudo luarocks install moonscript
   - sudo luarocks install https://luarocks.org/manifests/olivine-labs/busted-2.0.rc7-0.rockspec
   - cat $(which busted) | sed 's/\/usr\/bin\/lua/.\/luajit/' > busted
   - chmod +x busted
