@@ -15,7 +15,7 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
   MagickBooleanType MagickReadImageBlob(MagickWand*, const void*, const size_t);
 
-  const char* MagickGetException(const MagickWand*, ExceptionType*);
+  char* MagickGetException(const MagickWand*, ExceptionType*);
 
   int MagickGetImageWidth(MagickWand*);
   int MagickGetImageHeight(MagickWand*);
@@ -36,7 +36,7 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
-  const char* MagickGetImageFormat(MagickWand* wand);
+  char* MagickGetImageFormat(MagickWand* wand);
 
   size_t MagickGetImageCompressionQuality(MagickWand * wand);
   MagickBooleanType MagickSetImageCompressionQuality(MagickWand *wand,
