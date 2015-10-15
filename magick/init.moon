@@ -219,17 +219,17 @@ composite_op = {
 }
 
 gravity_str = {
-   "ForgetGravity",
-   "NorthWestGravity",
-   "NorthGravity",
-   "NorthEastGravity",
-   "WestGravity",
-   "CenterGravity",
-   "EastGravity",
-   "SouthWestGravity",
-   "SouthGravity",
-   "SouthEastGravity",
-   "StaticGravity"
+  "ForgetGravity",
+  "NorthWestGravity",
+  "NorthGravity",
+  "NorthEastGravity",
+  "WestGravity",
+  "CenterGravity",
+  "EastGravity",
+  "SouthWestGravity",
+  "SouthGravity",
+  "SouthEastGravity",
+  "StaticGravity"
 }
 
 gravity_type = {}
