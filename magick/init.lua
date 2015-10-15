@@ -283,7 +283,7 @@ end
 local get_exception
 get_exception = function(wand)
   local etype = ffi.new("ExceptionType[1]", 0)
-  local msg = ffi.string(lib.MagickGetException(wand, etype))
+  local msg = ffi.string(ffi.gc(lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory))
   return etype[0], msg
 end
 local handle_result
@@ -306,7 +306,7 @@ do
       return lib.MagickGetImageHeight(self.wand)
     end,
     get_format = function(self)
-      return ffi.string(lib.MagickGetImageFormat(self.wand)):lower()
+      return ffi.string(ffi.gc(lib.MagickGetImageFormat(self.wand), lib.MagickRelinquishMemory)):lower()
     end,
     set_format = function(self, format)
       return handle_result(self, lib.MagickSetImageFormat(self.wand, format))
@@ -319,7 +319,7 @@ do
     end,
     get_option = function(self, magick, key)
       local format = magick .. ":" .. key
-      return ffi.string(lib.MagickGetOption(self.wand, format))
+      return ffi.string(ffi.gc(lib.MagickGetOption(self.wand, format), lib.MagickRelinquishMemory))
     end,
     set_option = function(self, magick, key, value)
       local format = magick .. ":" .. key

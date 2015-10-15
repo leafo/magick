@@ -246,7 +246,7 @@ filter = (name) -> lib[name .. "Filter"]
 
 get_exception = (wand) ->
   etype = ffi.new "ExceptionType[1]", 0
-  msg = ffi.string lib.MagickGetException wand, etype
+  msg = ffi.string ffi.gc lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory
   etype[0], msg
 
 handle_result = (img_or_wand, status) ->
@@ -262,7 +262,7 @@ class Image
 
   get_width: => lib.MagickGetImageWidth @wand
   get_height: => lib.MagickGetImageHeight @wand
-  get_format: => ffi.string(lib.MagickGetImageFormat @wand)\lower!
+  get_format: => ffi.string(ffi.gc lib.MagickGetImageFormat(@wand), lib.MagickRelinquishMemory)\lower!
   set_format: (format) =>
     handle_result @,
       lib.MagickSetImageFormat @wand, format
@@ -274,7 +274,7 @@ class Image
 
   get_option: (magick, key) =>
     format = magick .. ":" .. key
-    ffi.string lib.MagickGetOption @wand, format
+    ffi.string ffi.gc lib.MagickGetOption(@wand, format), lib.MagickRelinquishMemory
 
   set_option: (magick, key, value) =>
     format = magick .. ":" .. key
