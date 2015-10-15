@@ -6,7 +6,8 @@ install:
   - sudo apt-get install libmagickwand-dev
   - sudo luarocks install moonscript
   - sudo luarocks install https://luarocks.org/manifests/olivine-labs/busted-2.0.rc7-0.rockspec
-  - cat $(which busted) | sed 's/\/usr\/bin\/lua/.\/luajit/' > busted
+  - cat $(which busted) | sed 's/\/usr\/bin\/lua/\/usr\/bin\/luajit/' > busted
+  - find /usr/bin
   - chmod +x busted
 
 script: ./busted
