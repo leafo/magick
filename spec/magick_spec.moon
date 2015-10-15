@@ -36,50 +36,52 @@ describe "magick", ->
       img\destroy!
 
     it "icon", ->
-      img\resize 16, 16
-      img\write out_path "icon.ico"
+      assert img\resize 16, 16
+      assert img\write out_path "icon.ico"
 
     it "resize", ->
-      img\resize nil, 80
-      img\write out_path "resize.png"
+      assert img\resize nil, 80
+      assert img\write out_path "resize.png"
+
+    it "resize with exception", ->
+      assert.has_error ->
+        assert img\resize -50, -50
 
     it "resize_and_crop", ->
-      img\resize_and_crop 500,1000
-      img\write out_path "resize_and_crop.png"
+      assert img\resize_and_crop 500,1000
+      assert img\write out_path "resize_and_crop.png"
 
     it "blur", ->
-      img\blur 3, 10
-      img\write out_path "blur.png"
+      assert img\blur 3, 10
+      assert img\write out_path "blur.png"
 
     it "rotate", ->
-      img\rotate 45
-      img\write out_path "rotate.png"
+      assert img\rotate 45
+      assert img\write out_path "rotate.png"
 
     it "quality", ->
-      img\set_quality 50
+      assert img\set_quality 50
       assert.same 50, img\get_quality!
-      img\write out_path "quality.jpg"
+      assert img\write out_path "quality.jpg"
 
     it "sharpen", ->
-      img\sharpen 1
-      img\write out_path "sharpen.png"
+      assert img\sharpen 1
+      assert img\write out_path "sharpen.png"
 
     it "scale", ->
-      img\scale 80
-      img\write out_path "scale.png"
+      assert img\scale 80
+      assert img\write out_path "scale.png"
 
     it "composite", ->
       img2 = img\clone!
-      img2\resize 32
-
+      assert img2\resize 32
       assert img\composite img2, 10, 20
-
-      img\write out_path "composite.png"
+      assert img\write out_path "composite.png"
 
     it "should make clone", ->
       before_w, before_h = img\get_width!, img\get_height!
       cloned = img\clone!
-      cloned\resize 50, 20
+      assert cloned\resize 50, 20
 
       assert.same before_w, img\get_width!
       assert.same before_h, img\get_height!
@@ -95,15 +97,15 @@ describe "magick", ->
       assert.same img\get_height!, blob_img\get_height!
 
     it "should set format", ->
-      img\set_format "bmp"
+      assert img\set_format "bmp"
       assert.same "bmp", img\get_format!
 
     it "should set gravity", ->
-      img\set_gravity "SouthEastGravity"
+      assert img\set_gravity "SouthEastGravity"
       assert.same "SouthEastGravity", img\get_gravity!
 
     it "should set option", ->
-      img\set_option "webp", "lossless", "0"
+      assert img\set_option "webp", "lossless", "0"
       assert.same "0", img\get_option "webp", "lossless"
 
   describe "color_image", ->
@@ -163,5 +165,5 @@ describe "magick", ->
       img = assert load_image "spec/test.gif"
 
     it "coalesce", ->
-      img\coalesce!
-      img\write out_path "coalesce.gif"
+      assert img\coalesce!
+      assert img\write out_path "coalesce.gif"
