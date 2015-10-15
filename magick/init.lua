@@ -71,15 +71,23 @@ ffi.cdef([[  typedef void MagickWand;
   double PixelGetRed(const PixelWand *);
   double PixelGetGreen(const PixelWand *);
   double PixelGetBlue(const PixelWand *);
+
+  MagickWand* MagickCoalesceImages(MagickWand*);
 ]])
 local get_flags
 get_flags = function()
   local proc = io.popen("pkg-config --cflags --libs MagickWand", "r")
-  local flags = proc:read("*a")
+  local flags
+  local stime = os.time()
+  while flags == nil and proc ~= nil and (os.time() - stime) < 3 do
+    flags = proc:read("*a")
+  end
+  if proc then
+    proc:close()
+  end
   get_flags = function()
     return flags
   end
-  proc:close()
   return flags
 end
 local get_filters
@@ -342,6 +350,11 @@ do
       lib.MagickAddImage(wand, self.wand)
       return Image(wand, self.path)
     end,
+    coalesce = function(self)
+      local old_wand = self.wand
+      self.wand = lib.MagickCoalesceImages(old_wand)
+      return lib.DestroyMagickWand(old_wand)
+    end,
     resize = function(self, w, h, f, blur)
       if f == nil then
         f = "Lanczos2"
@@ -353,6 +366,7 @@ do
         error("Failed to load filter list, can't resize")
       end
       w, h = self:_keep_aspect(w, h)
+      self:coalesce()
       return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter(f), blur))
     end,
     adaptive_resize = function(self, w, h)
