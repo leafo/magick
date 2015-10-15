@@ -22,8 +22,8 @@ $ luarocks install magick
 
 ## Basic Usage
 
-If you just need to resize an image, use the `thumb` function. It can handle a
-variety of resize operations and will clean up the image afterwards.
+If you just need to resize/crop an image, use the `thumb` function. It provides
+a shorthand syntax for common operations.
 
 ```lua
 local magick = require("magick")
