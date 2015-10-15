@@ -259,6 +259,7 @@ handle_result = (img_or_wand, status) ->
 
 class Image
   new: (@wand, @path) =>
+
   get_width: => lib.MagickGetImageWidth @wand
   get_height: => lib.MagickGetImageHeight @wand
   get_format: => ffi.string(lib.MagickGetImageFormat @wand)\lower!
@@ -305,9 +306,7 @@ class Image
     Image wand, @path
 
   coalesce: =>
-    new_wand = lib.MagickCoalesceImages @wand
-    @destroy!
-    @wand = new_wand
+    @wand = ffi.gc lib.MagickCoalesceImages(@wand), ffi.DestroyMagickWand
     true
 
   resize: (w,h, f="Lanczos2", blur=1.0) =>
@@ -339,14 +338,13 @@ class Image
       lib.MagickSharpenImage @wand, radius, sigma
 
   rotate: (degrees, r=0, g=0, b=0) =>
-    pixel = lib.NewPixelWand!
+    pixel = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
 
     lib.PixelSetRed pixel, r
     lib.PixelSetGreen pixel, g
     lib.PixelSetBlue pixel, b
 
     res = { handle_result @, lib.MagickRotateImage @wand, pixel, degrees }
-    lib.DestroyPixelWand pixel
     unpack res
 
   composite: (blob, x, y, opstr="OverCompositeOp") =>
@@ -391,23 +389,25 @@ class Image
 
   get_blob: =>
     len = ffi.new "size_t[1]", 0
-    blob = lib.MagickGetImageBlob @wand, len
-    with ffi.string blob, len[0]
-      lib.MagickRelinquishMemory blob
+    blob = ffi.gc lib.MagickGetImageBlob(@wand, len),
+      lib.MagickRelinquishMemory
+
+    ffi.string blob, len[0]
 
   write: (fname) =>
     handle_result @, lib.MagickWriteImage @wand, fname
 
   destroy: =>
-    lib.DestroyMagickWand @wand if @wand
-    @wand = nil
+    if @wand
+      lib.DestroyMagickWand ffi.gc @wand, nil
+      @wand = nil
 
     if @pixel_wand
-      lib.DestroyPixelWand @pixel_wand
+      lib.DestroyPixelWand ffi.gc @pixel_wand, nil
       @pixel_wand = nil
 
   get_pixel: (x,y) =>
-    @pixel_wand or= lib.NewPixelWand!
+    @pixel_wand or= ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
     assert lib.MagickGetImagePixelColor(@wand, x,y, @pixel_wand),
       "failed to get pixel"
 
@@ -417,19 +417,16 @@ class Image
     "Image<#{@path}, #{@wand}>"
 
 load_image = (path) ->
-  wand = lib.NewMagickWand!
+  wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
   if 0 == lib.MagickReadImage wand, path
     code, msg = get_exception wand
-    lib.DestroyMagickWand wand
     return nil, msg, code
-
   Image wand, path
 
 load_image_from_blob = (blob) ->
-  wand = lib.NewMagickWand!
+  wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
   if 0 == lib.MagickReadImageBlob wand, blob, #blob
     code, msg = get_exception wand
-    lib.DestroyMagickWand wand
     return nil, msg, code
 
   Image wand, "<from_blob>"
@@ -489,7 +486,6 @@ thumb = (img, size_str, output) ->
   else
     img\get_blob!
 
-  img\destroy!
   ret
 
 { :load_image, :load_image_from_blob, :thumb, :Image, :parse_size_str, :VERSION }

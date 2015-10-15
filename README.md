@@ -57,8 +57,7 @@ All functions contained in the table returned by `require("magick")`.
 #### `thumb(input_fname, size_str, out_fname=nil)`
 
 Loads and resizes image. Write output to `out_fname` if provided, otherwise
-return image blob. (`input_fname` can optionally be an instance of `Image`,
-will get automatically destroyed)
+return image blob. (`input_fname` can optionally be an instance of `Image`)
 
 #### `load_image(fname)`
 
@@ -71,9 +70,7 @@ Loads an image from a Lua string containing the binary image data.
 
 ## `Image` object
 
-Calling `load_image` or `load_image_from_blob` returns an `Image` object. Make
-sure to call `destroy` to delete the image in long running programs or there
-will be a memory leak.
+Calling `load_image` or `load_image_from_blob` returns an `Image` object.
 
 
 ```lua
@@ -85,8 +82,9 @@ print("width:", img:get_width(), "height:", img:get_height());
 
 img:resize(200, 200)
 img:write("resized.png")
-img:destroy()
 ```
+
+Images are automatically freed from memory by LuaJIT's garbage collector.
 
 ### Methods
 
@@ -286,12 +284,13 @@ Get the r,g,b,a color components of a pixel in the image as doubles from `0` to 
 
 #### `img:clone()`
 
-Returns a copy of the image. All copies must be destroyed as well.
+Returns a copy of the image.
 
 #### `img:destroy()`
 
-Frees the memory associated with image, it is invalid to use the image after
-calling this method.
+Immediately frees the memory associated with the image, it is invalid to use the
+image after calling this method. It is unecessary to call this method normally
+as images are tracked by the garbage collector.
 
 # Tests
 

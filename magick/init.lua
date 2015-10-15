@@ -353,9 +353,7 @@ do
       return Image(wand, self.path)
     end,
     coalesce = function(self)
-      local new_wand = lib.MagickCoalesceImages(self.wand)
-      self:destroy()
-      self.wand = new_wand
+      self.wand = ffi.gc(lib.MagickCoalesceImages(self.wand), ffi.DestroyMagickWand)
       return true
     end,
     resize = function(self, w, h, f, blur)
@@ -410,14 +408,13 @@ do
       if b == nil then
         b = 0
       end
-      local pixel = lib.NewPixelWand()
+      local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       lib.PixelSetRed(pixel, r)
       lib.PixelSetGreen(pixel, g)
       lib.PixelSetBlue(pixel, b)
       local res = {
         handle_result(self, lib.MagickRotateImage(self.wand, pixel, degrees))
       }
-      lib.DestroyPixelWand(pixel)
       return unpack(res)
     end,
     composite = function(self, blob, x, y, opstr)
@@ -463,28 +460,24 @@ do
     end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)
-      local blob = lib.MagickGetImageBlob(self.wand, len)
-      do
-        local _with_0 = ffi.string(blob, len[0])
-        lib.MagickRelinquishMemory(blob)
-        return _with_0
-      end
+      local blob = ffi.gc(lib.MagickGetImageBlob(self.wand, len), lib.MagickRelinquishMemory)
+      return ffi.string(blob, len[0])
     end,
     write = function(self, fname)
       return handle_result(self, lib.MagickWriteImage(self.wand, fname))
     end,
     destroy = function(self)
       if self.wand then
-        lib.DestroyMagickWand(self.wand)
+        lib.DestroyMagickWand(ffi.gc(self.wand, nil))
+        self.wand = nil
       end
-      self.wand = nil
       if self.pixel_wand then
-        lib.DestroyPixelWand(self.pixel_wand)
+        lib.DestroyPixelWand(ffi.gc(self.pixel_wand, nil))
         self.pixel_wand = nil
       end
     end,
     get_pixel = function(self, x, y)
-      self.pixel_wand = self.pixel_wand or lib.NewPixelWand()
+      self.pixel_wand = self.pixel_wand or ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       assert(lib.MagickGetImagePixelColor(self.wand, x, y, self.pixel_wand), "failed to get pixel")
       return lib.PixelGetRed(self.pixel_wand), lib.PixelGetGreen(self.pixel_wand), lib.PixelGetBlue(self.pixel_wand), lib.PixelGetAlpha(self.pixel_wand)
     end,
@@ -512,20 +505,18 @@ do
 end
 local load_image
 load_image = function(path)
-  local wand = lib.NewMagickWand()
+  local wand = ffi.gc(lib.NewMagickWand(), lib.DestroyMagickWand)
   if 0 == lib.MagickReadImage(wand, path) then
     local code, msg = get_exception(wand)
-    lib.DestroyMagickWand(wand)
     return nil, msg, code
   end
   return Image(wand, path)
 end
 local load_image_from_blob
 load_image_from_blob = function(blob)
-  local wand = lib.NewMagickWand()
+  local wand = ffi.gc(lib.NewMagickWand(), lib.DestroyMagickWand)
   if 0 == lib.MagickReadImageBlob(wand, blob, #blob) then
     local code, msg = get_exception(wand)
-    lib.DestroyMagickWand(wand)
     return nil, msg, code
   end
   return Image(wand, "<from_blob>")
@@ -597,7 +588,6 @@ thumb = function(img, size_str, output)
   else
     ret = img:get_blob()
   end
-  img:destroy()
   return ret
 end
 return {

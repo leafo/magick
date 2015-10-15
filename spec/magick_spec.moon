@@ -32,9 +32,8 @@ describe "magick", ->
     before_each ->
       img = assert load_image "spec/test_image.png"
 
-    after_each ->
+    it "destroy", ->
       img\destroy!
-      img = nil
 
     it "icon", ->
       img\resize 16, 16
@@ -76,7 +75,6 @@ describe "magick", ->
       assert img\composite img2, 10, 20
 
       img\write out_path "composite.png"
-      img2\destroy!
 
     it "should make clone", ->
       before_w, before_h = img\get_width!, img\get_height!
@@ -89,16 +87,12 @@ describe "magick", ->
       assert.same 50, cloned\get_width!
       assert.same 20, cloned\get_height!
 
-      cloned\destroy!
-
     it "should return blob", ->
       blob = img\get_blob!
       blob_img = load_image_from_blob blob
 
       assert.same img\get_width!, blob_img\get_width!
       assert.same img\get_height!, blob_img\get_height!
-
-      blob_img\destroy!
 
     it "should set format", ->
       img\set_format "bmp"
@@ -118,10 +112,6 @@ describe "magick", ->
 
     before_each ->
       img = assert load_image "spec/color_test.png"
-
-    after_each ->
-      img\destroy!
-      img = nil
 
     it "should get colors of pixels", ->
       local r,g,b,a
