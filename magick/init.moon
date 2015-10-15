@@ -96,17 +96,7 @@ get_flags = ->
 
 get_filters = ->
   fname = "magick/resample.h"
-  prefixes = {
-    "/usr/include/ImageMagick"
-    "/usr/local/include/ImageMagick"
-    -> get_flags!\match("-I([^%s]+)")
-  }
-
-  for p in *prefixes
-    if "function" == type p
-      p = p!
-      continue unless p
-
+  has_support = (p) ->
     full = "#{p}/#{fname}"
     if f = io.open full
       content = with f\read "*a" do f\close!
@@ -114,6 +104,18 @@ get_filters = ->
       if filter_types
         ffi.cdef filter_types
         return true
+
+  prefixes = {
+    "/usr/include/ImageMagick"
+    "/usr/local/include/ImageMagick"
+  }
+
+  for p in *prefixes
+    if has_support(p)
+      return true
+  for p in get_flags!\gmatch("-I([^%s]+)")
+    if has_support(p)
+      return true
 
   false
 
