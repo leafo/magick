@@ -67,6 +67,8 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickGetImagePixelColor(MagickWand *wand,
     const ssize_t x,const ssize_t y,PixelWand *color);
 
+  MagickWand* MagickCoalesceImages(MagickWand*);
+
   PixelWand *NewPixelWand(void);
   PixelWand *DestroyPixelWand(PixelWand *);
 
@@ -349,6 +351,12 @@ do
       local wand = lib.NewMagickWand()
       lib.MagickAddImage(wand, self.wand)
       return Image(wand, self.path)
+    end,
+    coalesce = function(self)
+      local new_wand = lib.MagickCoalesceImages(self.wand)
+      self:destroy()
+      self.wand = new_wand
+      return true
     end,
     resize = function(self, w, h, f, blur)
       if f == nil then

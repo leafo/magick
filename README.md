@@ -196,6 +196,11 @@ Associates one or options with the img (e.g `img:set_option("webp", "lossless", 
 
 Scale the size of an image to the given dimensions.
 
+#### `img:coalesce()`
+
+Coalesces the current image by compositing each frame on the previous frame.
+This un-optimized animated images to make them suitable for other methods.
+
 #### `img:composite(source, x, y, compose)`
 
 Composite another image onto another at the specified offset `x`, `y`.

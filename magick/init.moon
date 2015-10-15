@@ -71,6 +71,8 @@ ffi.cdef [[
   MagickBooleanType MagickGetImagePixelColor(MagickWand *wand,
     const ssize_t x,const ssize_t y,PixelWand *color);
 
+  MagickWand* MagickCoalesceImages(MagickWand*);
+
   PixelWand *NewPixelWand(void);
   PixelWand *DestroyPixelWand(PixelWand *);
 
@@ -301,6 +303,12 @@ class Image
     wand = lib.NewMagickWand!
     lib.MagickAddImage wand, @wand
     Image wand, @path
+
+  coalesce: =>
+    new_wand = lib.MagickCoalesceImages @wand
+    @destroy!
+    @wand = new_wand
+    true
 
   resize: (w,h, f="Lanczos2", blur=1.0) =>
     error "Failed to load filter list, can't resize" unless can_resize

@@ -164,3 +164,14 @@ describe "magick", ->
         thumb "spec/test_image.png", size,
           "spec/output_images/thumb_#{i}.png"
 
+  describe "gif image", ->
+    import load_image, load_image_from_blob from magick
+    out_path = (fname) -> "spec/output_images/#{fname}"
+
+    local img
+    before_each ->
+      img = assert load_image "spec/test.gif"
+
+    it "coalesce", ->
+      img\coalesce!
+      img\write out_path "coalesce.gif"
