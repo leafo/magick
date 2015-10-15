@@ -52,6 +52,9 @@ ffi.cdef [[
   MagickBooleanType MagickScaleImage(MagickWand *wand,
     const size_t columns,const size_t rows);
 
+  MagickBooleanType MagickRotateImage(MagickWand *wand,
+  const PixelWand *background,const double degrees);
+
   MagickBooleanType MagickSetOption(MagickWand *,const char *,const char *);
   char* MagickGetOption(MagickWand *,const char *);
 
@@ -75,6 +78,11 @@ ffi.cdef [[
   double PixelGetRed(const PixelWand *);
   double PixelGetGreen(const PixelWand *);
   double PixelGetBlue(const PixelWand *);
+
+  void PixelSetAlpha(PixelWand *wand, const double alpha);
+  void PixelSetRed(PixelWand *wand, const double red);
+  void PixelSetGreen(PixelWand *wand, const double green);
+  void PixelSetBlue(PixelWand *wand, const double blue);
 ]]
 
 get_flags = ->
@@ -321,6 +329,17 @@ class Image
   sharpen: (sigma, radius=0) =>
     handle_result @,
       lib.MagickSharpenImage @wand, radius, sigma
+
+  rotate: (degrees, r=0, g=0, b=0) =>
+    pixel = lib.NewPixelWand!
+
+    lib.PixelSetRed pixel, r
+    lib.PixelSetGreen pixel, g
+    lib.PixelSetBlue pixel, b
+
+    res = { handle_result @, lib.MagickRotateImage @wand, pixel, degrees }
+    lib.DestroyPixelWand pixel
+    unpack res
 
   composite: (blob, x, y, opstr="OverCompositeOp") =>
     if type(blob) == "table" and blob.__class == Image

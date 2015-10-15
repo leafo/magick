@@ -109,6 +109,13 @@ Crops image to `w`,`h` where the top left is `x`, `y`
 
 Blurs the image with specified paramaters. See [Blur Arguments](http://www.imagemagick.org/Usage/blur/#blur_args)
 
+#### `img:rotate(degrees, r=0, g=0, b)`
+
+Rotates the image by specified number of degrees. The image dimensions will
+enlarge to prevent cropping. The triangles on the corners are filled with the
+color specified by `r`, `g`, `b`. The color components are specified as
+floating point numbers from 0 to 1.
+
 #### `img:sharpen(sigma, radius=0)`
 
 Sharpens the image with specified parameters. See [Sharpening Images](http://www.imagemagick.org/Usage/blur/#sharpen)

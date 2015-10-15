@@ -52,6 +52,10 @@ describe "magick", ->
       img\blur 3, 10
       img\write out_path "blur.png"
 
+    it "rotate", ->
+      img\rotate 45
+      img\write out_path "rotate.png"
+
     it "quality", ->
       img\set_quality 50
       assert.same 50, img\get_quality!

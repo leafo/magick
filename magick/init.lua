@@ -48,6 +48,9 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickScaleImage(MagickWand *wand,
     const size_t columns,const size_t rows);
 
+  MagickBooleanType MagickRotateImage(MagickWand *wand,
+  const PixelWand *background,const double degrees);
+
   MagickBooleanType MagickSetOption(MagickWand *,const char *,const char *);
   char* MagickGetOption(MagickWand *,const char *);
 
@@ -71,6 +74,11 @@ ffi.cdef([[  typedef void MagickWand;
   double PixelGetRed(const PixelWand *);
   double PixelGetGreen(const PixelWand *);
   double PixelGetBlue(const PixelWand *);
+
+  void PixelSetAlpha(PixelWand *wand, const double alpha);
+  void PixelSetRed(PixelWand *wand, const double red);
+  void PixelSetGreen(PixelWand *wand, const double green);
+  void PixelSetBlue(PixelWand *wand, const double blue);
 ]])
 local get_flags
 get_flags = function()
@@ -383,6 +391,26 @@ do
         radius = 0
       end
       return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
+    end,
+    rotate = function(self, degrees, r, g, b)
+      if r == nil then
+        r = 0
+      end
+      if g == nil then
+        g = 0
+      end
+      if b == nil then
+        b = 0
+      end
+      local pixel = lib.NewPixelWand()
+      lib.PixelSetRed(pixel, r)
+      lib.PixelSetGreen(pixel, g)
+      lib.PixelSetBlue(pixel, b)
+      local res = {
+        handle_result(self, lib.MagickRotateImage(self.wand, pixel, degrees))
+      }
+      lib.DestroyPixelWand(pixel)
+      return unpack(res)
     end,
     composite = function(self, blob, x, y, opstr)
       if opstr == nil then
