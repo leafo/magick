@@ -98,42 +98,34 @@ get_filters = function()
   local prefixes = {
     "/usr/include/ImageMagick",
     "/usr/local/include/ImageMagick",
-    function()
-      return get_flags():match("-I([^%s]+)")
-    end
+    unpack((function()
+      local _accum_0 = { }
+      local _len_0 = 1
+      for p in get_flags():gmatch("-I([^%s]+)") do
+        _accum_0[_len_0] = p
+        _len_0 = _len_0 + 1
+      end
+      return _accum_0
+    end)())
   }
   for _index_0 = 1, #prefixes do
-    local _continue_0 = false
-    repeat
-      local p = prefixes[_index_0]
-      if "function" == type(p) then
-        p = p()
-        if not (p) then
-          _continue_0 = true
-          break
+    local p = prefixes[_index_0]
+    local full = tostring(p) .. "/" .. tostring(fname)
+    do
+      local f = io.open(full)
+      if f then
+        local content
+        do
+          local _with_0 = f:read("*a")
+          f:close()
+          content = _with_0
+        end
+        local filter_types = content:match("(typedef enum.-FilterTypes;)")
+        if filter_types then
+          ffi.cdef(filter_types)
+          return true
         end
       end
-      local full = tostring(p) .. "/" .. tostring(fname)
-      do
-        local f = io.open(full)
-        if f then
-          local content
-          do
-            local _with_0 = f:read("*a")
-            f:close()
-            content = _with_0
-          end
-          local filter_types = content:match("(typedef enum.-FilterTypes;)")
-          if filter_types then
-            ffi.cdef(filter_types)
-            return true
-          end
-        end
-      end
-      _continue_0 = true
-    until true
-    if not _continue_0 then
-      break
     end
   end
   return false

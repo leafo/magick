@@ -99,14 +99,10 @@ get_filters = ->
   prefixes = {
     "/usr/include/ImageMagick"
     "/usr/local/include/ImageMagick"
-    -> get_flags!\match("-I([^%s]+)")
+    unpack [p for p in get_flags!\gmatch "-I([^%s]+)"]
   }
 
   for p in *prefixes
-    if "function" == type p
-      p = p!
-      continue unless p
-
     full = "#{p}/#{fname}"
     if f = io.open full
       content = with f\read "*a" do f\close!
