@@ -1,5 +1,7 @@
 # magick
 
+[![Build Status](https://travis-ci.org/leafo/magick.svg?branch=master)](https://travis-ci.org/leafo/magick)
+
 Lua bindings to ImageMagick's [MagicWand](http://www.imagemagick.org/script/magick-wand.php) for LuaJIT using FFI.
 
 ## Installation
