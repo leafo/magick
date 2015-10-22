@@ -302,6 +302,16 @@ following command to run tests. You can check the output in
 $ busted
 ```
 
+# Changelog
+
+### 1.1.0 - Thu Oct 22 05:11:41 UTC 2015
+
+* add automatic memory management with `ffi.gc`
+* fix some string memory leaks when getting type and options of image
+* add `coalesce`, `rotate` methods to image
+* use `pkg-config` instead of `MagickWand-config` to query library
+* all include paths provided by config are searched instead of first
+
 # Contact
 
 Author: Leaf Corcoran (leafo) ([@moonscript](http://twitter.com/moonscript))  
