@@ -258,7 +258,11 @@ class Image
 
   get_width: => lib.MagickGetImageWidth @wand
   get_height: => lib.MagickGetImageHeight @wand
-  get_format: => ffi.string(ffi.gc lib.MagickGetImageFormat(@wand), lib.MagickRelinquishMemory)\lower!
+  get_format: =>
+    format = lib.MagickGetImageFormat(@wand)
+    with ffi.string(format)\lower!
+      lib.MagickRelinquishMemory format
+
   set_format: (format) =>
     handle_result @,
       lib.MagickSetImageFormat @wand, format
@@ -270,7 +274,9 @@ class Image
 
   get_option: (magick, key) =>
     format = magick .. ":" .. key
-    ffi.string ffi.gc lib.MagickGetOption(@wand, format), lib.MagickRelinquishMemory
+    option_str = lib.MagickGetOption(@wand, format)
+    with ffi.string option_str
+      lib.MagickRelinquishMemory option_str
 
   set_option: (magick, key, value) =>
     format = magick .. ":" .. key
@@ -417,6 +423,7 @@ load_image = (path) ->
   if 0 == lib.MagickReadImage wand, path
     code, msg = get_exception wand
     return nil, msg, code
+
   Image wand, path
 
 load_image_from_blob = (blob) ->

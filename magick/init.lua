@@ -298,7 +298,12 @@ do
       return lib.MagickGetImageHeight(self.wand)
     end,
     get_format = function(self)
-      return ffi.string(ffi.gc(lib.MagickGetImageFormat(self.wand), lib.MagickRelinquishMemory)):lower()
+      local format = lib.MagickGetImageFormat(self.wand)
+      do
+        local _with_0 = ffi.string(format):lower()
+        lib.MagickRelinquishMemory(format)
+        return _with_0
+      end
     end,
     set_format = function(self, format)
       return handle_result(self, lib.MagickSetImageFormat(self.wand, format))
@@ -311,7 +316,12 @@ do
     end,
     get_option = function(self, magick, key)
       local format = magick .. ":" .. key
-      return ffi.string(ffi.gc(lib.MagickGetOption(self.wand, format), lib.MagickRelinquishMemory))
+      local option_str = lib.MagickGetOption(self.wand, format)
+      do
+        local _with_0 = ffi.string(option_str)
+        lib.MagickRelinquishMemory(option_str)
+        return _with_0
+      end
     end,
     set_option = function(self, magick, key, value)
       local format = magick .. ":" .. key
