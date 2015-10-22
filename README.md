@@ -84,7 +84,9 @@ img:resize(200, 200)
 img:write("resized.png")
 ```
 
-Images are automatically freed from memory by LuaJIT's garbage collector.
+Images are automatically freed from memory by LuaJIT's garbage collector, but
+images can take up a lot of space in memory when loaded so it's recommended to
+call `destroy` on the image object as soon as possible.
 
 ### Methods
 
