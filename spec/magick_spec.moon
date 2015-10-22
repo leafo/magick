@@ -43,9 +43,9 @@ describe "magick", ->
       assert img\resize nil, 80
       assert img\write out_path "resize.png"
 
-    it "resize with exception", ->
+    it "with exception", ->
       assert.has_error ->
-        assert img\resize -50, -50
+        assert img\set_format "butt"
 
     it "resize_and_crop", ->
       assert img\resize_and_crop 500,1000
