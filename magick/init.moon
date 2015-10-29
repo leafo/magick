@@ -446,8 +446,12 @@ parse_size_str = (str, src_w, src_h) ->
       unless rest\match"!"
         if src_w/src_h > w/h
           h = nil
+          if (w * src_h) / src_w < 1 then
+            h = 1
         else
           w = nil
+          if (h * src_w) / src_h < 1 then
+            w = 1
 
   {
     :w, :h
