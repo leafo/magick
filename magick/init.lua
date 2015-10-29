@@ -541,8 +541,14 @@ parse_size_str = function(str, src_w, src_h)
       if not (rest:match("!")) then
         if src_w / src_h > w / h then
           h = nil
+          if (w * src_h) / src_w < 1 then
+            h = 1
+          end
         else
           w = nil
+          if (h * src_w) / src_h < 1 then
+            w = 1
+          end
         end
       end
     end
