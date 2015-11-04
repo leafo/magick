@@ -19,5 +19,7 @@ build = {
   type = "builtin",
   modules = {
     ["magick"] = "magick/init.lua",
+    ["magick.wand.data"] = "magick/wand/data.lua",
+    ["magick.wand.lib"] = "magick/wand/lib.lua",
   }
 }
