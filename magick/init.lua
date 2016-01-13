@@ -115,6 +115,7 @@ handle_result = function(img_or_wand, status)
 end
 local Image
 do
+  local _class_0
   local _base_0 = {
     get_width = function(self)
       return lib.MagickGetImageWidth(self.wand)
@@ -313,7 +314,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, wand, path)
       self.wand, self.path = wand, path
     end,
