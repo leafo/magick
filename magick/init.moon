@@ -94,6 +94,37 @@ gravity_type = {}
 for i, t in ipairs gravity_str
   gravity_type[t] = i
 
+orientation_str = {
+  "TopLeftOrientation",
+  "TopRightOrientation",
+  "BottomRightOrientation",
+  "BottomLeftOrientation",
+  "LeftTopOrientation",
+  "RightTopOrientation",
+  "RightBottomOrientation",
+  "LeftBottomOrientation"
+}
+
+orientation_type = {}
+
+for i, t in ipairs orientation_str
+  orientation_type[t] = i
+
+interlace_str = {
+  "NoInterlace",
+  "LineInterlace",
+  "PlaneInterlace",
+  "PartitionInterlace",
+  "GIFInterlace",
+  "JPEGInterlace",
+  "PNGInterlace"
+}
+
+interlace_type = {}
+
+for i, t in ipairs interlace_str
+  interlace_type[t] = i
+
 lib.MagickWandGenesis!
 
 filter = (name) -> lib[name .. "Filter"]
@@ -273,6 +304,50 @@ class Image
 
     lib.PixelGetRed(@pixel_wand), lib.PixelGetGreen(@pixel_wand), lib.PixelGetBlue(@pixel_wand), lib.PixelGetAlpha(@pixel_wand)
 
+  transpose: =>
+    handle_result @, lib.MagickTransposeImage @wand
+
+  transverse: =>
+    handle_result @, lib.MagickTransverseImage @wand
+
+  flip: =>
+    handle_result @, lib.MagickFlipImage @wand
+
+  flop: =>
+    handle_result @, lib.MagickFlopImage @wand
+
+  get_property: (property) =>
+    res = lib.MagickGetImageProperty @wand, property
+    if nil != res
+      with ffi.string res
+        lib.MagickRelinquishMemory res
+    else
+      code, msg = get_exception @wand
+      nil, msg, code
+
+  set_property: (property, value) =>
+    handle_result @,
+      lib.MagickSetImageProperty @wand, property, value
+
+  get_orientation: =>
+    orientation_str[lib.MagickGetImageOrientation @wand]
+
+  set_orientation: (orientation) =>
+    type = orientation_type[orientation]
+    error "invalid orientation type" unless type
+    lib.MagickSetImageOrientation @wand, type
+
+  get_interlace_scheme: =>
+    interlace_str[lib.MagickGetImageInterlaceScheme @wand]
+
+  set_interlace_scheme: (interlace_scheme) =>
+    type = interlace_type[interlace_scheme]
+    error "invalid interlace type" unless type
+    lib.MagickSetImageInterlaceScheme @wand, type
+
+  auto_orient: =>
+    handle_result @, lib.MagickAutoOrientImage @wand
+
   __tostring: =>
     "Image<#{@path}, #{@wand}>"
 
@@ -350,4 +425,3 @@ thumb = (img, size_str, output) ->
   ret
 
 { :load_image, :load_image_from_blob, :thumb, :Image, :parse_size_str, :VERSION }
-

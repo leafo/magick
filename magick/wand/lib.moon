@@ -9,6 +9,8 @@ ffi.cdef [[
   typedef int ssize_t;
   typedef int CompositeOperator;
   typedef int GravityType;
+  typedef int OrientationType;
+  typedef int InterlaceType;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
@@ -82,6 +84,28 @@ ffi.cdef [[
   void PixelSetRed(PixelWand *wand, const double red);
   void PixelSetGreen(PixelWand *wand, const double green);
   void PixelSetBlue(PixelWand *wand, const double blue);
+
+  MagickBooleanType MagickTransposeImage(MagickWand *wand);
+
+  MagickBooleanType MagickTransverseImage(MagickWand *wand);
+
+  MagickBooleanType MagickFlipImage(MagickWand *wand);
+
+  MagickBooleanType MagickFlopImage(MagickWand *wand);
+
+  char* MagickGetImageProperty(MagickWand *wand, const char *property);
+  MagickBooleanType MagickSetImageProperty(MagickWand *wand,
+    const char *property,const char *value);
+
+  OrientationType MagickGetImageOrientation(MagickWand *wand);
+  MagickBooleanType MagickSetImageOrientation(MagickWand *wand,
+    const OrientationType orientation);
+
+  InterlaceType MagickGetImageInterlaceScheme(MagickWand *wand);
+  MagickBooleanType MagickSetImageInterlaceScheme(MagickWand *wand,
+    const InterlaceType interlace_scheme);
+
+  MagickBooleanType MagickAutoOrientImage(MagickWand *wand);
 ]]
 
 

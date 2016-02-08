@@ -92,6 +92,33 @@ local gravity_type = { }
 for i, t in ipairs(gravity_str) do
   gravity_type[t] = i
 end
+local orientation_str = {
+  "TopLeftOrientation",
+  "TopRightOrientation",
+  "BottomRightOrientation",
+  "BottomLeftOrientation",
+  "LeftTopOrientation",
+  "RightTopOrientation",
+  "RightBottomOrientation",
+  "LeftBottomOrientation"
+}
+local orientation_type = { }
+for i, t in ipairs(orientation_str) do
+  orientation_type[t] = i
+end
+local interlace_str = {
+  "NoInterlace",
+  "LineInterlace",
+  "PlaneInterlace",
+  "PartitionInterlace",
+  "GIFInterlace",
+  "JPEGInterlace",
+  "PNGInterlace"
+}
+local interlace_type = { }
+for i, t in ipairs(interlace_str) do
+  interlace_type[t] = i
+end
 lib.MagickWandGenesis()
 local filter
 filter = function(name)
@@ -308,6 +335,57 @@ do
       self.pixel_wand = self.pixel_wand or ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       assert(lib.MagickGetImagePixelColor(self.wand, x, y, self.pixel_wand), "failed to get pixel")
       return lib.PixelGetRed(self.pixel_wand), lib.PixelGetGreen(self.pixel_wand), lib.PixelGetBlue(self.pixel_wand), lib.PixelGetAlpha(self.pixel_wand)
+    end,
+    transpose = function(self)
+      return handle_result(self, lib.MagickTransposeImage(self.wand))
+    end,
+    transverse = function(self)
+      return handle_result(self, lib.MagickTransverseImage(self.wand))
+    end,
+    flip = function(self)
+      return handle_result(self, lib.MagickFlipImage(self.wand))
+    end,
+    flop = function(self)
+      return handle_result(self, lib.MagickFlopImage(self.wand))
+    end,
+    get_property = function(self, property)
+      local res = lib.MagickGetImageProperty(self.wand, property)
+      if nil ~= res then
+        do
+          local _with_0 = ffi.string(res)
+          lib.MagickRelinquishMemory(res)
+          return _with_0
+        end
+      else
+        local code, msg = get_exception(self.wand)
+        return nil, msg, code
+      end
+    end,
+    set_property = function(self, property, value)
+      return handle_result(self, lib.MagickSetImageProperty(self.wand, property, value))
+    end,
+    get_orientation = function(self)
+      return orientation_str[lib.MagickGetImageOrientation(self.wand)]
+    end,
+    set_orientation = function(self, orientation)
+      local type = orientation_type[orientation]
+      if not (type) then
+        error("invalid orientation type")
+      end
+      return lib.MagickSetImageOrientation(self.wand, type)
+    end,
+    get_interlace_scheme = function(self)
+      return interlace_str[lib.MagickGetImageInterlaceScheme(self.wand)]
+    end,
+    set_interlace_scheme = function(self, interlace_scheme)
+      local type = interlace_type[interlace_scheme]
+      if not (type) then
+        error("invalid interlace type")
+      end
+      return lib.MagickSetImageInterlaceScheme(self.wand, type)
+    end,
+    auto_orient = function(self)
+      return handle_result(self, lib.MagickAutoOrientImage(self.wand))
     end,
     __tostring = function(self)
       return "Image<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"

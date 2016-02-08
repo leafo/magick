@@ -72,6 +72,22 @@ describe "magick", ->
       assert img\scale 80
       assert img\write out_path "scale.png"
 
+    it "transpose", ->
+      assert img\transpose!
+      assert img\write out_path "transpose.png"
+
+    it "transverse", ->
+      assert img\transverse!
+      assert img\write out_path "transverse.png"
+
+    it "flip", ->
+      assert img\flip!
+      assert img\write out_path "flip.png"
+
+    it "flop", ->
+      assert img\flop!
+      assert img\write out_path "flop.png"
+
     it "composite", ->
       img2 = img\clone!
       assert img2\resize 32
@@ -108,6 +124,29 @@ describe "magick", ->
       assert img\set_option "webp", "lossless", "0"
       assert.same "0", img\get_option "webp", "lossless"
 
+    it "should set property", ->
+      assert img\set_property "exif:Orientation", "1"
+      assert.same "1", img\get_property "exif:Orientation"
+
+    it "should get non-existent property", ->
+      assert.same nil, img\get_property "NonExistentProperty"
+
+    it "should set orientation", ->
+      assert img\set_orientation "TopLeftOrientation"
+      assert.same "TopLeftOrientation", img\get_orientation!
+
+    it "should not set orientation", ->
+      assert.has_error ->
+        assert img\set_orientation "NonExistentOrientation"
+
+    it "should set interlace scheme", ->
+      assert img\set_interlace_scheme "PlaneInterlace"
+      assert.same "PlaneInterlace", img\get_interlace_scheme!
+
+    it "should not set interlace scheme", ->
+      assert.has_error ->
+        assert img\set_interlace_scheme "NonExistentInterlaceScheme"
+
   describe "color_image", ->
     import load_image from magick
     local img
@@ -142,6 +181,20 @@ describe "magick", ->
       img = load_image "spec/exif_test.jpg"
       img\strip!
       img\write "spec/output_images/exif_test.jpg"
+
+    it "should read exif data", ->
+      import load_image from magick
+      img = load_image "spec/exif_test.jpg"
+      assert.same "NIKON D5100", img\get_property "exif:Model"
+
+  describe "automatic orientation", ->
+      it "should automatically orient", ->
+        import load_image from magick
+        img = load_image "spec/auto_orient_test.jpg"
+        assert.same "BottomRightOrientation", img\get_orientation!
+        assert img\auto_orient!
+        assert.same "TopLeftOrientation", img\get_orientation!
+        assert img\write "spec/output_images/auto_orient.jpg"
 
   describe "thumb", ->
     import thumb from magick
