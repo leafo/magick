@@ -443,20 +443,71 @@ parse_size_str = function(str, src_w, src_h)
   }
 end
 
+local get_dimensions_from_string
+get_dimensions_from_string = function(size_str, src_w, src_h)
+  local str_w, str_h, rest = size_str:match("^(%d*%%?)x(%d*%%?)(.*)$")
+  local p = str_w:match("(%d+)%%")
+  if p then
+    w = tonumber(p) / 100 * src_w
+  else
+    w = tonumber(str_w) or 0
+  end
+  local p = str_h:match("(%d+)%%")
+  if p then
+    h = tonumber(p) / 100 * src_h
+  else
+    h = tonumber(str_h) or 0
+  end
+
+  return {
+    w = w,
+    h = h
+  }
+end
+
+function serializeTable(val, name, skipnewlines, depth)
+    skipnewlines = skipnewlines or false
+    depth = depth or 0
+
+    local tmp = string.rep(" ", depth)
+
+    if name then tmp = tmp .. name .. " = " end
+
+    if type(val) == "table" then
+        tmp = tmp .. "{" .. (not skipnewlines and "\n" or "")
+
+        for k, v in pairs(val) do
+            tmp =  tmp .. serializeTable(v, k, skipnewlines, depth + 1) .. "," .. (not skipnewlines and "\n" or "")
+        end
+
+        tmp = tmp .. string.rep(" ", depth) .. "}"
+    elseif type(val) == "number" then
+        tmp = tmp .. tostring(val)
+    elseif type(val) == "string" then
+        tmp = tmp .. string.format("%q", val)
+    elseif type(val) == "boolean" then
+        tmp = tmp .. (val and "true" or "false")
+    else
+        tmp = tmp .. "\"[inserializeable datatype:" .. type(val) .. "]\""
+    end
+
+    return tmp
+end
+
 local thumb
 thumb = function(img, size_str, output)
   if type(img) == "string" then
     img = assert(load_image(img))
   end
   local src_w, src_h = img:get_width(), img:get_height()
-  local str_w, str_h, rest = size_str:match("^(%d*%%?)x(%d*%%?)(.*)$")
-  local opts = parse_size_str(size_str, src_w, src_h)
-  if tonumber(str_w) > src_w or tonumber(str_h) > src_h then
+  dimensions = get_dimensions_from_string(size_str, src_w, src_h)
+  if dimensions.w > src_w or dimensions.h > src_h then
     if output then
       return img:write(output)
     end
     return img:get_blob()
   end
+  local opts = parse_size_str(size_str, src_w, src_h)
   if opts.center_crop then
     img:resize_and_crop(opts.w, opts.h)
   elseif opts.crop_x then
