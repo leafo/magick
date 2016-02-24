@@ -449,7 +449,14 @@ thumb = function(img, size_str, output)
     img = assert(load_image(img))
   end
   local src_w, src_h = img:get_width(), img:get_height()
+  local str_w, str_h, rest = size_str:match("^(%d*%%?)x(%d*%%?)(.*)$")
   local opts = parse_size_str(size_str, src_w, src_h)
+  if tonumber(str_w) > src_w or tonumber(str_h) > src_h then
+    if output then
+      return img:write(output)
+    end
+    return img:get_blob()
+  end
   if opts.center_crop then
     img:resize_and_crop(opts.w, opts.h)
   elseif opts.crop_x then
@@ -457,7 +464,6 @@ thumb = function(img, size_str, output)
   else
     img:resize(opts.w, opts.h)
   end
-  local ret
   if output then
     ret = img:write(output)
   else
