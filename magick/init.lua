@@ -488,6 +488,17 @@ sepia = function(img, threshold, output)
   return ret
 end
 
+local rotate
+rotate = function(img, degrees, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:rotate(degrees)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -509,6 +520,7 @@ return {
   copy_image = copy_image,
   color_space = color_space,
   sepia = sepia,
+  rotate = rotate,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
