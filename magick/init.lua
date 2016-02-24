@@ -75,6 +75,45 @@ local composite_op = {
   ["DarkenIntensityCompositeOp"] = 66,
   ["LightenIntensityCompositeOp"] = 67
 }
+
+local colorspace = {
+  ["UndefinedColorspace"] = 0,
+  ["RGBColorspace"] = 1,
+  ["GRAYColorspace"] = 2,
+  ["TransparentColorspace"] = 3,
+  ["OHTAColorspace"] = 4,
+  ["LabColorspace"] = 5,
+  ["XYZColorspace"] = 6,
+  ["YCbCrColorspace"] = 7,
+  ["YCCColorspace"] = 8,
+  ["YIQColorspace"] = 9,
+  ["YPbPrColorspace"] = 10,
+  ["YUVColorspace"] = 11,
+  ["CMYKColorspace"] = 12,
+  ["sRGBColorspace"] = 13,
+  ["HSBColorspace"] = 14,
+  ["HSLColorspace"] = 15,
+  ["HWBColorspace"] = 16,
+  ["Rec601LumaColorspace"] = 17,
+  ["Rec601YCbCrColorspace"] = 18,
+  ["Rec709LumaColorspace"] = 19,
+  ["Rec709YCbCrColorspace"] = 20,
+  ["LogColorspace"] = 21,
+  ["CMYColorspace"] = 22,
+  ["LuvColorspace"] = 23,
+  ["HCLColorspace"] = 24,
+  ["LCHColorspace"] = 25,
+  ["LMSColorspace"] = 26,
+  ["LCHabColorspace"] = 27,
+  ["LCHuvColorspace"] = 28,
+  ["scRGBColorspace"] = 29,
+  ["HSIColorspace"] = 30,
+  ["HSVColorspace"] = 31,
+  ["HCLpColorspace"] = 32,
+  ["YDbDrColorspace"] = 33,
+  ["xyYColorspace"] = 34
+}
+
 local gravity_str = {
   "ForgetGravity",
   "NorthWestGravity",
@@ -225,6 +264,13 @@ do
         radius = 0
       end
       return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
+    end,
+    color_space = function(self, space)
+      return handle_result(self, lib.MagickTransformImageColorspace(self.wand, colorspace[space]))
+    end,
+    sepia = function(self, threshold)
+      threshold = 65535 * threshold
+      return handle_result(self, lib.MagickSepiaToneImage(self.wand, threshold))
     end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
@@ -396,6 +442,7 @@ parse_size_str = function(str, src_w, src_h)
     center_crop = center_crop
   }
 end
+
 local thumb
 thumb = function(img, size_str, output)
   if type(img) == "string" then
@@ -418,10 +465,50 @@ thumb = function(img, size_str, output)
   end
   return ret
 end
+
+local color_space
+color_space = function(img, space, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:color_space(space)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local sepia
+sepia = function(img, threshold, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:sepia(threshold)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local copy_image
+copy_image = function(img, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  local ret
+  if output then
+    ret = img:write(output)
+  else
+    ret = img:get_blob()
+  end
+  return ret
+end
+
 return {
   load_image = load_image,
   load_image_from_blob = load_image_from_blob,
   thumb = thumb,
+  copy_image = copy_image,
+  color_space = color_space,
+  sepia = sepia,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION

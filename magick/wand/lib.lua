@@ -7,6 +7,7 @@ ffi.cdef([[  typedef void MagickWand;
   typedef int ssize_t;
   typedef int CompositeOperator;
   typedef int GravityType;
+  typedef int ColorspaceType;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
@@ -33,6 +34,9 @@ ffi.cdef([[  typedef void MagickWand;
     const size_t, const size_t, const ssize_t, const ssize_t);
 
   MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
+  MagickBooleanType MagickSetImageColorspace(MagickWand* wand, const ColorspaceType colorspace);
+  MagickBooleanType MagickTransformImageColorspace(MagickWand *wand, const ColorspaceType colorspace);
+  MagickBooleanType MagickSepiaToneImage(MagickWand* wand, const double threshold);	
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   char* MagickGetImageFormat(MagickWand* wand);
