@@ -270,6 +270,7 @@ do
     end,
     sepia = function(self, threshold)
       threshold = 65535 * threshold
+      handle_result(self, lib.MagickTransformImageColorspace(self.wand, colorspace["TransparentColorspace"]))
       return handle_result(self, lib.MagickSepiaToneImage(self.wand, threshold))
     end,
     rotate = function(self, degrees, r, g, b)
