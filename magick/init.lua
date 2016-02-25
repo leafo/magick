@@ -274,7 +274,7 @@ do
       return handle_result(self, lib.MagickSepiaToneImage(self.wand, threshold))
     end,
     brightness_contrast = function(self, brightness, contrast)
-      return handle_result(self, lib.MagickBrightnessContrastImage(self.wand, tonumber(brightness), tonumber(contrast)))
+      return handle_result(self, lib.MagickBrightnessContrastImage(self.wand, brightness, contrast))
     end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
@@ -560,6 +560,28 @@ brightness_contrast = function(img, brightness, contrast, output)
   return ret
 end
 
+local sharpen
+sharpen = function(img, sigma, radius, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:sharpen(sigma, radius)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local blur
+blur = function(img, sigma, radius, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:blur(sigma, radius)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local rotate
 rotate = function(img, degrees, output)
   if type(img) == "string" then
@@ -594,6 +616,8 @@ return {
   brightness_contrast = brightness_contrast,
   sepia = sepia,
   rotate = rotate,
+  blur = blur,
+  sharpen = sharpen,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
