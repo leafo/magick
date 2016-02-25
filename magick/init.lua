@@ -615,9 +615,6 @@ vignette = function(img, vignette_black_point, vignette_white_point, vignette_x,
   if type(img) == "string" then
     img = assert(load_image(img))
   end
-  file = io.open("/vagrant/lua.log", "w")
-  file:write(string.format("dest_fname: %s ; black_point: %s ; white_point: %s ; vignette_x: %s ; vignette_y: %s ; dest_fname: %s", img, vignette_black_point, vignette_white_point, vignette_x, vignette_y, output))
-  file:close()
   img:vignette(vignette_black_point, vignette_white_point, vignette_x, vignette_y)
   local ret
   ret = img:write(output)
