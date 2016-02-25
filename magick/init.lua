@@ -280,6 +280,9 @@ do
       return handle_result(self, lib.MagickSketchImage(self.wand, radius, sigma, angle))
     end,
     vignette = function(self, vignette_black_point, vignette_white_point, vignette_x, vignette_y)
+      local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel, 'transparent')
+      lib.MagickSetImageBackgroundColor(self.wand, pixel)
       return handle_result(self, lib.MagickVignetteImage(self.wand, vignette_black_point, vignette_white_point, vignette_x, vignette_y))
     end,
     rotate = function(self, degrees, r, g, b)
