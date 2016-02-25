@@ -46,6 +46,9 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickBrightnessContrastImage(MagickWand *wand, const double brightness,const double contrast);
   MagickBooleanType MagickSketchImage(MagickWand *wand, const double radius,const double sigma,const double angle);
   MagickBooleanType MagickVignetteImage(MagickWand *wand, const double black_point,const double white_point,const ssize_t x, const ssize_t y);
+  MagickBooleanType MagickFlipImage(MagickWand *wand);
+  MagickBooleanType MagickFlopImage(MagickWand *wand);
+  MagickBooleanType MagickOilPaintImage(MagickWand *wand, const double radius);
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   char* MagickGetImageFormat(MagickWand* wand);

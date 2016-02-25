@@ -279,6 +279,15 @@ do
     sketch = function(self, radius, sigma, angle)
       return handle_result(self, lib.MagickSketchImage(self.wand, radius, sigma, angle))
     end,
+    flip = function(self)
+      return handle_result(self, lib.MagickFlipImage(self.wand))
+    end,
+    flop = function(self)
+      return handle_result(self, lib.MagickFlopImage(self.wand))
+    end,
+    oil_paint = function(self, radius)
+      return handle_result(self, lib.MagickOilPaintImage(self.wand, radius))
+    end,
     vignette = function(self, vignette_black_point, vignette_white_point, vignette_x, vignette_y)
       local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       lib.PixelSetColor(pixel, 'transparent')
@@ -624,6 +633,39 @@ vignette = function(img, vignette_black_point, vignette_white_point, vignette_x,
   return ret
 end
 
+local flip
+flip = function(img, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:flip()
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local flop
+flop = function(img, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:flop()
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local oil_paint
+oil_paint = function(img, radius, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:oil_paint(radius)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -651,6 +693,9 @@ return {
   sharpen = sharpen,
   sketch = sketch,
   vignette = vignette,
+  flip = flip,
+  flop = flop,
+  oil_paint = oil_paint,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
