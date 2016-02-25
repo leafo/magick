@@ -44,7 +44,7 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageBackgroundColor(MagickWand *wand, const PixelWand *background);
   MagickBooleanType MagickNewImage(MagickWand *wand, const size_t columns,const size_t rows, const PixelWand *background);
   MagickBooleanType MagickBrightnessContrastImage(MagickWand *wand, const double brightness,const double contrast);
-
+  MagickBooleanType MagickSketchImage(MagickWand *wand, const double radius,const double sigma,const double angle);
 
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);

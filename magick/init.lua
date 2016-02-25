@@ -276,6 +276,9 @@ do
     brightness_contrast = function(self, brightness, contrast)
       return handle_result(self, lib.MagickBrightnessContrastImage(self.wand, brightness, contrast))
     end,
+    sketch = function(self, radius, sigma, angle)
+      return handle_result(self, lib.MagickSketchImage(self.wand, radius, sigma, angle))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -593,6 +596,17 @@ rotate = function(img, degrees, output)
   return ret
 end
 
+local sketch
+sketch = function(img, sigma, radius, angle, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:sketch(sigma, radius, angle)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -618,6 +632,7 @@ return {
   rotate = rotate,
   blur = blur,
   sharpen = sharpen,
+  sketch = sketch,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
