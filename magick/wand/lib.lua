@@ -8,6 +8,7 @@ ffi.cdef([[  typedef void MagickWand;
   typedef int CompositeOperator;
   typedef int GravityType;
   typedef int ColorspaceType;
+  typedef int AlphaChannelOption;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
@@ -36,7 +37,15 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
   MagickBooleanType MagickSetImageColorspace(MagickWand* wand, const ColorspaceType colorspace);
   MagickBooleanType MagickTransformImageColorspace(MagickWand *wand, const ColorspaceType colorspace);
-  MagickBooleanType MagickSepiaToneImage(MagickWand* wand, const double threshold);	
+  MagickBooleanType MagickSepiaToneImage(MagickWand* wand, const double threshold);
+  MagickBooleanType MagickSolarizeImage(MagickWand* wand, const double threshold);
+  MagickBooleanType MagickSetImageAlpha(MagickWand*, const double);
+  MagickBooleanType MagickSetImageAlphaChannel(MagickWand*, const AlphaChannelOption);
+  MagickBooleanType MagickSetImageBackgroundColor(MagickWand *wand, const PixelWand *background);
+  MagickBooleanType MagickNewImage(MagickWand *wand, const size_t columns,const size_t rows, const PixelWand *background);
+  MagickBooleanType MagickBrightnessContrastImage(MagickWand *wand, const double brightness,const double contrast);
+
+
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   char* MagickGetImageFormat(MagickWand* wand);
@@ -80,6 +89,7 @@ ffi.cdef([[  typedef void MagickWand;
   double PixelGetGreen(const PixelWand *);
   double PixelGetBlue(const PixelWand *);
 
+  void PixelSetColor(PixelWand *wand, const char *color);
   void PixelSetAlpha(PixelWand *wand, const double alpha);
   void PixelSetRed(PixelWand *wand, const double red);
   void PixelSetGreen(PixelWand *wand, const double green);

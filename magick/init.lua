@@ -270,8 +270,11 @@ do
     end,
     sepia = function(self, threshold)
       threshold = 65535 * threshold
-      handle_result(self, lib.MagickTransformImageColorspace(self.wand, colorspace["TransparentColorspace"]))
+      handle_result(self, lib.MagickSetImageAlphaChannel(self.wand, 3))
       return handle_result(self, lib.MagickSepiaToneImage(self.wand, threshold))
+    end,
+    brightness_contrast = function(self, brightness, contrast)
+      return handle_result(self, lib.MagickBrightnessContrastImage(self.wand, tonumber(brightness), tonumber(contrast)))
     end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
@@ -546,6 +549,17 @@ sepia = function(img, threshold, output)
   return ret
 end
 
+local brightness_contrast
+brightness_contrast = function(img, brightness, contrast, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:brightness_contrast(brightness, contrast)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local rotate
 rotate = function(img, degrees, output)
   if type(img) == "string" then
@@ -577,6 +591,7 @@ return {
   thumb = thumb,
   copy_image = copy_image,
   color_space = color_space,
+  brightness_contrast = brightness_contrast,
   sepia = sepia,
   rotate = rotate,
   Image = Image,
