@@ -279,6 +279,9 @@ do
     sketch = function(self, radius, sigma, angle)
       return handle_result(self, lib.MagickSketchImage(self.wand, radius, sigma, angle))
     end,
+    vignette = function(self, vignette_black_point, vignette_white_point, vignette_x, vignette_y)
+      return handle_result(self, lib.MagickVignetteImage(self.wand, vignette_black_point, vignette_white_point, vignette_x, vignette_y))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -607,6 +610,20 @@ sketch = function(img, sigma, radius, angle, output)
   return ret
 end
 
+local vignette
+vignette = function(img, vignette_black_point, vignette_white_point, vignette_x, vignette_y, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  file = io.open("/vagrant/lua.log", "w")
+  file:write(string.format("dest_fname: %s ; black_point: %s ; white_point: %s ; vignette_x: %s ; vignette_y: %s ; dest_fname: %s", img, vignette_black_point, vignette_white_point, vignette_x, vignette_y, output))
+  file:close()
+  img:vignette(vignette_black_point, vignette_white_point, vignette_x, vignette_y)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -633,6 +650,7 @@ return {
   blur = blur,
   sharpen = sharpen,
   sketch = sketch,
+  vignette = vignette,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
