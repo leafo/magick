@@ -303,6 +303,9 @@ do
     emboss = function(self, radius, sigma)
       return handle_result(self, lib.MagickEmbossImage(self.wand, radius, sigma))
     end,
+    enhance = function(self)
+      return handle_result(self, lib.MagickEnhanceImage(self.wand))
+    end,
     vignette = function(self, vignette_black_point, vignette_white_point, vignette_x, vignette_y)
       local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       lib.PixelSetColor(pixel, 'transparent')
@@ -685,6 +688,17 @@ emboss = function(img, radius, sigma, output)
   return ret
 end
 
+local enhance
+enhance = function(img, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:enhance()
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -718,6 +732,7 @@ return {
   brightness_saturation_hue = brightness_saturation_hue,
   negate = negate,
   emboss = emboss,
+  enhance = enhance,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION

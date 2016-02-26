@@ -53,6 +53,7 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   MagickBooleanType MagickNegateImage(MagickWand *wand, const MagickBooleanType gray);
   MagickBooleanType MagickEmbossImage(MagickWand *wand,const double radius, const double sigma);
+  MagickBooleanType MagickEnhanceImage(MagickWand *wand);
 
 
   char* MagickGetImageFormat(MagickWand* wand);
