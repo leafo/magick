@@ -127,6 +127,12 @@ local gravity_str = {
   "SouthEastGravity",
   "StaticGravity"
 }
+
+local boolean_type = {
+  ["MagickFalse"] = 0,
+  ["MagickTrue"] = 1
+}
+
 local gravity_type = { }
 for i, t in ipairs(gravity_str) do
   gravity_type[t] = i
@@ -276,6 +282,9 @@ do
     brightness_contrast = function(self, brightness, contrast)
       return handle_result(self, lib.MagickBrightnessContrastImage(self.wand, brightness, contrast))
     end,
+    brightness_saturation_hue = function(self, brightness, saturation, hue)
+      return handle_result(self, lib.MagickModulateImage(self.wand, brightness, saturation, hue))
+    end,
     sketch = function(self, radius, sigma, angle)
       return handle_result(self, lib.MagickSketchImage(self.wand, radius, sigma, angle))
     end,
@@ -287,6 +296,12 @@ do
     end,
     oil_paint = function(self, radius)
       return handle_result(self, lib.MagickOilPaintImage(self.wand, radius))
+    end,
+    negate = function(self, isgray)
+      return handle_result(self, lib.MagickNegateImage(self.wand, boolean_type[isgray]))
+    end,
+    emboss = function(self, radius, sigma)
+      return handle_result(self, lib.MagickEmbossImage(self.wand, radius, sigma))
     end,
     vignette = function(self, vignette_black_point, vignette_white_point, vignette_x, vignette_y)
       local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
@@ -487,35 +502,6 @@ get_dimensions_from_string = function(size_str, src_w, src_h)
   }
 end
 
-function serializeTable(val, name, skipnewlines, depth)
-    skipnewlines = skipnewlines or false
-    depth = depth or 0
-
-    local tmp = string.rep(" ", depth)
-
-    if name then tmp = tmp .. name .. " = " end
-
-    if type(val) == "table" then
-        tmp = tmp .. "{" .. (not skipnewlines and "\n" or "")
-
-        for k, v in pairs(val) do
-            tmp =  tmp .. serializeTable(v, k, skipnewlines, depth + 1) .. "," .. (not skipnewlines and "\n" or "")
-        end
-
-        tmp = tmp .. string.rep(" ", depth) .. "}"
-    elseif type(val) == "number" then
-        tmp = tmp .. tostring(val)
-    elseif type(val) == "string" then
-        tmp = tmp .. string.format("%q", val)
-    elseif type(val) == "boolean" then
-        tmp = tmp .. (val and "true" or "false")
-    else
-        tmp = tmp .. "\"[inserializeable datatype:" .. type(val) .. "]\""
-    end
-
-    return tmp
-end
-
 local thumb
 thumb = function(img, size_str, output)
   if type(img) == "string" then
@@ -666,6 +652,39 @@ oil_paint = function(img, radius, output)
   return ret
 end
 
+local brightness_saturation_hue
+brightness_saturation_hue = function(img, brightness, saturation, hue, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:brightness_saturation_hue(brightness, saturation, hue)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local negate
+negate = function(img, isgray, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:negate(isgray)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local emboss
+emboss = function(img, radius, sigma, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:emboss(radius, sigma)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -696,6 +715,9 @@ return {
   flip = flip,
   flop = flop,
   oil_paint = oil_paint,
+  brightness_saturation_hue = brightness_saturation_hue,
+  negate = negate,
+  emboss = emboss,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
