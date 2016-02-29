@@ -1,5 +1,7 @@
 local ffi = require("ffi")
-ffi.cdef([[  typedef void MagickWand;
+ffi.cdef([[
+  typedef void MagickWand;
+  typedef void DrawingWand;
   typedef void PixelWand;
 
   typedef int MagickBooleanType;
@@ -12,6 +14,7 @@ ffi.cdef([[  typedef void MagickWand;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
+  DrawingWand* NewDrawingWand();
   MagickWand* DestroyMagickWand(MagickWand*);
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
   MagickBooleanType MagickReadImageBlob(MagickWand*, const void*, const size_t);
@@ -57,8 +60,8 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickTintImage(MagickWand *wand, const PixelWand *tint, const PixelWand *opacity);
   MagickBooleanType MagickWaveImage(MagickWand *wand,const double amplitude, const double wave_length);
   MagickBooleanType MagickSwirlImage(MagickWand *wand,const double degrees);
+  MagickBooleanType MagickPolaroidImage(MagickWand *wand, const DrawingWand *drawing_wand,const double angle);
 
-  
   char* MagickGetImageFormat(MagickWand* wand);
 
 

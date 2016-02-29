@@ -325,6 +325,10 @@ do
     swirl = function(self, degrees)
       return handle_result(self, lib.MagickSwirlImage(self.wand, degrees))
     end,
+    polaroid_image = function(self)
+      local drawing_wand = lib.NewDrawingWand()
+      return handle_result(self, lib.MagickPolaroidImage(self.wand, drawing_wand, 0.0))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -745,6 +749,17 @@ swirl = function(img, degrees, output)
   return ret
 end
 
+local polaroid_image
+polaroid_image = function(img, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:polaroid_image()
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -782,6 +797,7 @@ return {
   tint = tint,
   wave = wave,
   swirl = swirl,
+  polaroid_image = polaroid_image,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
