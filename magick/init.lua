@@ -322,6 +322,9 @@ do
     wave = function(self, amplitude, wave_length)
       return handle_result(self, lib.MagickWaveImage(self.wand, amplitude, wave_length))
     end,
+    swirl = function(self, degrees)
+      return handle_result(self, lib.MagickSwirlImage(self.wand, degrees))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -720,13 +723,23 @@ wave = function(img, amplitude, wave_length, output)
   return ret
 end
 
-
 local enhance
 enhance = function(img, output)
   if type(img) == "string" then
     img = assert(load_image(img))
   end
   img:enhance()
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local swirl
+swirl = function(img, degrees, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:swirl(degrees)
   local ret
   ret = img:write(output)
   return ret
@@ -768,6 +781,7 @@ return {
   enhance = enhance,
   tint = tint,
   wave = wave,
+  swirl = swirl,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION

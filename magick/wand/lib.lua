@@ -56,7 +56,9 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickEnhanceImage(MagickWand *wand);
   MagickBooleanType MagickTintImage(MagickWand *wand, const PixelWand *tint, const PixelWand *opacity);
   MagickBooleanType MagickWaveImage(MagickWand *wand,const double amplitude, const double wave_length);
+  MagickBooleanType MagickSwirlImage(MagickWand *wand,const double degrees);
 
+  
   char* MagickGetImageFormat(MagickWand* wand);
 
 
