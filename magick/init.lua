@@ -337,6 +337,13 @@ do
     charcoal = function(self, radius, sigma)
       return handle_result(self, lib.MagickCharcoalImage(self.wand, radius, sigma))
     end,
+    colorize = function(self, color, opacity)
+      local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel, color)
+      local pixel_opacity = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel_opacity, opacity)
+      return handle_result(self, lib.MagickColorizeImage(self.wand, pixel, pixel_opacity))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -790,6 +797,17 @@ charcoal = function(img, radius, sigma, output)
   return ret
 end
 
+local colorize
+colorize = function(img, color, opacity, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:colorize(color, opacity)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -830,6 +848,7 @@ return {
   border = border,
   polaroid_image = polaroid_image,
   charcoal = charcoal,
+  colorize = colorize,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION

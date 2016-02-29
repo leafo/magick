@@ -63,7 +63,7 @@ ffi.cdef([[
   MagickBooleanType MagickPolaroidImage(MagickWand *wand, const DrawingWand *drawing_wand,const double angle);
   MagickBooleanType MagickBorderImage(MagickWand *wand, const PixelWand *bordercolor,const size_t width, const size_t height);
   MagickBooleanType MagickCharcoalImage(MagickWand *wand, const double radius,const double sigma);
-
+  MagickBooleanType MagickColorizeImage(MagickWand *wand, const PixelWand *colorize,const PixelWand *opacity);
 
   char* MagickGetImageFormat(MagickWand* wand);
 
