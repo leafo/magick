@@ -334,6 +334,9 @@ do
       lib.PixelSetColor(pixel, color)
       return handle_result(self, lib.MagickBorderImage(self.wand, pixel, width, height))
     end,
+    charcoal = function(self, radius, sigma)
+      return handle_result(self, lib.MagickCharcoalImage(self.wand, radius, sigma))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -776,6 +779,16 @@ border = function(img, color, width, height, output)
   return ret
 end
 
+local charcoal
+charcoal = function(img, radius, sigma, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:charcoal(radius, sigma)
+  local ret
+  ret = img:write(output)
+  return ret
+end
 
 local copy_image
 copy_image = function(img, output)
@@ -816,6 +829,7 @@ return {
   swirl = swirl,
   border = border,
   polaroid_image = polaroid_image,
+  charcoal = charcoal,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
