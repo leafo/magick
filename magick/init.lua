@@ -306,11 +306,21 @@ do
     enhance = function(self)
       return handle_result(self, lib.MagickEnhanceImage(self.wand))
     end,
+    tint = function(self, color, opacity)
+      local pixel_color = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel_color, color)
+      local pixel_opacity = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel_opacity, opacity)
+      return handle_result(self, lib.MagickTintImage(self.wand, pixel_color, pixel_opacity))
+    end,
     vignette = function(self, vignette_black_point, vignette_white_point, vignette_x, vignette_y)
       local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       lib.PixelSetColor(pixel, 'transparent')
       lib.MagickSetImageBackgroundColor(self.wand, pixel)
       return handle_result(self, lib.MagickVignetteImage(self.wand, vignette_black_point, vignette_white_point, vignette_x, vignette_y))
+    end,
+    wave = function(self, amplitude, wave_length)
+      return handle_result(self, lib.MagickWaveImage(self.wand, amplitude, wave_length))
     end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
@@ -688,6 +698,29 @@ emboss = function(img, radius, sigma, output)
   return ret
 end
 
+local tint
+tint = function(img, color, opacity, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:tint(color, opacity)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local wave
+wave = function(img, amplitude, wave_length, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:wave(amplitude, wave_length)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+
 local enhance
 enhance = function(img, output)
   if type(img) == "string" then
@@ -733,6 +766,8 @@ return {
   negate = negate,
   emboss = emboss,
   enhance = enhance,
+  tint = tint,
+  wave = wave,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION

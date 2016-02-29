@@ -54,7 +54,8 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickNegateImage(MagickWand *wand, const MagickBooleanType gray);
   MagickBooleanType MagickEmbossImage(MagickWand *wand,const double radius, const double sigma);
   MagickBooleanType MagickEnhanceImage(MagickWand *wand);
-
+  MagickBooleanType MagickTintImage(MagickWand *wand, const PixelWand *tint, const PixelWand *opacity);
+  MagickBooleanType MagickWaveImage(MagickWand *wand,const double amplitude, const double wave_length);
 
   char* MagickGetImageFormat(MagickWand* wand);
 
@@ -103,6 +104,7 @@ ffi.cdef([[  typedef void MagickWand;
   void PixelSetRed(PixelWand *wand, const double red);
   void PixelSetGreen(PixelWand *wand, const double green);
   void PixelSetBlue(PixelWand *wand, const double blue);
+  void PixelSetOpacity(PixelWand *wand,const double opacity);
 ]])
 local get_flags
 get_flags = function()
