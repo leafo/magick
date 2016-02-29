@@ -329,6 +329,11 @@ do
       local drawing_wand = lib.NewDrawingWand()
       return handle_result(self, lib.MagickPolaroidImage(self.wand, drawing_wand, 0.0))
     end,
+    border = function(self, color, width, height)
+      local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel, color)
+      return handle_result(self, lib.MagickBorderImage(self.wand, pixel, width, height))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -760,6 +765,18 @@ polaroid_image = function(img, output)
   return ret
 end
 
+local border
+border = function(img, color, width, height, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:border(color, width, height)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -797,6 +814,7 @@ return {
   tint = tint,
   wave = wave,
   swirl = swirl,
+  border = border,
   polaroid_image = polaroid_image,
   Image = Image,
   parse_size_str = parse_size_str,

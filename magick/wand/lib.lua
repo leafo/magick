@@ -61,6 +61,9 @@ ffi.cdef([[
   MagickBooleanType MagickWaveImage(MagickWand *wand,const double amplitude, const double wave_length);
   MagickBooleanType MagickSwirlImage(MagickWand *wand,const double degrees);
   MagickBooleanType MagickPolaroidImage(MagickWand *wand, const DrawingWand *drawing_wand,const double angle);
+  MagickBooleanType MagickBorderImage(MagickWand *wand, const PixelWand *bordercolor,const size_t width, const size_t height);
+
+
 
   char* MagickGetImageFormat(MagickWand* wand);
 
