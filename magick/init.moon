@@ -558,6 +558,9 @@ load_image_from_path = (img_path) ->
 
 get_dimensions_from_string = (size_str, src_w, src_h) ->
   str_w, str_h, rest = size_str\match "^(%d*%%?)x(%d*%%?)(.*)$"
+  w = nil
+  h = nil
+
   if p = str_w\match "(%d+)%%"
     w = tonumber(p) / 100 * src_w
   else

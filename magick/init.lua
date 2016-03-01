@@ -603,20 +603,22 @@ end
 local get_dimensions_from_string
 get_dimensions_from_string = function(size_str, src_w, src_h)
   local str_w, str_h, rest = size_str:match("^(%d*%%?)x(%d*%%?)(.*)$")
+  local w = nil
+  local h = nil
   do
     local p = str_w:match("(%d+)%%")
     if p then
-      local w = tonumber(p) / 100 * src_w
+      w = tonumber(p) / 100 * src_w
     else
-      local w = tonumber(str_w) or 0
+      w = tonumber(str_w) or 0
     end
   end
   do
     local p = str_h:match("(%d+)%%")
     if p then
-      local h = tonumber(p) / 100 * src_h
+      h = tonumber(p) / 100 * src_h
     else
-      local h = tonumber(str_h) or 0
+      h = tonumber(str_h) or 0
     end
   end
   return {
