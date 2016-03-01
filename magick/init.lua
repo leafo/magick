@@ -359,6 +359,9 @@ do
     noise = function(self, type)
       return handle_result(self, lib.MagickAddNoiseImage(self.wand, noise_type[type]))
     end,
+    auto_gamma = function(self, type)
+      return handle_result(self, lib.MagickAutoGammaImage(self.wand))
+    end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
         r = 0
@@ -834,12 +837,23 @@ threshold = function(img, width, height, offset, output)
   return ret
 end
 
-local noise
-noise = function(img, ntype, output)
+local threshold
+threshold = function(img, width, height, offset, output)
   if type(img) == "string" then
     img = assert(load_image(img))
   end
-  img:noise(ntype)
+  img:threshold(width, height, offset)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local auto_gamma
+auto_gamma = function(img, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:auto_gamma()
   local ret
   ret = img:write(output)
   return ret
@@ -888,6 +902,7 @@ return {
   colorize = colorize,
   threshold = threshold,
   noise = noise,
+  auto_gamma = auto_gamma,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION

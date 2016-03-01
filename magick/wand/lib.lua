@@ -67,6 +67,7 @@ ffi.cdef([[
   MagickBooleanType MagickColorizeImage(MagickWand *wand, const PixelWand *colorize,const PixelWand *opacity);
   MagickBooleanType MagickAdaptiveThresholdImage(MagickWand *wand, const size_t width,const size_t height,const ssize_t offset);
   MagickBooleanType MagickAddNoiseImage(MagickWand *wand, const NoiseType noise_type);
+  MagickBooleanType MagickAutoGammaImage(MagickWand *wand);
 
   char* MagickGetImageFormat(MagickWand* wand);
 
