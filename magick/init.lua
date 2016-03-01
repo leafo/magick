@@ -137,6 +137,42 @@ local noise_type = {
   ["PoissonNoise"] = 5
 }
 
+local evaluate_operator = {
+  ["UndefinedEvaluateOperator"] = 0,
+  ["AddEvaluateOperator"] = 1,
+  ["AndEvaluateOperator"] = 2,
+  ["DivideEvaluateOperator"] = 3,
+  ["LeftShiftEvaluateOperator"] = 4,
+  ["MaxEvaluateOperator"] =	5,
+  ["MinEvaluateOperator"] =	6,
+  ["MultiplyEvaluateOperator"] = 7,
+  ["OrEvaluateOperator"] = 8,
+  ["RightShiftEvaluateOperator"] = 9,
+  ["SetEvaluateOperator"] = 10,
+  ["SubtractEvaluateOperator"] = 11,
+  ["XorEvaluateOperator"] = 12,
+  ["PowEvaluateOperator"] = 13,
+  ["LogEvaluateOperator"] = 14,
+  ["ThresholdEvaluateOperator"] = 15,
+  ["ThresholdBlackEvaluateOperator"] = 16,
+  ["ThresholdWhiteEvaluateOperator"] = 17,
+  ["GaussianNoiseEvaluateOperator"] = 18,
+  ["ImpulseNoiseEvaluateOperator"] = 19,
+  ["LaplacianNoiseEvaluateOperator"] = 20,
+  ["MultiplicativeNoiseEvaluateOperator"] = 21,
+  ["PoissonNoiseEvaluateOperator"] = 22,
+  ["UniformNoiseEvaluateOperator"] = 23,
+  ["CosineEvaluateOperator"] = 24,
+  ["SineEvaluateOperator"] = 25,
+  ["AddModulusEvaluateOperator"] = 26,
+  ["MeanEvaluateOperator"] = 27,
+  ["AbsEvaluateOperator"] = 28,
+  ["ExponentialEvaluateOperator"] = 29,
+  ["MedianEvaluateOperator"] = 30,
+  ["SumEvaluateOperator"] = 31,
+  ["RootMeanSquareEvaluateOperator"] = 32
+}
+
 local boolean_type = {
   ["MagickFalse"] = 0,
   ["MagickTrue"] = 1
@@ -359,8 +395,23 @@ do
     noise = function(self, type)
       return handle_result(self, lib.MagickAddNoiseImage(self.wand, noise_type[type]))
     end,
-    auto_gamma = function(self, type)
+    auto_gamma = function(self)
       return handle_result(self, lib.MagickAutoGammaImage(self.wand))
+    end,
+    auto_level = function(self)
+      return handle_result(self, lib.MagickAutoLevelImage(self.wand))
+    end,
+    blue_shift = function(self, factor)
+      return handle_result(self, lib.MagickBlueShiftImage(self.wand, factor))
+    end,
+    cycle_colormap = function(self, displace)
+      return handle_result(self, lib.MagickCycleColormapImage(self.wand, displace))
+    end,
+    edge = function(self, radius)
+      return handle_result(self, lib.MagickEdgeImage(self.wand, radius))
+    end,
+    evaluate = function(self, op, value)
+      return handle_result(self, lib.MagickEvaluateImage(self.wand, evaluate_operator[op], value))
     end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
@@ -859,6 +910,61 @@ auto_gamma = function(img, output)
   return ret
 end
 
+local auto_level
+auto_level = function(img, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:auto_level()
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local blue_shift
+blue_shift = function(img, factor, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:blue_shift(factor)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local edge
+edge = function(img, radius, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:edge(radius)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local cycle_colormap
+cycle_colormap = function(img, displace, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:cycle_colormap(displace)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local evaluate
+evaluate = function(img, op, value, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:evaluate(op, value)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -903,6 +1009,11 @@ return {
   threshold = threshold,
   noise = noise,
   auto_gamma = auto_gamma,
+  auto_level = auto_level,
+  blue_shift = blue_shift,
+  cycle_colormap = cycle_colormap,
+  edge = edge,
+  evaluate = evaluate,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION

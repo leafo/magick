@@ -12,6 +12,7 @@ ffi.cdef([[
   typedef int ColorspaceType;
   typedef int AlphaChannelOption;
   typedef int NoiseType;
+  typedef int MagickEvaluateOperator;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
@@ -68,6 +69,13 @@ ffi.cdef([[
   MagickBooleanType MagickAdaptiveThresholdImage(MagickWand *wand, const size_t width,const size_t height,const ssize_t offset);
   MagickBooleanType MagickAddNoiseImage(MagickWand *wand, const NoiseType noise_type);
   MagickBooleanType MagickAutoGammaImage(MagickWand *wand);
+  MagickBooleanType MagickAutoLevelImage(MagickWand *wand);
+  MagickBooleanType MagickBlueShiftImage(MagickWand *wand, const double factor);
+  MagickBooleanType MagickCommentImage(MagickWand *wand, const char *comment);
+  MagickBooleanType MagickCycleColormapImage(MagickWand *wand, const ssize_t displace);
+  MagickBooleanType MagickEdgeImage(MagickWand *wand,const double radius);
+  MagickBooleanType MagickEvaluateImage(MagickWand *wand, const MagickEvaluateOperator operator,const double value);
+
 
   char* MagickGetImageFormat(MagickWand* wand);
 
