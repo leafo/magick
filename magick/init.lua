@@ -75,7 +75,19 @@ local composite_op = {
   ["DarkenIntensityCompositeOp"] = 66,
   ["LightenIntensityCompositeOp"] = 67
 }
-
+local gravity_str = {
+  "ForgetGravity",
+  "NorthWestGravity",
+  "NorthGravity",
+  "NorthEastGravity",
+  "WestGravity",
+  "CenterGravity",
+  "EastGravity",
+  "SouthWestGravity",
+  "SouthGravity",
+  "SouthEastGravity",
+  "StaticGravity"
+}
 local colorspace = {
   ["UndefinedColorspace"] = 0,
   ["RGBColorspace"] = 1,
@@ -113,21 +125,6 @@ local colorspace = {
   ["YDbDrColorspace"] = 33,
   ["xyYColorspace"] = 34
 }
-
-local gravity_str = {
-  "ForgetGravity",
-  "NorthWestGravity",
-  "NorthGravity",
-  "NorthEastGravity",
-  "WestGravity",
-  "CenterGravity",
-  "EastGravity",
-  "SouthWestGravity",
-  "SouthGravity",
-  "SouthEastGravity",
-  "StaticGravity"
-}
-
 local noise_type = {
   ["UniformNoise"] = 0,
   ["GaussianNoise"] = 1,
@@ -136,48 +133,47 @@ local noise_type = {
   ["LaplacianNoise"] = 4,
   ["PoissonNoise"] = 5
 }
-
-local evaluate_operator = {
-  ["UndefinedEvaluateOperator"] = 0,
-  ["AddEvaluateOperator"] = 1,
-  ["AndEvaluateOperator"] = 2,
-  ["DivideEvaluateOperator"] = 3,
-  ["LeftShiftEvaluateOperator"] = 4,
-  ["MaxEvaluateOperator"] =	5,
-  ["MinEvaluateOperator"] =	6,
-  ["MultiplyEvaluateOperator"] = 7,
-  ["OrEvaluateOperator"] = 8,
-  ["RightShiftEvaluateOperator"] = 9,
-  ["SetEvaluateOperator"] = 10,
-  ["SubtractEvaluateOperator"] = 11,
-  ["XorEvaluateOperator"] = 12,
-  ["PowEvaluateOperator"] = 13,
-  ["LogEvaluateOperator"] = 14,
-  ["ThresholdEvaluateOperator"] = 15,
-  ["ThresholdBlackEvaluateOperator"] = 16,
-  ["ThresholdWhiteEvaluateOperator"] = 17,
-  ["GaussianNoiseEvaluateOperator"] = 18,
-  ["ImpulseNoiseEvaluateOperator"] = 19,
-  ["LaplacianNoiseEvaluateOperator"] = 20,
-  ["MultiplicativeNoiseEvaluateOperator"] = 21,
-  ["PoissonNoiseEvaluateOperator"] = 22,
-  ["UniformNoiseEvaluateOperator"] = 23,
-  ["CosineEvaluateOperator"] = 24,
-  ["SineEvaluateOperator"] = 25,
-  ["AddModulusEvaluateOperator"] = 26,
-  ["MeanEvaluateOperator"] = 27,
-  ["AbsEvaluateOperator"] = 28,
-  ["ExponentialEvaluateOperator"] = 29,
-  ["MedianEvaluateOperator"] = 30,
-  ["SumEvaluateOperator"] = 31,
-  ["RootMeanSquareEvaluateOperator"] = 32
+local _ = {
+  evaluate_operator = {
+    ["UndefinedEvaluateOperator"] = 0,
+    ["AddEvaluateOperator"] = 1,
+    ["AndEvaluateOperator"] = 2,
+    ["DivideEvaluateOperator"] = 3,
+    ["LeftShiftEvaluateOperator"] = 4,
+    ["MaxEvaluateOperator"] = 5,
+    ["MinEvaluateOperator"] = 6,
+    ["MultiplyEvaluateOperator"] = 7,
+    ["OrEvaluateOperator"] = 8,
+    ["RightShiftEvaluateOperator"] = 9,
+    ["SetEvaluateOperator"] = 10,
+    ["SubtractEvaluateOperator"] = 11,
+    ["XorEvaluateOperator"] = 12,
+    ["PowEvaluateOperator"] = 13,
+    ["LogEvaluateOperator"] = 14,
+    ["ThresholdEvaluateOperator"] = 15,
+    ["ThresholdBlackEvaluateOperator"] = 16,
+    ["ThresholdWhiteEvaluateOperator"] = 17,
+    ["GaussianNoiseEvaluateOperator"] = 18,
+    ["ImpulseNoiseEvaluateOperator"] = 19,
+    ["LaplacianNoiseEvaluateOperator"] = 20,
+    ["MultiplicativeNoiseEvaluateOperator"] = 21,
+    ["PoissonNoiseEvaluateOperator"] = 22,
+    ["UniformNoiseEvaluateOperator"] = 23,
+    ["CosineEvaluateOperator"] = 24,
+    ["SineEvaluateOperator"] = 25,
+    ["AddModulusEvaluateOperator"] = 26,
+    ["MeanEvaluateOperator"] = 27,
+    ["AbsEvaluateOperator"] = 28,
+    ["ExponentialEvaluateOperator"] = 29,
+    ["MedianEvaluateOperator"] = 30,
+    ["SumEvaluateOperator"] = 31,
+    ["RootMeanSquareEvaluateOperator"] = 32
+  }
 }
-
 local boolean_type = {
   ["MagickFalse"] = 0,
   ["MagickTrue"] = 1
 }
-
 local gravity_type = { }
 for i, t in ipairs(gravity_str) do
   gravity_type[t] = i
@@ -321,7 +317,7 @@ do
     end,
     sepia = function(self, threshold)
       threshold = 65535 * threshold
-      handle_result(self, lib.MagickSetImageAlphaChannel(self.wand, 3))
+      lib.MagickSetImageAlphaChannel(self.wand, 3)
       return handle_result(self, lib.MagickSepiaToneImage(self.wand, threshold))
     end,
     brightness_contrast = function(self, brightness, contrast)
@@ -371,7 +367,7 @@ do
       return handle_result(self, lib.MagickSwirlImage(self.wand, degrees))
     end,
     polaroid_image = function(self)
-      local drawing_wand = lib.NewDrawingWand()
+      local drawing_wand = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       return handle_result(self, lib.MagickPolaroidImage(self.wand, drawing_wand, 0.0))
     end,
     border = function(self, color, width, height)
@@ -392,8 +388,8 @@ do
     threshold = function(self, width, height, offset)
       return handle_result(self, lib.MagickAdaptiveThresholdImage(self.wand, width, height, offset))
     end,
-    noise = function(self, type)
-      return handle_result(self, lib.MagickAddNoiseImage(self.wand, noise_type[type]))
+    noise = function(self, ntype)
+      return handle_result(self, lib.MagickAddNoiseImage(self.wand, noise_type[ntype]))
     end,
     auto_gamma = function(self)
       return handle_result(self, lib.MagickAutoGammaImage(self.wand))
@@ -583,36 +579,56 @@ parse_size_str = function(str, src_w, src_h)
     center_crop = center_crop
   }
 end
-
+local save_or_get_image
+save_or_get_image = function(img, output)
+  local ret
+  if output then
+    ret = img:write(output)
+  else
+    ret = img:get_blob()
+  end
+  return ret
+end
+local load_image_from_path
+load_image_from_path = function(img_path)
+  local img = nil
+  if type(img_path) == "string" then
+    img = assert(load_image(img_path))
+  end
+  if not (img) then
+    error("invalid image path")
+  end
+  return img
+end
 local get_dimensions_from_string
 get_dimensions_from_string = function(size_str, src_w, src_h)
   local str_w, str_h, rest = size_str:match("^(%d*%%?)x(%d*%%?)(.*)$")
-  local p = str_w:match("(%d+)%%")
-  if p then
-    w = tonumber(p) / 100 * src_w
-  else
-    w = tonumber(str_w) or 0
+  do
+    local p = str_w:match("(%d+)%%")
+    if p then
+      local w = tonumber(p) / 100 * src_w
+    else
+      local w = tonumber(str_w) or 0
+    end
   end
-  local p = str_h:match("(%d+)%%")
-  if p then
-    h = tonumber(p) / 100 * src_h
-  else
-    h = tonumber(str_h) or 0
+  do
+    local p = str_h:match("(%d+)%%")
+    if p then
+      local h = tonumber(p) / 100 * src_h
+    else
+      local h = tonumber(str_h) or 0
+    end
   end
-
   return {
     w = w,
     h = h
   }
 end
-
 local thumb
 thumb = function(img, size_str, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
+  img = load_image_from_path(img)
   local src_w, src_h = img:get_width(), img:get_height()
-  dimensions = get_dimensions_from_string(size_str, src_w, src_h)
+  local dimensions = get_dimensions_from_string(size_str, src_w, src_h)
   if dimensions.w > src_w or dimensions.h > src_h then
     if output then
       return img:write(output)
@@ -627,369 +643,198 @@ thumb = function(img, size_str, output)
   else
     img:resize(opts.w, opts.h)
   end
-  if output then
-    ret = img:write(output)
-  else
-    ret = img:get_blob()
-  end
-  return ret
+  return save_or_get_image(img, output)
 end
-
-local color_space
-color_space = function(img, space, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:color_space(space)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local sepia
-sepia = function(img, threshold, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:sepia(threshold)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local brightness_contrast
-brightness_contrast = function(img, brightness, contrast, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:brightness_contrast(brightness, contrast)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local sharpen
-sharpen = function(img, sigma, radius, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:sharpen(sigma, radius)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local blur
-blur = function(img, sigma, radius, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:blur(sigma, radius)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local rotate
-rotate = function(img, degrees, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:rotate(degrees)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local sketch
-sketch = function(img, sigma, radius, angle, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:sketch(sigma, radius, angle)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local vignette
-vignette = function(img, vignette_black_point, vignette_white_point, vignette_x, vignette_y, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:vignette(vignette_black_point, vignette_white_point, vignette_x, vignette_y)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local flip
-flip = function(img, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:flip()
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local flop
-flop = function(img, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:flop()
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local oil_paint
-oil_paint = function(img, radius, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:oil_paint(radius)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local brightness_saturation_hue
-brightness_saturation_hue = function(img, brightness, saturation, hue, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:brightness_saturation_hue(brightness, saturation, hue)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local negate
-negate = function(img, isgray, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:negate(isgray)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local emboss
-emboss = function(img, radius, sigma, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:emboss(radius, sigma)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local tint
-tint = function(img, color, opacity, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:tint(color, opacity)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local wave
-wave = function(img, amplitude, wave_length, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:wave(amplitude, wave_length)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local enhance
-enhance = function(img, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:enhance()
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local swirl
-swirl = function(img, degrees, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:swirl(degrees)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local polaroid_image
-polaroid_image = function(img, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:polaroid_image()
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local border
-border = function(img, color, width, height, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:border(color, width, height)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local charcoal
-charcoal = function(img, radius, sigma, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:charcoal(radius, sigma)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local colorize
-colorize = function(img, color, opacity, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:colorize(color, opacity)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local threshold
-threshold = function(img, width, height, offset, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:threshold(width, height, offset)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local threshold
-threshold = function(img, width, height, offset, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:threshold(width, height, offset)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local auto_gamma
-auto_gamma = function(img, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:auto_gamma()
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local auto_level
-auto_level = function(img, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:auto_level()
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local blue_shift
-blue_shift = function(img, factor, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:blue_shift(factor)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local edge
-edge = function(img, radius, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:edge(radius)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local cycle_colormap
-cycle_colormap = function(img, displace, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:cycle_colormap(displace)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
-local evaluate
-evaluate = function(img, op, value, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  img:evaluate(op, value)
-  local ret
-  ret = img:write(output)
-  return ret
-end
-
 local copy_image
 copy_image = function(img, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  local ret
-  if output then
-    ret = img:write(output)
-  else
-    ret = img:get_blob()
-  end
-  return ret
+  img = load_image_from_path(img)
+  return save_or_get_image(img, output)
 end
-
+local color_space
+color_space = function(img, space, output)
+  img = load_image_from_path(img)
+  img:color_space(space)
+  return save_or_get_image(img, output)
+end
+local sepia
+sepia = function(img, threshold, output)
+  img = load_image_from_path(img)
+  img:sepia(threshold)
+  return save_or_get_image(img, output)
+end
+local brightness_contrast
+brightness_contrast = function(img, brightness, contrast, output)
+  img = load_image_from_path(img)
+  img:brightness_contrast(brightness, contrast)
+  return save_or_get_image(img, output)
+end
+local sharpen
+sharpen = function(img, sigma, radius, output)
+  img = load_image_from_path(img)
+  img:sharpen(sigma, radius)
+  return save_or_get_image(img, output)
+end
+local blur
+blur = function(img, sigma, radius, output)
+  img = load_image_from_path(img)
+  img:blur(sigma, radius)
+  return save_or_get_image(img, output)
+end
+local rotate
+rotate = function(img, degrees, output)
+  img = load_image_from_path(img)
+  img:rotate(degrees)
+  return save_or_get_image(img, output)
+end
+local sketch
+sketch = function(img, sigma, radius, angle, output)
+  img = load_image_from_path(img)
+  img:sketch(sigma, radius, angle)
+  return save_or_get_image(img, output)
+end
+local vignette
+vignette = function(img, vignette_black_point, vignette_white_point, vignette_x, vignette_y, output)
+  img = load_image_from_path(img)
+  img:vignette(vignette_black_point, vignette_white_point, vignette_x, vignette_y)
+  return save_or_get_image(img, output)
+end
+local flip
+flip = function(img, output)
+  img = load_image_from_path(img)
+  img:flip()
+  return save_or_get_image(img, output)
+end
+local flop
+flop = function(img, output)
+  img = load_image_from_path(img)
+  img:flop()
+  return save_or_get_image(img, output)
+end
+local oil_paint
+oil_paint = function(img, radius, output)
+  img = load_image_from_path(img)
+  img:oil_paint(radius)
+  return save_or_get_image(img, output)
+end
+local brightness_saturation_hue
+brightness_saturation_hue = function(img, brightness, saturation, hue, output)
+  img = load_image_from_path(img)
+  img:brightness_saturation_hue(brightness, saturation, hue)
+  return save_or_get_image(img, output)
+end
+local negate
+negate = function(img, isgray, output)
+  img = load_image_from_path(img)
+  img:negate(isgray)
+  return save_or_get_image(img, output)
+end
+local emboss
+emboss = function(img, radius, sigma, output)
+  img = load_image_from_path(img)
+  img:emboss(radius, sigma)
+  return save_or_get_image(img, output)
+end
+local tint
+tint = function(img, color, opacity, output)
+  img = load_image_from_path(img)
+  img:tint(color, opacity)
+  return save_or_get_image(img, output)
+end
+local wave
+wave = function(img, amplitude, wave_length, output)
+  img = load_image_from_path(img)
+  img:wave(amplitude, wave_length)
+  return save_or_get_image(img, output)
+end
+local enhance
+enhance = function(img, output)
+  img = load_image_from_path(img)
+  img:enhance()
+  return save_or_get_image(img, output)
+end
+local swirl
+swirl = function(img, degrees, output)
+  img = load_image_from_path(img)
+  img:swirl(degrees)
+  return save_or_get_image(img, output)
+end
+local polaroid_image
+polaroid_image = function(img, output)
+  img = load_image_from_path(img)
+  img:polaroid_image()
+  return save_or_get_image(img, output)
+end
+local border
+border = function(img, color, width, height, output)
+  img = load_image_from_path(img)
+  img:border(color, width, height)
+  return save_or_get_image(img, output)
+end
+local charcoal
+charcoal = function(img, radius, sigma, output)
+  img = load_image_from_path(img)
+  img:charcoal(radius, sigma)
+  return save_or_get_image(img, output)
+end
+local colorize
+colorize = function(img, color, opacity, output)
+  img = load_image_from_path(img)
+  img:colorize(color, opacity)
+  return save_or_get_image(img, output)
+end
+local threshold
+threshold = function(img, width, height, offset, output)
+  img = load_image_from_path(img)
+  img:threshold(width, height, offset)
+  return save_or_get_image(img, output)
+end
+local auto_gamma
+auto_gamma = function(img, output)
+  img = load_image_from_path(img)
+  img:auto_gamma()
+  return save_or_get_image(img, output)
+end
+local auto_level
+auto_level = function(img, output)
+  img = load_image_from_path(img)
+  img:auto_level()
+  return save_or_get_image(img, output)
+end
+local blue_shift
+blue_shift = function(img, factor, output)
+  img = load_image_from_path(img)
+  img:blue_shift(factor)
+  return save_or_get_image(img, output)
+end
+local edge
+edge = function(img, radius, output)
+  img = load_image_from_path(img)
+  img:edge(radius)
+  return save_or_get_image(img, output)
+end
+local cycle_colormap
+cycle_colormap = function(img, displace, output)
+  img = load_image_from_path(img)
+  img:cycle_colormap(displace)
+  return save_or_get_image(img, output)
+end
+local evaluate
+evaluate = function(img, op, value, output)
+  img = load_image_from_path(img)
+  img:evaluate(op, value)
+  return save_or_get_image(img, output)
+end
 return {
   load_image = load_image,
   load_image_from_blob = load_image_from_blob,
-  thumb = thumb,
   copy_image = copy_image,
+  thumb = thumb,
   color_space = color_space,
-  brightness_contrast = brightness_contrast,
   sepia = sepia,
-  rotate = rotate,
-  blur = blur,
+  brightness_contrast = brightness_contrast,
   sharpen = sharpen,
+  blur = blur,
+  rotate = rotate,
   sketch = sketch,
   vignette = vignette,
   flip = flip,
@@ -998,21 +843,20 @@ return {
   brightness_saturation_hue = brightness_saturation_hue,
   negate = negate,
   emboss = emboss,
-  enhance = enhance,
   tint = tint,
   wave = wave,
+  enhance = enhance,
   swirl = swirl,
-  border = border,
   polaroid_image = polaroid_image,
+  border = border,
   charcoal = charcoal,
   colorize = colorize,
   threshold = threshold,
-  noise = noise,
   auto_gamma = auto_gamma,
   auto_level = auto_level,
   blue_shift = blue_shift,
-  cycle_colormap = cycle_colormap,
   edge = edge,
+  cycle_colormap = cycle_colormap,
   evaluate = evaluate,
   Image = Image,
   parse_size_str = parse_size_str,
