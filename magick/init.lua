@@ -128,6 +128,15 @@ local gravity_str = {
   "StaticGravity"
 }
 
+local noise_type = {
+  ["UniformNoise"] = 0,
+  ["GaussianNoise"] = 1,
+  ["MultiplicativeGaussianNoise"] = 2,
+  ["ImpulseNoise"] = 3,
+  ["LaplacianNoise"] = 4,
+  ["PoissonNoise"] = 5
+}
+
 local boolean_type = {
   ["MagickFalse"] = 0,
   ["MagickTrue"] = 1
@@ -343,6 +352,12 @@ do
       local pixel_opacity = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       lib.PixelSetColor(pixel_opacity, opacity)
       return handle_result(self, lib.MagickColorizeImage(self.wand, pixel, pixel_opacity))
+    end,
+    threshold = function(self, width, height, offset)
+      return handle_result(self, lib.MagickAdaptiveThresholdImage(self.wand, width, height, offset))
+    end,
+    noise = function(self, type)
+      return handle_result(self, lib.MagickAddNoiseImage(self.wand, noise_type[type]))
     end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
@@ -808,6 +823,28 @@ colorize = function(img, color, opacity, output)
   return ret
 end
 
+local threshold
+threshold = function(img, width, height, offset, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:threshold(width, height, offset)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
+local noise
+noise = function(img, ntype, output)
+  if type(img) == "string" then
+    img = assert(load_image(img))
+  end
+  img:noise(ntype)
+  local ret
+  ret = img:write(output)
+  return ret
+end
+
 local copy_image
 copy_image = function(img, output)
   if type(img) == "string" then
@@ -849,6 +886,8 @@ return {
   polaroid_image = polaroid_image,
   charcoal = charcoal,
   colorize = colorize,
+  threshold = threshold,
+  noise = noise,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
