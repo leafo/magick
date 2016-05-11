@@ -90,7 +90,7 @@ local gravity_str = {
 }
 local gravity_type = { }
 for i, t in ipairs(gravity_str) do
-  gravity_type[t] = i
+  gravity_type[t] = i - 1
 end
 lib.MagickWandGenesis()
 local filter
@@ -154,7 +154,7 @@ do
       return handle_result(self, lib.MagickSetOption(self.wand, format, value))
     end,
     get_gravity = function(self)
-      return gravity_str[lib.MagickGetImageGravity(self.wand)]
+      return gravity_str[lib.MagickGetImageGravity(self.wand) + 1]
     end,
     set_gravity = function(self, typestr)
       local type = gravity_type[typestr]
