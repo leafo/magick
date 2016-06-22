@@ -627,11 +627,17 @@ get_dimensions_from_string = function(size_str, src_w, src_h)
   }
 end
 local thumb
-thumb = function(img, size_str, output)
+thumb = function(img, size_str, output, allow_oversize, oversize_limit)
+  if allow_oversize == nil then
+    allow_oversize = false
+  end
+  if oversize_limit == nil then
+    oversize_limit = 5000
+  end
   img = load_image_from_path(img)
   local src_w, src_h = img:get_width(), img:get_height()
   local dimensions = get_dimensions_from_string(size_str, src_w, src_h)
-  if dimensions.w > src_w or dimensions.h > src_h then
+  if (allow_oversize and (dimensions.w > oversize_limit or dimensions.h > oversize_limit)) or (not allow_oversize and (dimensions.w > src_w or dimensions.h > src_h)) then
     if output then
       return img:write(output)
     end

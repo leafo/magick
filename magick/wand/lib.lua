@@ -1,7 +1,5 @@
 local ffi = require("ffi")
-ffi.cdef([[
-  typedef void MagickWand;
-  typedef void DrawingWand;
+ffi.cdef([[  typedef void MagickWand;
   typedef void PixelWand;
 
   typedef int MagickBooleanType;
@@ -9,14 +7,9 @@ ffi.cdef([[
   typedef int ssize_t;
   typedef int CompositeOperator;
   typedef int GravityType;
-  typedef int ColorspaceType;
-  typedef int AlphaChannelOption;
-  typedef int NoiseType;
-  typedef int MagickEvaluateOperator;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
-  DrawingWand* NewDrawingWand();
   MagickWand* DestroyMagickWand(MagickWand*);
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
   MagickBooleanType MagickReadImageBlob(MagickWand*, const void*, const size_t);
@@ -40,45 +33,9 @@ ffi.cdef([[
     const size_t, const size_t, const ssize_t, const ssize_t);
 
   MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
-  MagickBooleanType MagickSetImageColorspace(MagickWand* wand, const ColorspaceType colorspace);
-  MagickBooleanType MagickTransformImageColorspace(MagickWand *wand, const ColorspaceType colorspace);
-  MagickBooleanType MagickSepiaToneImage(MagickWand* wand, const double threshold);
-  MagickBooleanType MagickSolarizeImage(MagickWand* wand, const double threshold);
-  MagickBooleanType MagickSetImageAlpha(MagickWand*, const double);
-  MagickBooleanType MagickSetImageAlphaChannel(MagickWand*, const AlphaChannelOption);
-  MagickBooleanType MagickSetImageBackgroundColor(MagickWand *wand, const PixelWand *background);
-  MagickBooleanType MagickNewImage(MagickWand *wand, const size_t columns,const size_t rows, const PixelWand *background);
-  MagickBooleanType MagickBrightnessContrastImage(MagickWand *wand, const double brightness,const double contrast);
-  MagickBooleanType MagickSketchImage(MagickWand *wand, const double radius,const double sigma,const double angle);
-  MagickBooleanType MagickVignetteImage(MagickWand *wand, const double black_point,const double white_point,const ssize_t x, const ssize_t y);
-  MagickBooleanType MagickFlipImage(MagickWand *wand);
-  MagickBooleanType MagickFlopImage(MagickWand *wand);
-  MagickBooleanType MagickOilPaintImage(MagickWand *wand, const double radius);
-  MagickBooleanType MagickModulateImage(MagickWand *wand, const double brightness,const double saturation,const double hue);
+
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
-  MagickBooleanType MagickNegateImage(MagickWand *wand, const MagickBooleanType gray);
-  MagickBooleanType MagickEmbossImage(MagickWand *wand,const double radius, const double sigma);
-  MagickBooleanType MagickEnhanceImage(MagickWand *wand);
-  MagickBooleanType MagickTintImage(MagickWand *wand, const PixelWand *tint, const PixelWand *opacity);
-  MagickBooleanType MagickWaveImage(MagickWand *wand,const double amplitude, const double wave_length);
-  MagickBooleanType MagickSwirlImage(MagickWand *wand,const double degrees);
-  MagickBooleanType MagickPolaroidImage(MagickWand *wand, const DrawingWand *drawing_wand,const double angle);
-  MagickBooleanType MagickBorderImage(MagickWand *wand, const PixelWand *bordercolor,const size_t width, const size_t height);
-  MagickBooleanType MagickCharcoalImage(MagickWand *wand, const double radius,const double sigma);
-  MagickBooleanType MagickColorizeImage(MagickWand *wand, const PixelWand *colorize,const PixelWand *opacity);
-  MagickBooleanType MagickAdaptiveThresholdImage(MagickWand *wand, const size_t width,const size_t height,const ssize_t offset);
-  MagickBooleanType MagickAddNoiseImage(MagickWand *wand, const NoiseType noise_type);
-  MagickBooleanType MagickAutoGammaImage(MagickWand *wand);
-  MagickBooleanType MagickAutoLevelImage(MagickWand *wand);
-  MagickBooleanType MagickBlueShiftImage(MagickWand *wand, const double factor);
-  MagickBooleanType MagickCommentImage(MagickWand *wand, const char *comment);
-  MagickBooleanType MagickCycleColormapImage(MagickWand *wand, const ssize_t displace);
-  MagickBooleanType MagickEdgeImage(MagickWand *wand,const double radius);
-  MagickBooleanType MagickEvaluateImage(MagickWand *wand, const MagickEvaluateOperator operator,const double value);
-
-
   char* MagickGetImageFormat(MagickWand* wand);
-
 
   size_t MagickGetImageCompressionQuality(MagickWand * wand);
   MagickBooleanType MagickSetImageCompressionQuality(MagickWand *wand,
@@ -119,12 +76,10 @@ ffi.cdef([[
   double PixelGetGreen(const PixelWand *);
   double PixelGetBlue(const PixelWand *);
 
-  void PixelSetColor(PixelWand *wand, const char *color);
   void PixelSetAlpha(PixelWand *wand, const double alpha);
   void PixelSetRed(PixelWand *wand, const double red);
   void PixelSetGreen(PixelWand *wand, const double green);
   void PixelSetBlue(PixelWand *wand, const double blue);
-  void PixelSetOpacity(PixelWand *wand,const double opacity);
 ]])
 local get_flags
 get_flags = function()

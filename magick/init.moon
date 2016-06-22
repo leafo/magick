@@ -573,11 +573,11 @@ get_dimensions_from_string = (size_str, src_w, src_h) ->
 
   {:w, :h}
 
-thumb = (img, size_str, output) ->
+thumb = (img, size_str, output, allow_oversize=false, oversize_limit=5000) ->
   img = load_image_from_path(img)
   src_w, src_h = img\get_width!, img\get_height!
   dimensions = get_dimensions_from_string size_str, src_w, src_h
-  if dimensions.w > src_w or dimensions.h > src_h
+  if (allow_oversize and (dimensions.w > oversize_limit or dimensions.h > oversize_limit)) or (not allow_oversize and (dimensions.w > src_w or dimensions.h > src_h))
     if output
       return img\write output
     return img\get_blob!
