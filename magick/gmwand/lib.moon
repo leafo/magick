@@ -32,6 +32,13 @@ ffi.cdef [[
 
   MagickPassFail MagickResizeImage(MagickWand *,const unsigned long,const unsigned long, const FilterTypes, const double);
   MagickPassFail DestroyMagickWand(MagickWand *);
+  MagickPassFail MagickRelinquishMemory(void *);
+
+  unsigned long MagickGetImageHeight(MagickWand *);
+  unsigned long MagickGetImageWidth(MagickWand *);
+
+  char *MagickGetImageFormat(MagickWand *);
+  MagickPassFail MagickSetImageFormat(MagickWand *wand,const char *format);
 ]]
 
 gmwand = ffi.load "GraphicsMagickWand"
