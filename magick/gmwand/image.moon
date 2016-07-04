@@ -8,6 +8,15 @@ get_exception = (wand) ->
   msg = ffi.string ffi.gc lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory
   etype[0], msg
 
+
+handle_result = (img_or_wand, status) ->
+  wand = img_or_wand.wand or img_or_wand
+  if status == 0
+    code, msg = get_exception wand
+    nil, msg, code
+  else
+    true
+
 class Image extends require "magick.base_image"
   @load: (path) =>
     wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
@@ -27,17 +36,17 @@ class Image extends require "magick.base_image"
   resize: (w,h, filter="Lanczos", blur=1.0) =>
     filter = assert data.filters\to_int(filter .. "Filter"), "invalid filter"
     w, h = @_keep_aspect w,h
-    lib.MagickResizeImage @wand, w, h, filter, blur
+    handle_result @, lib.MagickResizeImage @wand, w, h, filter, blur
 
   scale: (w,h) =>
     w, h = @_keep_aspect w,h
-    lib.MagickScaleImage @wand, w, h
+    handle_result @, lib.MagickScaleImage @wand, w, h
 
   crop: (w,h, x=0, y=0) =>
-    lib.MagickCropImage @wand, w, h, x, y
+    handle_result @, lib.MagickCropImage @wand, w, h, x, y
 
   write: (fname) =>
-    lib.MagickWriteImage @wand, fname
+    handle_result @, lib.MagickWriteImage @wand, fname
 
   __tostring: =>
     "GMImage<#{@path}, #{@wand}>"
