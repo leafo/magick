@@ -13,3 +13,9 @@ describe "magick", ->
       assert.same 64, image\get_width!
       assert.same 64, image\get_height!
 
+    it "handles image that doesn't exist", ->
+      img, err = load_image "spec/doesntexis.png"
+      assert.nil img
+      assert.same "Unable to open file (spec/doesntexis.png)", err
+
+

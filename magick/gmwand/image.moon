@@ -2,11 +2,17 @@
 ffi = require "ffi"
 import lib from require "magick.gmwand.lib"
 
+get_exception = (wand) ->
+  etype = ffi.new "ExceptionType[1]", 0
+  msg = ffi.string ffi.gc lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory
+  etype[0], msg
+
 class Image extends require "magick.base_image"
   @load: (path) =>
     wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
     if 0 == lib.MagickReadImage wand, path
-      return nil, "failed to load image"
+      code, msg = get_exception wand
+      return nil, msg, code
 
     @ wand, path
 
