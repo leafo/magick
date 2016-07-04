@@ -33,7 +33,7 @@ describe "magick", ->
       assert img\write out_path "resize.png"
 
     it "crop", ->
-      assert img\resize 20, 20
+      assert img\crop 20, 20
       assert img\write out_path "crop.png"
 
     it "scale", ->
