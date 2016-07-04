@@ -4,6 +4,7 @@ install:
   - sudo apt-get install luajit
   - sudo apt-get install luarocks
   - sudo apt-get install libmagickwand-dev
+  - sudo apt-get install libgraphicsmagick1-dev
   - sudo luarocks install moonscript
   - sudo luarocks install busted
   - cat $(which busted) | sed 's/\/usr\/bin\/lua/\/usr\/bin\/luajit-2.0.0-beta9/' > busted
