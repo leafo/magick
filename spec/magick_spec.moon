@@ -3,7 +3,7 @@ magick = require "magick"
 
 describe "magick", ->
   describe "parse_size_str", ->
-    import parse_size_str from magick
+    import parse_size_str from require "magick.thumb"
     src_w, src_h = 500, 300
 
     tests = {
