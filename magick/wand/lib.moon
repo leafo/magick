@@ -1,5 +1,7 @@
 ffi = require "ffi"
 
+local lib
+
 ffi.cdef [[
   typedef void MagickWand;
   typedef void PixelWand;
@@ -135,6 +137,9 @@ get_filters = ->
 
   false
 
+get_filter = (name) ->
+  lib[name .. "Filter"]
+
 can_resize = if get_filters!
   ffi.cdef [[
     MagickBooleanType MagickResizeImage(MagickWand*,
@@ -167,4 +172,4 @@ lib = try_to_load "MagickWand", ->
 
   lname and "lib" .. lname .. suffix
 
-{ :lib, :can_resize }
+{ :lib, :can_resize, :get_filter }

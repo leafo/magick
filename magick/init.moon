@@ -6,7 +6,6 @@ import lib, can_resize from require "magick.wand.lib"
 
 lib.MagickWandGenesis!
 
-filter = (name) -> lib[name .. "Filter"]
 
 get_exception = (wand) ->
   etype = ffi.new "ExceptionType[1]", 0
