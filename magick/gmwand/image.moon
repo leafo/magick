@@ -54,6 +54,13 @@ class Image extends require "magick.base_image"
   write: (fname) =>
     handle_result @, lib.MagickWriteImage @wand, fname
 
+  get_blob: =>
+    len = ffi.new "size_t[1]", 0
+    blob = ffi.gc lib.MagickWriteImageBlob(@wand, len),
+      lib.MagickRelinquishMemory
+
+    ffi.string blob, len[0]
+
   __tostring: =>
     "GMImage<#{@path}, #{@wand}>"
 

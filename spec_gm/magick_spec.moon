@@ -34,6 +34,13 @@ describe "magick", ->
     before_each ->
       img = assert load_image "spec/test_image.png"
 
+    it "get_blob", ->
+      blob = assert img\get_blob!
+      reloaded = load_image_from_blob blob
+
+      assert.same 64, reloaded\get_width!
+      assert.same 64, reloaded\get_height!
+
     it "resize", ->
       assert img\resize nil, 80
       assert img\write out_path "resize.png"

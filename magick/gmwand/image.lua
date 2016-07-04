@@ -56,6 +56,11 @@ do
     write = function(self, fname)
       return handle_result(self, lib.MagickWriteImage(self.wand, fname))
     end,
+    get_blob = function(self)
+      local len = ffi.new("size_t[1]", 0)
+      local blob = ffi.gc(lib.MagickWriteImageBlob(self.wand, len), lib.MagickRelinquishMemory)
+      return ffi.string(blob, len[0])
+    end,
     __tostring = function(self)
       return "GMImage<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"
     end

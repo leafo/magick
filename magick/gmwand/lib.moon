@@ -15,6 +15,8 @@ ffi.cdef [[
   MagickPassFail MagickReadImageBlob(MagickWand *,const unsigned char *,const size_t length);
   MagickPassFail MagickWriteImage(MagickWand *,const char *);
 
+  unsigned char *MagickWriteImageBlob(MagickWand *,size_t *);
+
   MagickPassFail DestroyMagickWand(MagickWand *);
   MagickPassFail MagickRelinquishMemory(void *);
 
