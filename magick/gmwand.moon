@@ -1,6 +1,6 @@
 import lib from require "magick.gmwand.lib"
 
-lib.InitializeMagick!
+lib.InitializeMagick nil
 
 import Image from require "magick.gmwand.image"
 import make_thumb from require "magick.thumb"
@@ -9,7 +9,7 @@ load_image = Image\load
 
 {
   VERSION: require "magick.version"
-  mode: "image_magick"
+  mode: "graphics_magick"
 
   :Image
   :load_image

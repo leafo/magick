@@ -1,6 +1,5 @@
 ffi = require "ffi"
 
-
 ffi.cdef [[
   void InitializeMagick( const char *path );
   typedef void MagickWand;
@@ -42,9 +41,6 @@ ffi.cdef [[
 ]]
 
 gmwand = ffi.load "GraphicsMagickWand"
-
--- gm = ffi.load "GraphicsMagick"
--- gm.InitializeMagick ""
 
 { lib: gmwand }
 

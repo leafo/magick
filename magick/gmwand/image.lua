@@ -1,6 +1,6 @@
 local ffi = require("ffi")
 local lib
-lib = require("magick.wand.lib").lib
+lib = require("magick.gmwand.lib").lib
 local Image
 do
   local _class_0

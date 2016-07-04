@@ -1,6 +1,6 @@
 local lib
 lib = require("magick.gmwand.lib").lib
-lib.InitializeMagick()
+lib.InitializeMagick(nil)
 local Image
 Image = require("magick.gmwand.image").Image
 local make_thumb
@@ -15,7 +15,7 @@ do
 end
 return {
   VERSION = require("magick.version"),
-  mode = "image_magick",
+  mode = "graphics_magick",
   Image = Image,
   load_image = load_image,
   thumb = make_thumb(load_image),
