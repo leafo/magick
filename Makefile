@@ -12,3 +12,7 @@ build:
 
 valgrind:
 	valgrind --leak-check=yes --trace-children=yes busted
+
+lint::
+	moonc lint_config.moon
+	git ls-files | grep '\.moon$$' | xargs -n 100 moonc -l
