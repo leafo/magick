@@ -89,6 +89,94 @@ gravity_str = {
   "StaticGravity"
 }
 
+colorspace = {
+  ["UndefinedColorspace"]: 0,
+  ["RGBColorspace"]: 1,
+  ["GRAYColorspace"]: 2,
+  ["TransparentColorspace"]: 3,
+  ["OHTAColorspace"]: 4,
+  ["LabColorspace"]: 5,
+  ["XYZColorspace"]: 6,
+  ["YCbCrColorspace"]: 7,
+  ["YCCColorspace"]: 8,
+  ["YIQColorspace"]: 9,
+  ["YPbPrColorspace"]: 10,
+  ["YUVColorspace"]: 11,
+  ["CMYKColorspace"]: 12,
+  ["sRGBColorspace"]: 13,
+  ["HSBColorspace"]: 14,
+  ["HSLColorspace"]: 15,
+  ["HWBColorspace"]: 16,
+  ["Rec601LumaColorspace"]: 17,
+  ["Rec601YCbCrColorspace"]: 18,
+  ["Rec709LumaColorspace"]:19,
+  ["Rec709YCbCrColorspace"]:20,
+  ["LogColorspace"]: 21,
+  ["CMYColorspace"]: 22,
+  ["LuvColorspace"]: 23,
+  ["HCLColorspace"]: 24,
+  ["LCHColorspace"]: 25,
+  ["LMSColorspace"]: 26,
+  ["LCHabColorspace"]: 27,
+  ["LCHuvColorspace"]: 28,
+  ["scRGBColorspace"]: 29,
+  ["HSIColorspace"]: 30,
+  ["HSVColorspace"]: 31,
+  ["HCLpColorspace"]:32,
+  ["YDbDrColorspace"]: 33,
+  ["xyYColorspace"]: 34
+}
+
+noise_type = {
+  ["UniformNoise"]: 0,
+  ["GaussianNoise"]: 1,
+  ["MultiplicativeGaussianNoise"]: 2,
+  ["ImpulseNoise"]: 3,
+  ["LaplacianNoise"]: 4,
+  ["PoissonNoise"]: 5
+}
+
+evaluate_operator: {
+  ["UndefinedEvaluateOperator"]: 0,
+  ["AddEvaluateOperator"]: 1,
+  ["AndEvaluateOperator"]: 2,
+  ["DivideEvaluateOperator"]: 3,
+  ["LeftShiftEvaluateOperator"]: 4,
+  ["MaxEvaluateOperator"]:	5,
+  ["MinEvaluateOperator"]:	6,
+  ["MultiplyEvaluateOperator"]: 7,
+  ["OrEvaluateOperator"]: 8,
+  ["RightShiftEvaluateOperator"]: 9,
+  ["SetEvaluateOperator"]: 10,
+  ["SubtractEvaluateOperator"]: 11,
+  ["XorEvaluateOperator"]: 12,
+  ["PowEvaluateOperator"]: 13,
+  ["LogEvaluateOperator"]: 14,
+  ["ThresholdEvaluateOperator"]: 15,
+  ["ThresholdBlackEvaluateOperator"]: 16,
+  ["ThresholdWhiteEvaluateOperator"]: 17,
+  ["GaussianNoiseEvaluateOperator"]: 18,
+  ["ImpulseNoiseEvaluateOperator"]: 19,
+  ["LaplacianNoiseEvaluateOperator"]: 20,
+  ["MultiplicativeNoiseEvaluateOperator"]: 21,
+  ["PoissonNoiseEvaluateOperator"]: 22,
+  ["UniformNoiseEvaluateOperator"]: 23,
+  ["CosineEvaluateOperator"]: 24,
+  ["SineEvaluateOperator"]: 25,
+  ["AddModulusEvaluateOperator"]: 26,
+  ["MeanEvaluateOperator"]: 27,
+  ["AbsEvaluateOperator"]: 28,
+  ["ExponentialEvaluateOperator"]: 29,
+  ["MedianEvaluateOperator"]: 30,
+  ["SumEvaluateOperator"]: 31,
+  ["RootMeanSquareEvaluateOperator"]: 32
+}
+
+boolean_type = {
+  ["MagickFalse"]: 0,
+  ["MagickTrue"]: 1
+}
+
 gravity_type = {}
 
 for i, t in ipairs gravity_str
@@ -196,7 +284,131 @@ class Image
   sharpen: (sigma, radius=0) =>
     handle_result @,
       lib.MagickSharpenImage @wand, radius, sigma
+--
+  color_space: (space) =>
+    handle_result @,
+      lib.MagickTransformImageColorspace @wand, colorspace[space]
 
+  sepia: (threshold) =>
+    threshold = 65535 * threshold
+    lib.MagickSetImageAlphaChannel @wand, 3
+    handle_result @,
+      lib.MagickSepiaToneImage @wand, threshold
+
+  brightness_contrast: (brightness, contrast) =>
+    handle_result @,
+      lib.MagickBrightnessContrastImage @wand, brightness, contrast
+
+  brightness_saturation_hue: (brightness, saturation, hue) =>
+    handle_result @,
+      lib.MagickModulateImage @wand, brightness, saturation, hue
+
+  sketch: (radius, sigma, angle) =>
+    handle_result @,
+      lib.MagickSketchImage @wand, radius, sigma, angle
+
+  flip: =>
+    handle_result @,
+      lib.MagickFlipImage @wand
+
+  flop: =>
+    handle_result @,
+      lib.MagickFlopImage @wand
+
+  oil_paint: (radius) =>
+    handle_result @,
+      lib.MagickOilPaintImage @wand, radius
+
+  negate: (isgray) =>
+    handle_result @,
+      lib.MagickNegateImage @wand, boolean_type[isgray]
+
+  emboss: (radius, sigma) =>
+    handle_result @,
+      lib.MagickEmbossImage @wand, radius, sigma
+
+  enhance: =>
+    handle_result @,
+      lib.MagickEnhanceImage @wand
+
+  tint:(color, opacity) =>
+    pixel_color = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    lib.PixelSetColor pixel_color, color
+    pixel_opacity = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    lib.PixelSetColor pixel_opacity, opacity
+    handle_result @,
+      lib.MagickTintImage @wand, pixel_color, pixel_opacity
+
+  vignette: (vignette_black_point, vignette_white_point, vignette_x, vignette_y) =>
+    pixel = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    lib.PixelSetColor pixel, 'transparent'
+    lib.MagickSetImageBackgroundColor self.wand, pixel
+    handle_result @,
+      lib.MagickVignetteImage @wand, vignette_black_point, vignette_white_point, vignette_x, vignette_y
+
+  wave: (amplitude, wave_length) =>
+    handle_result @,
+      lib.MagickWaveImage @wand, amplitude, wave_length
+
+  swirl: (degrees) =>
+    handle_result @,
+      lib.MagickSwirlImage @wand, degrees
+
+  polaroid_image: =>
+    drawing_wand = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    handle_result @,
+      lib.MagickPolaroidImage @wand, drawing_wand, 0.0
+
+  border: (color, width, height) =>
+    pixel = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    lib.PixelSetColor pixel, color
+    handle_result @,
+      lib.MagickBorderImage @wand, pixel, width, height
+
+  charcoal: (radius, sigma) =>
+    handle_result @,
+      lib.MagickCharcoalImage @wand, radius, sigma
+
+  colorize: (color, opacity) =>
+    pixel = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    lib.PixelSetColor pixel, color
+    pixel_opacity = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    lib.PixelSetColor pixel_opacity, opacity
+    handle_result@,
+      lib.MagickColorizeImage @wand, pixel, pixel_opacity
+
+  threshold: (width, height, offset) =>
+    handle_result @,
+      lib.MagickAdaptiveThresholdImage @wand, width, height, offset
+
+  noise: (ntype) =>
+    handle_result @,
+      lib.MagickAddNoiseImage @wand, noise_type[ntype]
+
+  auto_gamma: =>
+    handle_result @,
+      lib.MagickAutoGammaImage @wand
+
+  auto_level: =>
+    handle_result @,
+      lib.MagickAutoLevelImage @wand
+
+  blue_shift: (factor) =>
+    handle_result @,
+      lib.MagickBlueShiftImage @wand, factor
+
+  cycle_colormap: (displace) =>
+    handle_result @,
+      lib.MagickCycleColormapImage @wand, displace
+
+  edge: (radius) =>
+    handle_result @,
+      lib.MagickEdgeImage @wand, radius
+
+  evaluate: (op, value) =>
+    handle_result @,
+      lib.MagickEvaluateImage @wand, evaluate_operator[op], value
+--
   rotate: (degrees, r=0, g=0, b=0) =>
     pixel = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
 
@@ -328,20 +540,7 @@ parse_size_str = (str, src_w, src_h) ->
     :center_crop
   }
 
-thumb = (img, size_str, output) ->
-  if type(img) == "string"
-    img = assert load_image img
-
-  src_w, src_h = img\get_width!, img\get_height!
-  opts = parse_size_str size_str, src_w, src_h
-
-  if opts.center_crop
-    img\resize_and_crop opts.w, opts.h
-  elseif opts.crop_x
-    img\crop opts.w, opts.h, opts.crop_x, opts.crop_y
-  else
-    img\resize opts.w, opts.h
-
+save_or_get_image = (img, output) ->
   ret = if output
     img\write output
   else
@@ -349,5 +548,264 @@ thumb = (img, size_str, output) ->
 
   ret
 
-{ :load_image, :load_image_from_blob, :thumb, :Image, :parse_size_str, :VERSION }
+load_image_from_path = (img_path) ->
+  img = nil
+  if type(img_path) == "string"
+    img = assert load_image img_path
+  error "invalid image path" unless img
 
+  img
+
+get_dimensions_from_string = (size_str, src_w, src_h) ->
+  str_w, str_h, rest = size_str\match "^(%d*%%?)x(%d*%%?)(.*)$"
+  w = nil
+  h = nil
+
+  if p = str_w\match "(%d+)%%"
+    w = tonumber(p) / 100 * src_w
+  else
+    w = tonumber(str_w) or 0
+
+  if p = str_h\match "(%d+)%%"
+    h = tonumber(p) / 100 * src_h
+  else
+    h = tonumber(str_h) or 0
+
+  {:w, :h}
+
+thumb = (img, size_str, output, allow_oversize=false, oversize_limit=5000) ->
+  img = load_image_from_path(img)
+  src_w, src_h = img\get_width!, img\get_height!
+  dimensions = get_dimensions_from_string size_str, src_w, src_h
+  if (allow_oversize and (dimensions.w > oversize_limit or dimensions.h > oversize_limit)) or (not allow_oversize and (dimensions.w > src_w or dimensions.h > src_h))
+    if output
+      return img\write output
+    return img\get_blob!
+
+  opts = parse_size_str size_str, src_w, src_h
+  if opts.center_crop
+    img\resize_and_crop opts.w, opts.h
+  elseif opts.crop_x
+    img\crop opts.w, opts.h, opts.crop_x, opts.crop_y
+  else
+    img\resize opts.w, opts.h
+
+  return save_or_get_image img, output
+
+copy_image = (img, output) ->
+  img = load_image_from_path(img)
+
+  return save_or_get_image img, output
+
+color_space = (img, space, output) ->
+  img = load_image_from_path(img)
+  img\color_space space
+
+  return save_or_get_image img, output
+
+sepia = (img, threshold, output) ->
+  img = load_image_from_path(img)
+  img\sepia threshold
+
+  return save_or_get_image img, output
+
+brightness_contrast = (img, brightness, contrast, output) ->
+  img = load_image_from_path(img)
+  img\brightness_contrast brightness, contrast
+
+  return save_or_get_image img, output
+
+sharpen = (img, sigma, radius, output) ->
+  img = load_image_from_path(img)
+  img\sharpen sigma, radius
+
+  return save_or_get_image img, output
+
+blur = (img, sigma, radius, output) ->
+  img = load_image_from_path(img)
+  img\blur sigma, radius
+
+  return save_or_get_image img, output
+
+rotate = (img, degrees, output) ->
+  img = load_image_from_path(img)
+  img\rotate degrees
+
+  return save_or_get_image img, output
+
+sketch = (img, sigma, radius, angle, output) ->
+  img = load_image_from_path(img)
+  img\sketch sigma, radius, angle
+
+  return save_or_get_image img, output
+
+vignette = (img, vignette_black_point, vignette_white_point, vignette_x, vignette_y, output) ->
+  img = load_image_from_path(img)
+  img\vignette vignette_black_point, vignette_white_point, vignette_x, vignette_y
+
+  return save_or_get_image img, output
+
+flip = (img, output) ->
+  img = load_image_from_path(img)
+  img\flip!
+
+  return save_or_get_image img, output
+
+flop = (img, output) ->
+  img = load_image_from_path(img)
+  img\flop!
+
+  return save_or_get_image img, output
+
+oil_paint = (img, radius, output) ->
+  img = load_image_from_path(img)
+  img\oil_paint radius
+
+  return save_or_get_image img, output
+
+brightness_saturation_hue = (img, brightness, saturation, hue, output) ->
+  img = load_image_from_path(img)
+  img\brightness_saturation_hue brightness, saturation, hue
+
+  return save_or_get_image img, output
+
+negate = (img, isgray, output) ->
+  img = load_image_from_path(img)
+  img\negate isgray
+
+  return save_or_get_image img, output
+
+emboss = (img, radius, sigma, output) ->
+  img = load_image_from_path(img)
+  img\emboss radius, sigma
+
+  return save_or_get_image img, output
+
+tint = (img, color, opacity, output) ->
+  img = load_image_from_path(img)
+  img\tint color, opacity
+
+  return save_or_get_image img, output
+
+wave = (img, amplitude, wave_length, output) ->
+  img = load_image_from_path(img)
+  img\wave amplitude, wave_length
+
+  return save_or_get_image img, output
+
+enhance = (img, output) ->
+  img = load_image_from_path(img)
+  img\enhance!
+
+  return save_or_get_image img, output
+
+swirl = (img, degrees, output) ->
+  img = load_image_from_path(img)
+  img\swirl degrees
+
+  return save_or_get_image img, output
+
+polaroid_image = (img, output) ->
+  img = load_image_from_path(img)
+  img\polaroid_image!
+
+  return save_or_get_image img, output
+
+border = (img, color, width, height, output) ->
+  img = load_image_from_path(img)
+  img\border color, width, height
+
+  return save_or_get_image img, output
+
+charcoal = (img, radius, sigma, output) ->
+  img = load_image_from_path(img)
+  img\charcoal radius, sigma
+
+  return save_or_get_image img, output
+
+colorize = (img, color, opacity, output) ->
+  img = load_image_from_path(img)
+  img\colorize color, opacity
+
+  return save_or_get_image img, output
+
+threshold = (img, width, height, offset, output) ->
+  img = load_image_from_path(img)
+  img\threshold width, height, offset
+
+  return save_or_get_image img, output
+
+auto_gamma = (img, output) ->
+  img = load_image_from_path(img)
+  img\auto_gamma!
+
+  return save_or_get_image img, output
+
+auto_level = (img, output) ->
+  img = load_image_from_path(img)
+  img\auto_level!
+
+  return save_or_get_image img, output
+
+blue_shift = (img, factor, output) ->
+  img = load_image_from_path(img)
+  img\blue_shift factor
+
+  return save_or_get_image img, output
+
+edge = (img, radius, output) ->
+  img = load_image_from_path(img)
+  img\edge radius
+
+  return save_or_get_image img, output
+
+cycle_colormap = (img, displace, output) ->
+  img = load_image_from_path(img)
+  img\cycle_colormap displace
+
+  return save_or_get_image img, output
+
+evaluate = (img, op, value, output) ->
+  img = load_image_from_path(img)
+  img\evaluate op, value
+
+  return save_or_get_image img, output
+
+{
+  :load_image,
+  :load_image_from_blob,
+  :copy_image,
+  :thumb,
+  :color_space,
+  :sepia,
+  :brightness_contrast,
+  :sharpen,
+  :blur,
+  :rotate,
+  :sketch,
+  :vignette,
+  :flip,
+  :flop,
+  :oil_paint,
+  :brightness_saturation_hue,
+  :negate,
+  :emboss,
+  :tint,
+  :wave,
+  :enhance,
+  :swirl,
+  :polaroid_image,
+  :border,
+  :charcoal,
+  :colorize,
+  :threshold,
+  :auto_gamma,
+  :auto_level,
+  :blue_shift,
+  :edge,
+  :cycle_colormap,
+  :evaluate,
+  :Image,
+  :parse_size_str,
+  :VERSION
+}

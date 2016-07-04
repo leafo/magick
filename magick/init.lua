@@ -88,6 +88,92 @@ local gravity_str = {
   "SouthEastGravity",
   "StaticGravity"
 }
+local colorspace = {
+  ["UndefinedColorspace"] = 0,
+  ["RGBColorspace"] = 1,
+  ["GRAYColorspace"] = 2,
+  ["TransparentColorspace"] = 3,
+  ["OHTAColorspace"] = 4,
+  ["LabColorspace"] = 5,
+  ["XYZColorspace"] = 6,
+  ["YCbCrColorspace"] = 7,
+  ["YCCColorspace"] = 8,
+  ["YIQColorspace"] = 9,
+  ["YPbPrColorspace"] = 10,
+  ["YUVColorspace"] = 11,
+  ["CMYKColorspace"] = 12,
+  ["sRGBColorspace"] = 13,
+  ["HSBColorspace"] = 14,
+  ["HSLColorspace"] = 15,
+  ["HWBColorspace"] = 16,
+  ["Rec601LumaColorspace"] = 17,
+  ["Rec601YCbCrColorspace"] = 18,
+  ["Rec709LumaColorspace"] = 19,
+  ["Rec709YCbCrColorspace"] = 20,
+  ["LogColorspace"] = 21,
+  ["CMYColorspace"] = 22,
+  ["LuvColorspace"] = 23,
+  ["HCLColorspace"] = 24,
+  ["LCHColorspace"] = 25,
+  ["LMSColorspace"] = 26,
+  ["LCHabColorspace"] = 27,
+  ["LCHuvColorspace"] = 28,
+  ["scRGBColorspace"] = 29,
+  ["HSIColorspace"] = 30,
+  ["HSVColorspace"] = 31,
+  ["HCLpColorspace"] = 32,
+  ["YDbDrColorspace"] = 33,
+  ["xyYColorspace"] = 34
+}
+local noise_type = {
+  ["UniformNoise"] = 0,
+  ["GaussianNoise"] = 1,
+  ["MultiplicativeGaussianNoise"] = 2,
+  ["ImpulseNoise"] = 3,
+  ["LaplacianNoise"] = 4,
+  ["PoissonNoise"] = 5
+}
+local _ = {
+  evaluate_operator = {
+    ["UndefinedEvaluateOperator"] = 0,
+    ["AddEvaluateOperator"] = 1,
+    ["AndEvaluateOperator"] = 2,
+    ["DivideEvaluateOperator"] = 3,
+    ["LeftShiftEvaluateOperator"] = 4,
+    ["MaxEvaluateOperator"] = 5,
+    ["MinEvaluateOperator"] = 6,
+    ["MultiplyEvaluateOperator"] = 7,
+    ["OrEvaluateOperator"] = 8,
+    ["RightShiftEvaluateOperator"] = 9,
+    ["SetEvaluateOperator"] = 10,
+    ["SubtractEvaluateOperator"] = 11,
+    ["XorEvaluateOperator"] = 12,
+    ["PowEvaluateOperator"] = 13,
+    ["LogEvaluateOperator"] = 14,
+    ["ThresholdEvaluateOperator"] = 15,
+    ["ThresholdBlackEvaluateOperator"] = 16,
+    ["ThresholdWhiteEvaluateOperator"] = 17,
+    ["GaussianNoiseEvaluateOperator"] = 18,
+    ["ImpulseNoiseEvaluateOperator"] = 19,
+    ["LaplacianNoiseEvaluateOperator"] = 20,
+    ["MultiplicativeNoiseEvaluateOperator"] = 21,
+    ["PoissonNoiseEvaluateOperator"] = 22,
+    ["UniformNoiseEvaluateOperator"] = 23,
+    ["CosineEvaluateOperator"] = 24,
+    ["SineEvaluateOperator"] = 25,
+    ["AddModulusEvaluateOperator"] = 26,
+    ["MeanEvaluateOperator"] = 27,
+    ["AbsEvaluateOperator"] = 28,
+    ["ExponentialEvaluateOperator"] = 29,
+    ["MedianEvaluateOperator"] = 30,
+    ["SumEvaluateOperator"] = 31,
+    ["RootMeanSquareEvaluateOperator"] = 32
+  }
+}
+local boolean_type = {
+  ["MagickFalse"] = 0,
+  ["MagickTrue"] = 1
+}
 local gravity_type = { }
 for i, t in ipairs(gravity_str) do
   gravity_type[t] = i - 1
@@ -225,6 +311,103 @@ do
         radius = 0
       end
       return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
+    end,
+    color_space = function(self, space)
+      return handle_result(self, lib.MagickTransformImageColorspace(self.wand, colorspace[space]))
+    end,
+    sepia = function(self, threshold)
+      threshold = 65535 * threshold
+      lib.MagickSetImageAlphaChannel(self.wand, 3)
+      return handle_result(self, lib.MagickSepiaToneImage(self.wand, threshold))
+    end,
+    brightness_contrast = function(self, brightness, contrast)
+      return handle_result(self, lib.MagickBrightnessContrastImage(self.wand, brightness, contrast))
+    end,
+    brightness_saturation_hue = function(self, brightness, saturation, hue)
+      return handle_result(self, lib.MagickModulateImage(self.wand, brightness, saturation, hue))
+    end,
+    sketch = function(self, radius, sigma, angle)
+      return handle_result(self, lib.MagickSketchImage(self.wand, radius, sigma, angle))
+    end,
+    flip = function(self)
+      return handle_result(self, lib.MagickFlipImage(self.wand))
+    end,
+    flop = function(self)
+      return handle_result(self, lib.MagickFlopImage(self.wand))
+    end,
+    oil_paint = function(self, radius)
+      return handle_result(self, lib.MagickOilPaintImage(self.wand, radius))
+    end,
+    negate = function(self, isgray)
+      return handle_result(self, lib.MagickNegateImage(self.wand, boolean_type[isgray]))
+    end,
+    emboss = function(self, radius, sigma)
+      return handle_result(self, lib.MagickEmbossImage(self.wand, radius, sigma))
+    end,
+    enhance = function(self)
+      return handle_result(self, lib.MagickEnhanceImage(self.wand))
+    end,
+    tint = function(self, color, opacity)
+      local pixel_color = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel_color, color)
+      local pixel_opacity = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel_opacity, opacity)
+      return handle_result(self, lib.MagickTintImage(self.wand, pixel_color, pixel_opacity))
+    end,
+    vignette = function(self, vignette_black_point, vignette_white_point, vignette_x, vignette_y)
+      local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel, 'transparent')
+      lib.MagickSetImageBackgroundColor(self.wand, pixel)
+      return handle_result(self, lib.MagickVignetteImage(self.wand, vignette_black_point, vignette_white_point, vignette_x, vignette_y))
+    end,
+    wave = function(self, amplitude, wave_length)
+      return handle_result(self, lib.MagickWaveImage(self.wand, amplitude, wave_length))
+    end,
+    swirl = function(self, degrees)
+      return handle_result(self, lib.MagickSwirlImage(self.wand, degrees))
+    end,
+    polaroid_image = function(self)
+      local drawing_wand = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      return handle_result(self, lib.MagickPolaroidImage(self.wand, drawing_wand, 0.0))
+    end,
+    border = function(self, color, width, height)
+      local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel, color)
+      return handle_result(self, lib.MagickBorderImage(self.wand, pixel, width, height))
+    end,
+    charcoal = function(self, radius, sigma)
+      return handle_result(self, lib.MagickCharcoalImage(self.wand, radius, sigma))
+    end,
+    colorize = function(self, color, opacity)
+      local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel, color)
+      local pixel_opacity = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
+      lib.PixelSetColor(pixel_opacity, opacity)
+      return handle_result(self, lib.MagickColorizeImage(self.wand, pixel, pixel_opacity))
+    end,
+    threshold = function(self, width, height, offset)
+      return handle_result(self, lib.MagickAdaptiveThresholdImage(self.wand, width, height, offset))
+    end,
+    noise = function(self, ntype)
+      return handle_result(self, lib.MagickAddNoiseImage(self.wand, noise_type[ntype]))
+    end,
+    auto_gamma = function(self)
+      return handle_result(self, lib.MagickAutoGammaImage(self.wand))
+    end,
+    auto_level = function(self)
+      return handle_result(self, lib.MagickAutoLevelImage(self.wand))
+    end,
+    blue_shift = function(self, factor)
+      return handle_result(self, lib.MagickBlueShiftImage(self.wand, factor))
+    end,
+    cycle_colormap = function(self, displace)
+      return handle_result(self, lib.MagickCycleColormapImage(self.wand, displace))
+    end,
+    edge = function(self, radius)
+      return handle_result(self, lib.MagickEdgeImage(self.wand, radius))
+    end,
+    evaluate = function(self, op, value)
+      return handle_result(self, lib.MagickEvaluateImage(self.wand, evaluate_operator[op], value))
     end,
     rotate = function(self, degrees, r, g, b)
       if r == nil then
@@ -396,20 +579,8 @@ parse_size_str = function(str, src_w, src_h)
     center_crop = center_crop
   }
 end
-local thumb
-thumb = function(img, size_str, output)
-  if type(img) == "string" then
-    img = assert(load_image(img))
-  end
-  local src_w, src_h = img:get_width(), img:get_height()
-  local opts = parse_size_str(size_str, src_w, src_h)
-  if opts.center_crop then
-    img:resize_and_crop(opts.w, opts.h)
-  elseif opts.crop_x then
-    img:crop(opts.w, opts.h, opts.crop_x, opts.crop_y)
-  else
-    img:resize(opts.w, opts.h)
-  end
+local save_or_get_image
+save_or_get_image = function(img, output)
   local ret
   if output then
     ret = img:write(output)
@@ -418,10 +589,283 @@ thumb = function(img, size_str, output)
   end
   return ret
 end
+local load_image_from_path
+load_image_from_path = function(img_path)
+  local img = nil
+  if type(img_path) == "string" then
+    img = assert(load_image(img_path))
+  end
+  if not (img) then
+    error("invalid image path")
+  end
+  return img
+end
+local get_dimensions_from_string
+get_dimensions_from_string = function(size_str, src_w, src_h)
+  local str_w, str_h, rest = size_str:match("^(%d*%%?)x(%d*%%?)(.*)$")
+  local w = nil
+  local h = nil
+  do
+    local p = str_w:match("(%d+)%%")
+    if p then
+      w = tonumber(p) / 100 * src_w
+    else
+      w = tonumber(str_w) or 0
+    end
+  end
+  do
+    local p = str_h:match("(%d+)%%")
+    if p then
+      h = tonumber(p) / 100 * src_h
+    else
+      h = tonumber(str_h) or 0
+    end
+  end
+  return {
+    w = w,
+    h = h
+  }
+end
+local thumb
+thumb = function(img, size_str, output, allow_oversize, oversize_limit)
+  if allow_oversize == nil then
+    allow_oversize = false
+  end
+  if oversize_limit == nil then
+    oversize_limit = 5000
+  end
+  img = load_image_from_path(img)
+  local src_w, src_h = img:get_width(), img:get_height()
+  local dimensions = get_dimensions_from_string(size_str, src_w, src_h)
+  if (allow_oversize and (dimensions.w > oversize_limit or dimensions.h > oversize_limit)) or (not allow_oversize and (dimensions.w > src_w or dimensions.h > src_h)) then
+    if output then
+      return img:write(output)
+    end
+    return img:get_blob()
+  end
+  local opts = parse_size_str(size_str, src_w, src_h)
+  if opts.center_crop then
+    img:resize_and_crop(opts.w, opts.h)
+  elseif opts.crop_x then
+    img:crop(opts.w, opts.h, opts.crop_x, opts.crop_y)
+  else
+    img:resize(opts.w, opts.h)
+  end
+  return save_or_get_image(img, output)
+end
+local copy_image
+copy_image = function(img, output)
+  img = load_image_from_path(img)
+  return save_or_get_image(img, output)
+end
+local color_space
+color_space = function(img, space, output)
+  img = load_image_from_path(img)
+  img:color_space(space)
+  return save_or_get_image(img, output)
+end
+local sepia
+sepia = function(img, threshold, output)
+  img = load_image_from_path(img)
+  img:sepia(threshold)
+  return save_or_get_image(img, output)
+end
+local brightness_contrast
+brightness_contrast = function(img, brightness, contrast, output)
+  img = load_image_from_path(img)
+  img:brightness_contrast(brightness, contrast)
+  return save_or_get_image(img, output)
+end
+local sharpen
+sharpen = function(img, sigma, radius, output)
+  img = load_image_from_path(img)
+  img:sharpen(sigma, radius)
+  return save_or_get_image(img, output)
+end
+local blur
+blur = function(img, sigma, radius, output)
+  img = load_image_from_path(img)
+  img:blur(sigma, radius)
+  return save_or_get_image(img, output)
+end
+local rotate
+rotate = function(img, degrees, output)
+  img = load_image_from_path(img)
+  img:rotate(degrees)
+  return save_or_get_image(img, output)
+end
+local sketch
+sketch = function(img, sigma, radius, angle, output)
+  img = load_image_from_path(img)
+  img:sketch(sigma, radius, angle)
+  return save_or_get_image(img, output)
+end
+local vignette
+vignette = function(img, vignette_black_point, vignette_white_point, vignette_x, vignette_y, output)
+  img = load_image_from_path(img)
+  img:vignette(vignette_black_point, vignette_white_point, vignette_x, vignette_y)
+  return save_or_get_image(img, output)
+end
+local flip
+flip = function(img, output)
+  img = load_image_from_path(img)
+  img:flip()
+  return save_or_get_image(img, output)
+end
+local flop
+flop = function(img, output)
+  img = load_image_from_path(img)
+  img:flop()
+  return save_or_get_image(img, output)
+end
+local oil_paint
+oil_paint = function(img, radius, output)
+  img = load_image_from_path(img)
+  img:oil_paint(radius)
+  return save_or_get_image(img, output)
+end
+local brightness_saturation_hue
+brightness_saturation_hue = function(img, brightness, saturation, hue, output)
+  img = load_image_from_path(img)
+  img:brightness_saturation_hue(brightness, saturation, hue)
+  return save_or_get_image(img, output)
+end
+local negate
+negate = function(img, isgray, output)
+  img = load_image_from_path(img)
+  img:negate(isgray)
+  return save_or_get_image(img, output)
+end
+local emboss
+emboss = function(img, radius, sigma, output)
+  img = load_image_from_path(img)
+  img:emboss(radius, sigma)
+  return save_or_get_image(img, output)
+end
+local tint
+tint = function(img, color, opacity, output)
+  img = load_image_from_path(img)
+  img:tint(color, opacity)
+  return save_or_get_image(img, output)
+end
+local wave
+wave = function(img, amplitude, wave_length, output)
+  img = load_image_from_path(img)
+  img:wave(amplitude, wave_length)
+  return save_or_get_image(img, output)
+end
+local enhance
+enhance = function(img, output)
+  img = load_image_from_path(img)
+  img:enhance()
+  return save_or_get_image(img, output)
+end
+local swirl
+swirl = function(img, degrees, output)
+  img = load_image_from_path(img)
+  img:swirl(degrees)
+  return save_or_get_image(img, output)
+end
+local polaroid_image
+polaroid_image = function(img, output)
+  img = load_image_from_path(img)
+  img:polaroid_image()
+  return save_or_get_image(img, output)
+end
+local border
+border = function(img, color, width, height, output)
+  img = load_image_from_path(img)
+  img:border(color, width, height)
+  return save_or_get_image(img, output)
+end
+local charcoal
+charcoal = function(img, radius, sigma, output)
+  img = load_image_from_path(img)
+  img:charcoal(radius, sigma)
+  return save_or_get_image(img, output)
+end
+local colorize
+colorize = function(img, color, opacity, output)
+  img = load_image_from_path(img)
+  img:colorize(color, opacity)
+  return save_or_get_image(img, output)
+end
+local threshold
+threshold = function(img, width, height, offset, output)
+  img = load_image_from_path(img)
+  img:threshold(width, height, offset)
+  return save_or_get_image(img, output)
+end
+local auto_gamma
+auto_gamma = function(img, output)
+  img = load_image_from_path(img)
+  img:auto_gamma()
+  return save_or_get_image(img, output)
+end
+local auto_level
+auto_level = function(img, output)
+  img = load_image_from_path(img)
+  img:auto_level()
+  return save_or_get_image(img, output)
+end
+local blue_shift
+blue_shift = function(img, factor, output)
+  img = load_image_from_path(img)
+  img:blue_shift(factor)
+  return save_or_get_image(img, output)
+end
+local edge
+edge = function(img, radius, output)
+  img = load_image_from_path(img)
+  img:edge(radius)
+  return save_or_get_image(img, output)
+end
+local cycle_colormap
+cycle_colormap = function(img, displace, output)
+  img = load_image_from_path(img)
+  img:cycle_colormap(displace)
+  return save_or_get_image(img, output)
+end
+local evaluate
+evaluate = function(img, op, value, output)
+  img = load_image_from_path(img)
+  img:evaluate(op, value)
+  return save_or_get_image(img, output)
+end
 return {
   load_image = load_image,
   load_image_from_blob = load_image_from_blob,
+  copy_image = copy_image,
   thumb = thumb,
+  color_space = color_space,
+  sepia = sepia,
+  brightness_contrast = brightness_contrast,
+  sharpen = sharpen,
+  blur = blur,
+  rotate = rotate,
+  sketch = sketch,
+  vignette = vignette,
+  flip = flip,
+  flop = flop,
+  oil_paint = oil_paint,
+  brightness_saturation_hue = brightness_saturation_hue,
+  negate = negate,
+  emboss = emboss,
+  tint = tint,
+  wave = wave,
+  enhance = enhance,
+  swirl = swirl,
+  polaroid_image = polaroid_image,
+  border = border,
+  charcoal = charcoal,
+  colorize = colorize,
+  threshold = threshold,
+  auto_gamma = auto_gamma,
+  auto_level = auto_level,
+  blue_shift = blue_shift,
+  edge = edge,
+  cycle_colormap = cycle_colormap,
+  evaluate = evaluate,
   Image = Image,
   parse_size_str = parse_size_str,
   VERSION = VERSION
