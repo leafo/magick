@@ -1,8 +1,8 @@
-import lib from require "magick.wand.lib"
+import lib from require "magick.gmwand.lib"
 
-lib.MagickWandGenesis!
+lib.InitializeMagick!
 
-import Image from require "magick.wand.image"
+import Image from require "magick.gmwand.image"
 import make_thumb from require "magick.thumb"
 
 load_image = Image\load

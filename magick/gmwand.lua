@@ -1,8 +1,8 @@
 local lib
-lib = require("magick.wand.lib").lib
-lib.MagickWandGenesis()
+lib = require("magick.gmwand.lib").lib
+lib.InitializeMagick()
 local Image
-Image = require("magick.wand.image").Image
+Image = require("magick.gmwand.image").Image
 local make_thumb
 make_thumb = require("magick.thumb").make_thumb
 local load_image

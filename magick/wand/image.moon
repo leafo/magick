@@ -16,7 +16,7 @@ handle_result = (img_or_wand, status) ->
   else
     true
 
-class Image
+class Image extends require "magick.base_image"
   @load: (path) =>
     wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
     if 0 == lib.MagickReadImage wand, path
