@@ -9,6 +9,10 @@ install:
   - cat $(which busted) | sed 's/\/usr\/bin\/lua/\/usr\/bin\/luajit-2.0.0-beta9/' > busted
   - chmod +x busted
 
+before_script:
+  - Magick-config  --libs
+  - GraphicsMagick-config --libs
+
 script:
   - ./busted
   - ./busted spec_gm/
