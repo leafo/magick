@@ -92,7 +92,7 @@ gravity_str = {
 gravity_type = {}
 
 for i, t in ipairs gravity_str
-  gravity_type[t] = i
+  gravity_type[t] = i - 1
 
 lib.MagickWandGenesis!
 
@@ -142,7 +142,7 @@ class Image
       lib.MagickSetOption @wand, format, value
 
   get_gravity: =>
-    gravity_str[lib.MagickGetImageGravity @wand]
+    gravity_str[(lib.MagickGetImageGravity @wand) + 1]
 
   set_gravity: (typestr) =>
      type = gravity_type[typestr]
