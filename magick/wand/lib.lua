@@ -1,4 +1,5 @@
 local ffi = require("ffi")
+local lib
 ffi.cdef([[  typedef void MagickWand;
   typedef void PixelWand;
 
@@ -153,6 +154,10 @@ get_filters = function()
   end
   return false
 end
+local get_filter
+get_filter = function(name)
+  return lib[name .. "Filter"]
+end
 local can_resize
 if get_filters() then
   ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
@@ -191,7 +196,7 @@ try_to_load = function(...)
   end
   return error("Failed to load ImageMagick (" .. tostring(...) .. ")")
 end
-local lib = try_to_load("MagickWand", function()
+lib = try_to_load("MagickWand", function()
   local lname = get_flags():match("-l(MagickWand[^%s]*)")
   local suffix
   if ffi.os == "OSX" then
@@ -205,5 +210,6 @@ local lib = try_to_load("MagickWand", function()
 end)
 return {
   lib = lib,
-  can_resize = can_resize
+  can_resize = can_resize,
+  get_filter = get_filter
 }
