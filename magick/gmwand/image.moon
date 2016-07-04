@@ -25,19 +25,19 @@ class Image extends require "magick.base_image"
   get_height: => tonumber lib.MagickGetImageHeight @wand
 
   resize: (w,h, filter="Lanczos", blur=1.0) =>
-    filter = assert data.filters\to_int(filter), "invalid filter"
+    filter = assert data.filters\to_int(filter .. "Filter"), "invalid filter"
     w, h = @_keep_aspect w,h
-    handle_result @,
-      lib.MagickResizeImage @wand, w, h, filter, blur
+    lib.MagickResizeImage @wand, w, h, filter, blur
 
   scale: (w,h) =>
     w, h = @_keep_aspect w,h
-    handle_result @,
-      lib.MagickScaleImage @wand, w, h
+    lib.MagickScaleImage @wand, w, h
 
   crop: (w,h, x=0, y=0) =>
-    handle_result @,
-      lib.MagickCropImage @wand, w, h, x, y
+    lib.MagickCropImage @wand, w, h, x, y
+
+  write: (fname) =>
+    lib.MagickWriteImage @wand, fname
 
   __tostring: =>
     "GMImage<#{@path}, #{@wand}>"

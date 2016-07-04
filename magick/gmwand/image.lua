@@ -26,13 +26,13 @@ do
       if blur == nil then
         blur = 1.0
       end
-      filter = assert(data.filters:to_int(filter), "invalid filter")
+      filter = assert(data.filters:to_int(filter .. "Filter"), "invalid filter")
       w, h = self:_keep_aspect(w, h)
-      return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter, blur))
+      return lib.MagickResizeImage(self.wand, w, h, filter, blur)
     end,
     scale = function(self, w, h)
       w, h = self:_keep_aspect(w, h)
-      return handle_result(self, lib.MagickScaleImage(self.wand, w, h))
+      return lib.MagickScaleImage(self.wand, w, h)
     end,
     crop = function(self, w, h, x, y)
       if x == nil then
@@ -41,7 +41,10 @@ do
       if y == nil then
         y = 0
       end
-      return handle_result(self, lib.MagickCropImage(self.wand, w, h, x, y))
+      return lib.MagickCropImage(self.wand, w, h, x, y)
+    end,
+    write = function(self, fname)
+      return lib.MagickWriteImage(self.wand, fname)
     end,
     __tostring = function(self)
       return "GMImage<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"

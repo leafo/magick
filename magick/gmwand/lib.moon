@@ -7,22 +7,7 @@ ffi.cdef [[
   typedef int ExceptionType;
 
   typedef enum {
-    UndefinedFilter,
-    PointFilter,
-    BoxFilter,
-    TriangleFilter,
-    HermiteFilter,
-    HanningFilter,
-    HammingFilter,
-    BlackmanFilter,
-    GaussianFilter,
-    QuadraticFilter,
-    CubicFilter,
-    CatromFilter,
-    MitchellFilter,
-    LanczosFilter,
-    BesselFilter,
-    SincFilter
+    UndefinedFilter
   } FilterTypes;
 
   MagickWand *NewMagickWand();
@@ -30,7 +15,6 @@ ffi.cdef [[
   MagickPassFail MagickReadImageBlob(MagickWand *,const unsigned char *,const size_t length);
   MagickPassFail MagickWriteImage(MagickWand *,const char *);
 
-  MagickPassFail MagickResizeImage(MagickWand *,const unsigned long,const unsigned long, const FilterTypes, const double);
   MagickPassFail DestroyMagickWand(MagickWand *);
   MagickPassFail MagickRelinquishMemory(void *);
 
@@ -38,6 +22,10 @@ ffi.cdef [[
 
   unsigned long MagickGetImageHeight(MagickWand *);
   unsigned long MagickGetImageWidth(MagickWand *);
+
+  MagickPassFail MagickScaleImage(MagickWand *,const unsigned long,const unsigned long);
+  MagickPassFail MagickResizeImage(MagickWand *,const unsigned long,const unsigned long, const FilterTypes,const double);
+  MagickPassFail MagickCropImage(MagickWand *,const unsigned long,const unsigned long, const long,const long);
 
   char *MagickGetImageFormat(MagickWand *);
   MagickPassFail MagickSetImageFormat(MagickWand *wand,const char *format);

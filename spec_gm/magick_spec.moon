@@ -19,3 +19,16 @@ describe "magick", ->
       assert.same "Unable to open file (spec/doesntexis.png)", err
 
 
+  describe "with image", ->
+    import load_image, load_image_from_blob from magick
+    out_path = (fname) -> "spec_gm/output_images/#{fname}"
+
+    local img
+
+    before_each ->
+      img = assert load_image "spec/test_image.png"
+
+    it "resize_and_crop", ->
+      assert img\resize_and_crop 500,1000
+      assert img\write out_path "resize_and_crop.png"
+
