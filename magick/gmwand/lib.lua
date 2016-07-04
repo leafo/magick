@@ -2,6 +2,7 @@ local ffi = require("ffi")
 ffi.cdef([[  void InitializeMagick( const char *path );
   typedef void MagickWand;
   typedef unsigned int MagickPassFail;
+  typedef int ExceptionType;
 
   typedef enum {
     UndefinedFilter,
@@ -30,6 +31,8 @@ ffi.cdef([[  void InitializeMagick( const char *path );
   MagickPassFail MagickResizeImage(MagickWand *,const unsigned long,const unsigned long, const FilterTypes, const double);
   MagickPassFail DestroyMagickWand(MagickWand *);
   MagickPassFail MagickRelinquishMemory(void *);
+
+  char* MagickGetException(const MagickWand*, ExceptionType*);
 
   unsigned long MagickGetImageHeight(MagickWand *);
   unsigned long MagickGetImageWidth(MagickWand *);

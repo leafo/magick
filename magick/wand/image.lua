@@ -76,15 +76,6 @@ do
     strip = function(self)
       return lib.MagickStripImage(self.wand)
     end,
-    _keep_aspect = function(self, w, h)
-      if not w and h then
-        return self:get_width() / self:get_height() * h, h
-      elseif w and not h then
-        return w, self:get_height() / self:get_width() * w
-      else
-        return w, h
-      end
-    end,
     clone = function(self)
       local wand = lib.NewMagickWand()
       lib.MagickAddImage(wand, self.wand)
@@ -164,34 +155,6 @@ do
       end
       op = assert(composite_operators:to_int(op), "invalid operator type")
       return handle_result(self, lib.MagickCompositeImage(self.wand, blob, op, x, y))
-    end,
-    resize_and_crop = function(self, w, h)
-      local src_w, src_h = self:get_width(), self:get_height()
-      local ar_src = src_w / src_h
-      local ar_dest = w / h
-      if ar_dest > ar_src then
-        local new_height = w / ar_src
-        self:resize(w, new_height)
-        return self:crop(w, h, 0, (new_height - h) / 2)
-      else
-        local new_width = h * ar_src
-        self:resize(new_width, h)
-        return self:crop(w, h, (new_width - w) / 2, 0)
-      end
-    end,
-    scale_and_crop = function(self, w, h)
-      local src_w, src_h = self:get_width(), self:get_height()
-      local ar_src = src_w / src_h
-      local ar_dest = w / h
-      if ar_dest > ar_src then
-        local new_height = w / ar_src
-        self:resize(w, new_height)
-        return self:scale(w, h)
-      else
-        local new_width = h * ar_src
-        self:resize(new_width, h)
-        return self:scale(w, h)
-      end
     end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)
