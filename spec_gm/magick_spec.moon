@@ -28,6 +28,18 @@ describe "magick", ->
     before_each ->
       img = assert load_image "spec/test_image.png"
 
+    it "resize", ->
+      assert img\resize nil, 80
+      assert img\write out_path "resize.png"
+
+    it "crop", ->
+      assert img\resize 20, 20
+      assert img\write out_path "crop.png"
+
+    it "scale", ->
+      assert img\scale 80
+      assert img\write out_path "scale.png"
+
     it "resize_and_crop", ->
       assert img\resize_and_crop 500,1000
       assert img\write out_path "resize_and_crop.png"
