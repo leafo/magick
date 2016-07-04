@@ -2,6 +2,9 @@
 magick = require "magick"
 
 describe "magick", ->
+  it "has a version", ->
+    assert.truthy magick.VERSION
+
   describe "parse_size_str", ->
     import parse_size_str from require "magick.thumb"
     src_w, src_h = 500, 300
