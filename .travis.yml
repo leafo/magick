@@ -9,4 +9,6 @@ install:
   - cat $(which busted) | sed 's/\/usr\/bin\/lua/\/usr\/bin\/luajit-2.0.0-beta9/' > busted
   - chmod +x busted
 
-script: ./busted
+script:
+  - ./busted
+  - ./busted spec_gm/
