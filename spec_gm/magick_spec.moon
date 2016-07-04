@@ -18,6 +18,12 @@ describe "magick", ->
       assert.nil img
       assert.same "Unable to open file (spec/doesntexis.png)", err
 
+    it "loads blob", ->
+      blob = io.open("spec/test_image.png")\read "*a"
+      image = load_image_from_blob blob
+
+      assert.same 64, image\get_width!
+      assert.same 64, image\get_height!
 
   describe "with image", ->
     import load_image, load_image_from_blob from magick

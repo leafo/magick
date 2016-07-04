@@ -8,6 +8,16 @@ get_exception = function(wand)
   local msg = ffi.string(ffi.gc(lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory))
   return etype[0], msg
 end
+local handle_result
+handle_result = function(img_or_wand, status)
+  local wand = img_or_wand.wand or img_or_wand
+  if status == 0 then
+    local code, msg = get_exception(wand)
+    return nil, msg, code
+  else
+    return true
+  end
+end
 local Image
 do
   local _class_0
@@ -28,11 +38,11 @@ do
       end
       filter = assert(data.filters:to_int(filter .. "Filter"), "invalid filter")
       w, h = self:_keep_aspect(w, h)
-      return lib.MagickResizeImage(self.wand, w, h, filter, blur)
+      return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filter, blur))
     end,
     scale = function(self, w, h)
       w, h = self:_keep_aspect(w, h)
-      return lib.MagickScaleImage(self.wand, w, h)
+      return handle_result(self, lib.MagickScaleImage(self.wand, w, h))
     end,
     crop = function(self, w, h, x, y)
       if x == nil then
@@ -41,10 +51,10 @@ do
       if y == nil then
         y = 0
       end
-      return lib.MagickCropImage(self.wand, w, h, x, y)
+      return handle_result(self, lib.MagickCropImage(self.wand, w, h, x, y))
     end,
     write = function(self, fname)
-      return lib.MagickWriteImage(self.wand, fname)
+      return handle_result(self, lib.MagickWriteImage(self.wand, fname))
     end,
     __tostring = function(self)
       return "GMImage<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"
@@ -87,7 +97,14 @@ do
     end
     return self(wand, path)
   end
-  self.load_from_blob = function(self, blob) end
+  self.load_from_blob = function(self, blob)
+    local wand = ffi.gc(lib.NewMagickWand(), lib.DestroyMagickWand)
+    if 0 == lib.MagickReadImageBlob(wand, blob, #blob) then
+      local code, msg = get_exception(wand)
+      return nil, msg, code
+    end
+    return self(wand, "<from_blob>")
+  end
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end

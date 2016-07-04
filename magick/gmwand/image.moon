@@ -27,6 +27,12 @@ class Image extends require "magick.base_image"
     @ wand, path
 
   @load_from_blob: (blob) =>
+    wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
+    if 0 == lib.MagickReadImageBlob wand, blob, #blob
+      code, msg = get_exception wand
+      return nil, msg, code
+
+    @ wand, "<from_blob>"
 
   new: (@wand, @path) =>
 
