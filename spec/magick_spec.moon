@@ -191,13 +191,16 @@ describe "magick", ->
       assert.same "NIKON D5100", img\get_property "exif:Model"
 
   describe "automatic orientation", ->
-      it "should automatically orient", ->
-        import load_image from magick
-        img = load_image "spec/auto_orient_test.jpg"
-        assert.same "BottomRightOrientation", img\get_orientation!
-        assert img\auto_orient!
-        assert.same "TopLeftOrientation", img\get_orientation!
-        assert img\write "spec/output_images/auto_orient.jpg"
+    it "should automatically orient", ->
+      if os.getenv "TRAVIS"
+        return pending "not available on travis"
+
+      import load_image from magick
+      img = load_image "spec/auto_orient_test.jpg"
+      assert.same "BottomRightOrientation", img\get_orientation!
+      assert img\auto_orient!
+      assert.same "TopLeftOrientation", img\get_orientation!
+      assert img\write "spec/output_images/auto_orient.jpg"
 
   describe "thumb", ->
     import thumb from magick
