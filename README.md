@@ -2,15 +2,27 @@
 
 [![Build Status](https://travis-ci.org/leafo/magick.svg?branch=master)](https://travis-ci.org/leafo/magick)
 
-Lua bindings to ImageMagick's [MagicWand](http://www.imagemagick.org/script/magick-wand.php) for LuaJIT using FFI.
+Lua bindings to ImageMagick's
+[MagicWand](http://www.imagemagick.org/script/magick-wand.php) or
+GraphicsMagick's [Wand](http://www.graphicsmagick.org/wand/wand.html) for
+LuaJIT using FFI.
 
 ## Installation
 
-You'll need both LuaJIT (any version) and MagickWand installed. On Ubuntu you might run:
+You'll need both LuaJIT (any version) and MagickWand or GraphicsMagickinstalled.
+
+
+On Ubuntu, to use ImageMagick, you might run:
 
 ```bash
 $ sudo apt-get install luajit
 $ sudo apt-get install libmagickwand-dev
+```
+
+You can install GraphicsMagick in place of, or alongside, ImageMagick:
+
+```bash
+$ sudo apt-get install libgraphicsmagick1-dev
 ```
 
 It's recommended to use LuaRocks to install **magick**.
@@ -87,6 +99,32 @@ img:write("resized.png")
 Images are automatically freed from memory by LuaJIT's garbage collector, but
 images can take up a lot of space in memory when loaded so it's recommended to
 call `destroy` on the image object as soon as possible.
+
+### Using GraphicsMagick
+
+
+ImageMagick and GraphicsMagick implement the same interface. By default the
+`magick` module will include ImageMagick. You can specify which library you use
+by calling `require` on the module for the appropriate library. At the moment
+it's impossible to include both libraries into the same process due to
+collision of function names in the C namespace.
+
+Load ImageMagick directly:
+
+```lua
+magick = requrie "magick.wand"
+local img = magick.load_image("some_image.png")
+```
+
+Load GraphicsMagick directly:
+
+```lua
+magick = requrie "magick.gmwand"
+local img = magick.load_image("some_image.png")
+```
+
+> **Note:** not all methods on Image for ImageMagick are available in
+> GraphicsMagick right now. Pull requests welcome.
 
 ### Methods
 
@@ -168,20 +206,7 @@ Gets the image gravity type.
 
 Sets the image's gravity type:
 
-`gravity` can be one of:
-
-	"ForgetGravity",
-	"NorthWestGravity",
-	"NorthGravity",
-	"NorthEastGravity",
-	"WestGravity", 
-	"CenterGravity",
-	"EastGravity",
-	"SouthWestGravity",
-	"SouthGravity",
-	"SouthEastGravity",
-	"StaticGravity" 
-	
+`gravity` can be one of the values listed in [data.moon](https://github.com/leafo/magick/blob/master/magick/wand/data.moon#L77)
 
 #### `img:get_option(magick, key)`
 
@@ -205,76 +230,7 @@ This un-optimized animated images to make them suitable for other methods.
 
 Composite another image onto another at the specified offset `x`, `y`.
 
-`compose` can be one of:
-
-	"NoCompositeOp"
-	"ModulusAddCompositeOp"
-	"AtopCompositeOp"
-	"BlendCompositeOp"
-	"BumpmapCompositeOp"
-	"ChangeMaskCompositeOp"
-	"ClearCompositeOp"
-	"ColorBurnCompositeOp"
-	"ColorDodgeCompositeOp"
-	"ColorizeCompositeOp"
-	"CopyBlackCompositeOp"
-	"CopyBlueCompositeOp"
-	"CopyCompositeOp"
-	"CopyCyanCompositeOp"
-	"CopyGreenCompositeOp"
-	"CopyMagentaCompositeOp"
-	"CopyOpacityCompositeOp"
-	"CopyRedCompositeOp"
-	"CopyYellowCompositeOp"
-	"DarkenCompositeOp"
-	"DstAtopCompositeOp"
-	"DstCompositeOp"
-	"DstInCompositeOp"
-	"DstOutCompositeOp"
-	"DstOverCompositeOp"
-	"DifferenceCompositeOp"
-	"DisplaceCompositeOp"
-	"DissolveCompositeOp"
-	"ExclusionCompositeOp"
-	"HardLightCompositeOp"
-	"HueCompositeOp"
-	"InCompositeOp"
-	"LightenCompositeOp"
-	"LinearLightCompositeOp"
-	"LuminizeCompositeOp"
-	"MinusDstCompositeOp"
-	"ModulateCompositeOp"
-	"MultiplyCompositeOp"
-	"OutCompositeOp"
-	"OverCompositeOp"
-	"OverlayCompositeOp"
-	"PlusCompositeOp"
-	"ReplaceCompositeOp"
-	"SaturateCompositeOp"
-	"ScreenCompositeOp"
-	"SoftLightCompositeOp"
-	"SrcAtopCompositeOp"
-	"SrcCompositeOp"
-	"SrcInCompositeOp"
-	"SrcOutCompositeOp"
-	"SrcOverCompositeOp"
-	"ModulusSubtractCompositeOp"
-	"ThresholdCompositeOp"
-	"XorCompositeOp"
-	"DivideDstCompositeOp"
-	"DistortCompositeOp"
-	"BlurCompositeOp"
-	"PegtopLightCompositeOp"
-	"VividLightCompositeOp"
-	"PinLightCompositeOp"
-	"LinearDodgeCompositeOp"
-	"LinearBurnCompositeOp"
-	"MathematicsCompositeOp"
-	"DivideSrcCompositeOp"
-	"MinusSrcCompositeOp"
-	"DarkenIntensityCompositeOp"
-	"LightenIntensityCompositeOp"
-
+`compose` can be one of the values listed in [data.moon](https://github.com/leafo/magick/blob/master/magick/wand/data.moon#L5)
 
 #### `img:strip()`
 
@@ -305,6 +261,13 @@ $ busted
 ```
 
 # Changelog
+
+
+### 1.2.0 - Tue Jul 12 21:10:23 PDT 2016
+
+* Add preliminary GraphicsMagick support
+* Fix bug with gravity getter/setter (@ram-nadella)
+* Add additional wand method: https://github.com/leafo/magick/pull/32 (@sergeyfedotov)
 
 ### 1.1.0 - Thu Oct 22 05:11:41 UTC 2015
 
