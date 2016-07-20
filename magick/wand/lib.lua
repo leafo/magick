@@ -116,10 +116,9 @@ get_flags = function()
   proc:close()
   return flags
 end
-local im_new = false
+local im_7
 local get_filters
 get_filters = function()
-  local fname = "magick/resample.h"
   local prefixes = {
     "/usr/include/ImageMagick",
     "/usr/local/include/ImageMagick",
@@ -129,26 +128,25 @@ get_filters = function()
       for p in get_flags():gmatch("-I([^%s]+)") do
         _accum_0[_len_0] = p
         _len_0 = _len_0 + 1
-        -- for im 6.9+
-        local v = string.match(p, "[0-9].")
-        if not v and tonumber(v)  then
-          im_new = true
+        -- adapter im 6.9+ source install
+        local v = string.match(p, "[0-9]+")
+        if v and tonumber(v)  then
+          im_7 = true
         end
       return _accum_0
     end)())
   }
-  if im_new then
+  local fname
+  if not im_7 then
+    fname = "magick/resample.h"
+  else
     fname = "MagickCore/resample.h"
   end
   for _index_0 = 1, #prefixes do
     local p = prefixes[_index_0]
     local full = tostring(p) .. "/" .. tostring(fname)
-    local s_full = tostring(p) .. "/" .. tostring(s_fname)
     do
       local f = io.open(full)
-      if not f then
-        f = io.open(s_full)
-      end
       if f then
         local content
         do
@@ -156,8 +154,11 @@ get_filters = function()
           f:close()
           content = _with_0
         end
-        local filter_types = content:match("(typedef enum.-FilterTypes;)")
-        if im_new then
+        -- adapter im 6.9+
+        local filter_types
+        if not im_7 then
+          filter_types = content:match("(typedef enum.-FilterTypes;)")
+        else
           filter_types = content:match("(typedef enum.-FilterType;)")
         end
         if filter_types then
@@ -175,15 +176,16 @@ get_filter = function(name)
 end
 local can_resize
 if get_filters() then
-  if im_new then
+  -- adapter im 6.9+
+  if not im_7 then
     ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
         const size_t, const size_t,
-        const FilterType, const double);
+        const FilterTypes, const double);
     ]])
   else 
     ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
         const size_t, const size_t,
-        const FilterTypes, const double);
+        const FilterType, const double);
     ]])
   end
   can_resize = true
