@@ -128,6 +128,7 @@ get_filters = function()
       for p in get_flags():gmatch("-I([^%s]+)") do
         _accum_0[_len_0] = p
         _len_0 = _len_0 + 1
+      end
       return _accum_0
     end)())
   }
