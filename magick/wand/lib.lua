@@ -128,22 +128,22 @@ get_filters = function()
       for p in get_flags():gmatch("-I([^%s]+)") do
         _accum_0[_len_0] = p
         _len_0 = _len_0 + 1
-        -- adapter im 6.9+ source install
-        local v = string.match(p, "[0-9]+")
-        if v and tonumber(v)  then
-          im_7 = true
-        end
       return _accum_0
     end)())
   }
-  local fname
-  if not im_7 then
-    fname = "magick/resample.h"
-  else
-    fname = "MagickCore/resample.h"
-  end
   for _index_0 = 1, #prefixes do
     local p = prefixes[_index_0]
+    -- adapter im 6.9+ source install
+    local fname = "magick/resample.h"
+    do
+      local v = string.match(p, "%d+%.?%d*")
+      if v then
+        if tonumber(v) >= 6.9 then
+          fname = "MagickCore/resample.h"
+          im_7 = true
+        end
+      end
+    end
     local full = tostring(p) .. "/" .. tostring(fname)
     do
       local f = io.open(full)
@@ -154,9 +154,9 @@ get_filters = function()
           f:close()
           content = _with_0
         end
-        -- adapter im 6.9+
+        -- adapter im 6.9+ source install
         local filter_types
-        if not im_7 then
+        if not (im_7) then
           filter_types = content:match("(typedef enum.-FilterTypes;)")
         else
           filter_types = content:match("(typedef enum.-FilterType;)")
@@ -176,14 +176,14 @@ get_filter = function(name)
 end
 local can_resize
 if get_filters() then
-  -- adapter im 6.9+
-  if not im_7 then
-    ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
+  -- adapter im 6.9+ source install
+  if not (im_7) then
+    ffi.cdef([[      MagickBooleanType MagickResizeImage(MagickWand*,
         const size_t, const size_t,
         const FilterTypes, const double);
     ]])
-  else 
-    ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
+  else
+    ffi.cdef([[      MagickBooleanType MagickResizeImage(MagickWand*,
         const size_t, const size_t,
         const FilterType, const double);
     ]])

@@ -111,7 +111,6 @@ ffi.cdef [[
   MagickBooleanType MagickAutoOrientImage(MagickWand *wand);
 ]]
 
-
 get_flags = ->
   proc = io.popen "pkg-config --cflags --libs MagickWand", "r"
   flags = proc\read "*a"
@@ -119,8 +118,8 @@ get_flags = ->
   proc\close!
   flags
 
+local im_7
 get_filters = ->
-  fname = "magick/resample.h"
   prefixes = {
     "/usr/include/ImageMagick"
     "/usr/local/include/ImageMagick"
@@ -128,10 +127,21 @@ get_filters = ->
   }
 
   for p in *prefixes
+    -- adapter im 6.9+ source install
+    fname = "magick/resample.h"
+    if v = string.match(p, "%d+%.?%d*") 
+      if tonumber(v) >= 6.9
+        fname = "MagickCore/resample.h"
+        im_7 = true
     full = "#{p}/#{fname}"
     if f = io.open full
       content = with f\read "*a" do f\close!
-      filter_types = content\match "(typedef enum.-FilterTypes;)"
+      -- adapter im 6.9+ source install
+      local filter_types
+      unless im_7
+        filter_types = content\match "(typedef enum.-FilterTypes;)"
+      else
+        filter_types = content\match "(typedef enum.-FilterType;)"
       if filter_types
         ffi.cdef filter_types
         return true
@@ -142,11 +152,19 @@ get_filter = (name) ->
   lib[name .. "Filter"]
 
 can_resize = if get_filters!
-  ffi.cdef [[
-    MagickBooleanType MagickResizeImage(MagickWand*,
-      const size_t, const size_t,
-      const FilterTypes, const double);
-  ]]
+  -- adapter im 6.9+ source install
+  unless im_7
+    ffi.cdef [[
+      MagickBooleanType MagickResizeImage(MagickWand*,
+        const size_t, const size_t,
+        const FilterTypes, const double);
+    ]]
+  else 
+   ffi.cdef [[
+      MagickBooleanType MagickResizeImage(MagickWand*,
+        const size_t, const size_t,
+        const FilterType, const double);
+    ]]
   true
 
 try_to_load = (...) ->
