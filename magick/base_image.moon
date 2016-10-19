@@ -15,7 +15,9 @@ class BaseImage
     ar_src = src_w / src_h
     ar_dest = w / h
 
-    if ar_dest > ar_src
+    if ar_dest == ar_src
+      @resize w, h
+    elseif ar_dest > ar_src
       new_height = w / ar_src
       @resize w, new_height
       @crop w, h, 0, (new_height - h) / 2
