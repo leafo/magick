@@ -15,7 +15,6 @@ do
       local src_w, src_h = self:get_width(), self:get_height()
       local ar_src = src_w / src_h
       local ar_dest = w / h
-
       if ar_dest == ar_src then
         return self:resize(w, h)
       elseif ar_dest > ar_src then
