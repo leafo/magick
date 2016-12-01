@@ -224,6 +224,9 @@ do
     auto_orient = function(self)
       return handle_result(self, lib.MagickAutoOrientImage(self.wand))
     end,
+    reset_page = function(self)
+      return handle_result(self, lib.MagickResetImagePage(self.wand, nil))
+    end,
     __tostring = function(self)
       return "Image<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"
     end

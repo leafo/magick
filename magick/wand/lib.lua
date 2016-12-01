@@ -105,6 +105,8 @@ ffi.cdef([[  typedef void MagickWand;
     const InterlaceType interlace_scheme);
 
   MagickBooleanType MagickAutoOrientImage(MagickWand *wand);
+
+  MagickBooleanType MagickResetImagePage(MagickWand *wand, const char *page);
 ]])
 local get_flags
 get_flags = function()
