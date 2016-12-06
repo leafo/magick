@@ -1,4 +1,3 @@
-
 ffi = require "ffi"
 import lib, can_resize, get_filter from require "magick.wand.lib"
 import composite_operators, gravity, orientation, interlace from require "magick.wand.data"
@@ -186,11 +185,11 @@ class Image extends require "magick.base_image"
     lib.MagickSetImageOrientation @wand, otype
 
   get_interlace_scheme: =>
-    interlace\to_str lib.MagickGetImageInterlaceScheme @wand
+    interlace\to_str lib.MagickGetInterlaceScheme @wand
 
   set_interlace_scheme: (itype) =>
     itype = assert interlace\to_int(itype), "invalid interlace type"
-    lib.MagickSetImageInterlaceScheme @wand, itype
+    lib.MagickSetInterlaceScheme @wand, itype
 
   auto_orient: =>
     handle_result @, lib.MagickAutoOrientImage @wand

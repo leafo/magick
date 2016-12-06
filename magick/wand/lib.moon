@@ -1,4 +1,3 @@
-
 ffi = require "ffi"
 
 local lib
@@ -104,8 +103,8 @@ ffi.cdef [[
   MagickBooleanType MagickSetImageOrientation(MagickWand *wand,
     const OrientationType orientation);
 
-  InterlaceType MagickGetImageInterlaceScheme(MagickWand *wand);
-  MagickBooleanType MagickSetImageInterlaceScheme(MagickWand *wand,
+  InterlaceType MagickGetInterlaceScheme(MagickWand *wand);
+  MagickBooleanType MagickSetInterlaceScheme(MagickWand *wand,
     const InterlaceType interlace_scheme);
 
   MagickBooleanType MagickAutoOrientImage(MagickWand *wand);
