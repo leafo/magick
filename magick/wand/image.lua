@@ -121,6 +121,9 @@ do
       end
       return handle_result(self, lib.MagickBlurImage(self.wand, radius, sigma))
     end,
+    brighten = function(self, brightness)
+      return handle_result(self, lib.MagickBrightnessContrastImage(self.wand, brightness, 0))
+    end,
     sharpen = function(self, sigma, radius)
       if radius == nil then
         radius = 0

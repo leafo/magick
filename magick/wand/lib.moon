@@ -40,6 +40,7 @@ ffi.cdef [[
     const size_t, const size_t, const ssize_t, const ssize_t);
 
   MagickBooleanType MagickBlurImage(MagickWand*, const double, const double);
+  MagickBooleanType MagickBrightnessContrastImage(MagickWand*, const double, const double);
 
   MagickBooleanType MagickSetImageFormat(MagickWand* wand, const char* format);
   char* MagickGetImageFormat(MagickWand* wand);

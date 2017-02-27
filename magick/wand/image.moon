@@ -105,6 +105,10 @@ class Image extends require "magick.base_image"
     handle_result @,
       lib.MagickBlurImage @wand, radius, sigma
 
+  brighten: (brightness) =>
+    handle_result @,
+      lib.MagickBrightnessContrastImage @wand, brightness, 0
+
   sharpen: (sigma, radius=0) =>
     handle_result @,
       lib.MagickSharpenImage @wand, radius, sigma
