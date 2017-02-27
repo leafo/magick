@@ -39,6 +39,10 @@ class Image extends require "magick.base_image"
   get_width: => tonumber lib.MagickGetImageWidth @wand
   get_height: => tonumber lib.MagickGetImageHeight @wand
 
+  clone: =>
+    wand = lib.MagickGetImage @wand
+    Image wand, @path
+
   resize: (w,h, filter="Lanczos", blur=1.0) =>
     filter = assert data.filters\to_int(filter .. "Filter"), "invalid filter"
     w, h = @_keep_aspect w,h
@@ -51,8 +55,24 @@ class Image extends require "magick.base_image"
   crop: (w,h, x=0, y=0) =>
     handle_result @, lib.MagickCropImage @wand, w, h, x, y
 
+  blur: (sigma, radius=0) =>
+    handle_result @,
+      lib.MagickBlurImage @wand, radius, sigma
+
+  brighten: (brightness) =>
+    handle_result @,
+      lib.MagickModulateImage @wand, brightness + 100, 100, 100
+
   write: (fname) =>
     handle_result @, lib.MagickWriteImage @wand, fname
+
+  composite: (blob, x, y, op="OverCompositeOp") =>
+    if type(blob) == "table" and blob.__class == Image
+      blob = blob.wand
+
+    op = assert data.composite_operators\to_int(op), "invalid operator type"
+    handle_result @,
+      lib.MagickCompositeImage @wand, blob, op, x, y
 
   get_blob: =>
     len = ffi.new "size_t[1]", 0
