@@ -13,6 +13,7 @@ ffi.cdef([[  typedef void MagickWand;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
+  MagickWand* CloneMagickWand(const MagickWand *wand);
   MagickWand* DestroyMagickWand(MagickWand*);
   MagickBooleanType MagickReadImage(MagickWand*, const char*);
   MagickBooleanType MagickReadImageBlob(MagickWand*, const void*, const size_t);

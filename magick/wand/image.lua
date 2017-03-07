@@ -77,8 +77,7 @@ do
       return lib.MagickStripImage(self.wand)
     end,
     clone = function(self)
-      local wand = lib.NewMagickWand()
-      lib.MagickAddImage(wand, self.wand)
+      local wand = ffi.gc(lib.CloneMagickWand(self.wand), lib.DestroyMagickWand)
       return Image(wand, self.path)
     end,
     coalesce = function(self)

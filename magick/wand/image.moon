@@ -73,8 +73,7 @@ class Image extends require "magick.base_image"
      lib.MagickStripImage @wand
 
   clone: =>
-    wand = lib.NewMagickWand!
-    lib.MagickAddImage wand, @wand
+    wand = ffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand
     Image wand, @path
 
   coalesce: =>
