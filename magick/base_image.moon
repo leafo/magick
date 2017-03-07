@@ -41,5 +41,17 @@ class BaseImage
       @resize new_width, h
       @scale w, h
 
+  thumb: (size_str) =>
+    import parse_size_str from require "magick.thumb"
 
+    src_w, src_h = @get_width!, @get_height!
+    opts = parse_size_str size_str, src_w, src_h
 
+    if opts.center_crop
+      @resize_and_crop opts.w, opts.h
+    elseif opts.crop_x
+      @crop opts.w, opts.h, opts.crop_x, opts.crop_y
+    else
+      @resize opts.w, opts.h
+
+    true

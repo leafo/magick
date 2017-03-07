@@ -40,19 +40,9 @@ make_thumb = (load_image) ->
     if type(img) == "string"
       img = assert load_image img
 
-    src_w, src_h = img\get_width!, img\get_height!
-    opts = parse_size_str size_str, src_w, src_h
+    img\thumb size_str
 
-    if opts.center_crop
-      img\resize_and_crop opts.w, opts.h
-    elseif opts.crop_x
-      img\crop opts.w, opts.h, opts.crop_x, opts.crop_y
-    else
-      img\resize opts.w, opts.h
-
-    ret = if output == true
-      img
-    elseif output
+    ret = if output
       img\write output
     else
       img\get_blob!
@@ -60,7 +50,5 @@ make_thumb = (load_image) ->
     ret
 
   thumb
-
-
 
 {:parse_size_str, :make_thumb}

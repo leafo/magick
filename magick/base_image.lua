@@ -40,6 +40,20 @@ do
         self:resize(new_width, h)
         return self:scale(w, h)
       end
+    end,
+    thumb = function(self, size_str)
+      local parse_size_str
+      parse_size_str = require("magick.thumb").parse_size_str
+      local src_w, src_h = self:get_width(), self:get_height()
+      local opts = parse_size_str(size_str, src_w, src_h)
+      if opts.center_crop then
+        self:resize_and_crop(opts.w, opts.h)
+      elseif opts.crop_x then
+        self:crop(opts.w, opts.h, opts.crop_x, opts.crop_y)
+      else
+        self:resize(opts.w, opts.h)
+      end
+      return true
     end
   }
   _base_0.__index = _base_0
