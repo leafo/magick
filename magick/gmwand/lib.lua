@@ -10,6 +10,8 @@ ffi.cdef([[  void InitializeMagick( const char *path );
   } FilterTypes;
 
   MagickWand *NewMagickWand();
+  MagickWand *CloneMagickWand(const MagickWand *wand);
+
   MagickPassFail MagickReadImage(MagickWand *,const char *);
   MagickPassFail MagickReadImageBlob(MagickWand *,const unsigned char *,const size_t length);
   MagickPassFail MagickWriteImage(MagickWand *,const char *);

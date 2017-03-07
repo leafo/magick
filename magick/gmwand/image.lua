@@ -30,7 +30,7 @@ do
       return tonumber(lib.MagickGetImageHeight(self.wand))
     end,
     clone = function(self)
-      local wand = lib.MagickGetImage(self.wand)
+      local wand = ffi.gc(lib.CloneMagickWand(self.wand), lib.DestroyMagickWand)
       return Image(wand, self.path)
     end,
     resize = function(self, w, h, filter, blur)

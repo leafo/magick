@@ -40,7 +40,7 @@ class Image extends require "magick.base_image"
   get_height: => tonumber lib.MagickGetImageHeight @wand
 
   clone: =>
-    wand = lib.MagickGetImage @wand
+    wand = ffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand
     Image wand, @path
 
   resize: (w,h, filter="Lanczos", blur=1.0) =>
