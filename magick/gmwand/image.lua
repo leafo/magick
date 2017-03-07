@@ -63,8 +63,17 @@ do
       end
       return handle_result(self, lib.MagickBlurImage(self.wand, radius, sigma))
     end,
-    brighten = function(self, brightness)
-      return handle_result(self, lib.MagickModulateImage(self.wand, brightness + 100, 100, 100))
+    modulate = function(self, brightness, saturation, hue)
+      if brightness == nil then
+        brightness = 100
+      end
+      if saturation == nil then
+        saturation = 100
+      end
+      if hue == nil then
+        hue = 100
+      end
+      return handle_result(self, lib.MagickModulateImage(self.wand, brightness, saturation, hue))
     end,
     write = function(self, fname)
       return handle_result(self, lib.MagickWriteImage(self.wand, fname))

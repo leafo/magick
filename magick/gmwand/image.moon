@@ -59,9 +59,9 @@ class Image extends require "magick.base_image"
     handle_result @,
       lib.MagickBlurImage @wand, radius, sigma
 
-  brighten: (brightness) =>
+  modulate: (brightness=100, saturation=100, hue=100) =>
     handle_result @,
-      lib.MagickModulateImage @wand, brightness + 100, 100, 100
+      lib.MagickModulateImage @wand, brightness, saturation, hue
 
   write: (fname) =>
     handle_result @, lib.MagickWriteImage @wand, fname
