@@ -112,6 +112,8 @@ ffi.cdef [[
     const InterlaceType interlace_scheme);
 
   MagickBooleanType MagickAutoOrientImage(MagickWand *wand);
+
+  MagickBooleanType MagickResetImagePage(MagickWand *wand, const char *page);
 ]]
 
 

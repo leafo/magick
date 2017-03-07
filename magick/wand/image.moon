@@ -198,6 +198,9 @@ class Image extends require "magick.base_image"
   auto_orient: =>
     handle_result @, lib.MagickAutoOrientImage @wand
 
+  reset_page: =>
+    handle_result @, lib.MagickResetImagePage @wand, nil
+
   __tostring: =>
     "Image<#{@path}, #{@wand}>"
 
