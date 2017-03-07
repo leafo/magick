@@ -36,7 +36,7 @@ parse_size_str = (str, src_w, src_h) ->
   }
 
 make_thumb = (load_image) ->
-  thumb = (img, size_str, output, ret_image) ->
+  thumb = (img, size_str, output) ->
     if type(img) == "string"
       img = assert load_image img
 
@@ -50,7 +50,7 @@ make_thumb = (load_image) ->
     else
       img\resize opts.w, opts.h
 
-    ret = if ret_image
+    ret = if output == true
       img
     elseif output
       img\write output

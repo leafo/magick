@@ -48,7 +48,7 @@ end
 local make_thumb
 make_thumb = function(load_image)
   local thumb
-  thumb = function(img, size_str, output, ret_image)
+  thumb = function(img, size_str, output)
     if type(img) == "string" then
       img = assert(load_image(img))
     end
@@ -62,7 +62,7 @@ make_thumb = function(load_image)
       img:resize(opts.w, opts.h)
     end
     local ret
-    if ret_image then
+    if output == true then
       ret = img
     elseif output then
       ret = img:write(output)
