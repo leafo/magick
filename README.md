@@ -244,6 +244,10 @@ Get the r,g,b,a color components of a pixel in the image as doubles from `0` to 
 
 Returns a copy of the image.
 
+#### `img:modulate(brightness=100, saturation=100, hue=100)`
+
+Adjust the brightness, saturation, and hue of the image. See [Modulate Brightness, Saturation, and Hue](http://www.imagemagick.org/Usage/color_mods/#modulate)
+
 #### `img:destroy()`
 
 Immediately frees the memory associated with the image, it is invalid to use the
