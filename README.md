@@ -248,6 +248,11 @@ Returns a copy of the image.
 
 Adjust the brightness, saturation, and hue of the image. See [Modulate Brightness, Saturation, and Hue](http://www.imagemagick.org/Usage/color_mods/#modulate)
 
+#### `img:thumb(size_str)`
+
+Mutates the image to be a thumbnail. Uses the same size string format described
+at the top of this README.
+
 #### `img:destroy()`
 
 Immediately frees the memory associated with the image, it is invalid to use the
@@ -266,6 +271,13 @@ $ busted
 
 # Changelog
 
+### 1.3.0 - Wed Mar  8 09:49:31 PST 2017
+
+* Add modulate (@granpc)
+* Add more methods to graphics magick: composite, clone, blur (@granpc)
+* Add reset page to imagemagick wand (@thierrylamarre)
+* Clone method is uses the clone function provided by image magick, garbage collects new image
+* Add `thumb` method on the image class
 
 ### 1.2.0 - Tue Jul 12 21:10:23 PDT 2016
 
