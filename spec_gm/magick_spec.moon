@@ -65,16 +65,19 @@ describe "magick", ->
       assert img\scale 80
       assert img\write out_path "scale.png"
 
-
     it "composite", ->
       img2 = img\clone!
       assert img2\resize 32
       assert img\composite img2, 10, 20
       assert img\write out_path "composite.png"
 
-
     it "modulate", ->
       img2 = img\clone!
       assert img\modulate 50, 50, 50
       assert img\write out_path "modulate.png"
+
+    it "repage", ->
+      img2 = img\clone!
+      img2\crop 10, 10, 10, 10
+      img2\reset_page!
 

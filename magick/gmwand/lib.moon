@@ -41,6 +41,8 @@ ffi.cdef [[
 
   char *MagickGetImageFormat(MagickWand *);
   MagickPassFail MagickSetImageFormat(MagickWand *wand,const char *format);
+
+  unsigned int MagickSetImagePage(MagickWand *wand, const unsigned long width,const unsigned long height,const long x, const long y);
 ]]
 
 gmwand = ffi.load "GraphicsMagickWand"

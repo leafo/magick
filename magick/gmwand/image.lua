@@ -93,6 +93,9 @@ do
       local blob = ffi.gc(lib.MagickWriteImageBlob(self.wand, len), lib.MagickRelinquishMemory)
       return ffi.string(blob, len[0])
     end,
+    reset_page = function(self)
+      return lib.MagickSetImagePage(self.wand, self:get_width(), self:get_height(), 0, 0)
+    end,
     __tostring = function(self)
       return "GMImage<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"
     end
