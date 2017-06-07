@@ -76,6 +76,15 @@ describe "magick", ->
       assert img\modulate 50, 50, 50
       assert img\write out_path "modulate.png"
 
+    it "gets format", ->
+      assert.same "png", img\get_format!
+
+    it "sets format", ->
+      img2 = img\clone!
+      img2\set_format "bmp"
+      assert.same "bmp", img2\get_format!
+      assert img\write out_path "b.bmp"
+
     it "repage", ->
       img2 = img\clone!
       img2\crop 10, 10, 10, 10

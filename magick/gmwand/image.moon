@@ -39,6 +39,16 @@ class Image extends require "magick.base_image"
   get_width: => tonumber lib.MagickGetImageWidth @wand
   get_height: => tonumber lib.MagickGetImageHeight @wand
 
+  get_format: =>
+    format = lib.MagickGetImageFormat(@wand)
+    with ffi.string(format)\lower!
+      lib.MagickRelinquishMemory format
+
+  set_format: (format) =>
+    handle_result @,
+      lib.MagickSetImageFormat @wand, format
+
+
   clone: =>
     wand = ffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand
     Image wand, @path
