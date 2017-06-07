@@ -271,6 +271,11 @@ $ busted
 
 # Changelog
 
+### 1.4.0 - Tue Jun  6 22:54:12 PDT 2017
+
+* Add `reset_page` to Graphics Magick
+* Add `get_format` and `set_format` to Graphics Magick
+
 ### 1.3.0 - Wed Mar  8 09:49:31 PST 2017
 
 * Add modulate (@granpc)
