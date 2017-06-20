@@ -48,6 +48,12 @@ class Image extends require "magick.base_image"
     handle_result @,
       lib.MagickSetImageFormat @wand, format
 
+  get_depth: =>
+    tonumber lib.MagickGetImageDepth @wand
+
+  set_depth: (d) =>
+    handle_result @,
+      lib.MagickSetImageDepth @wand, d
 
   clone: =>
     wand = ffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand

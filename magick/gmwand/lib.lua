@@ -41,6 +41,9 @@ ffi.cdef([[  void InitializeMagick( const char *path );
   MagickPassFail MagickSetImageFormat(MagickWand *wand,const char *format);
 
   unsigned int MagickSetImagePage(MagickWand *wand, const unsigned long width,const unsigned long height,const long x, const long y);
+
+  MagickPassFail MagickSetImageDepth(MagickWand *,const unsigned long);
+  unsigned long MagickGetImageDepth(MagickWand *);
 ]])
 local gmwand = ffi.load("GraphicsMagickWand")
 return {

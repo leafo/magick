@@ -90,3 +90,12 @@ describe "magick", ->
       img2\crop 10, 10, 10, 10
       img2\reset_page!
 
+    it "gets depth", ->
+      d = img\get_depth!
+      assert.same 8, d
+
+    it "sets depth", ->
+      img2 = img\clone!
+      img2\set_depth 16
+
+
