@@ -47,6 +47,12 @@ do
     set_format = function(self, format)
       return handle_result(self, lib.MagickSetImageFormat(self.wand, format))
     end,
+    get_depth = function(self)
+      return tonumber(lib.MagickGetImageDepth(self.wand))
+    end,
+    set_depth = function(self, d)
+      return handle_result(self, lib.MagickSetImageDepth(self.wand, d))
+    end,
     get_quality = function(self)
       return lib.MagickGetImageCompressionQuality(self.wand)
     end,

@@ -160,6 +160,15 @@ describe "magick", ->
       assert.has_error ->
         assert img\set_interlace_scheme "NonExistentInterlaceScheme"
 
+    it "gets depth", ->
+      d = img\get_depth!
+      assert.same 8, d
+
+    it "sets depth", ->
+      img2 = img\clone!
+      img2\set_depth 16
+
+
   describe "color_image", ->
     import load_image from magick
     local img

@@ -46,6 +46,13 @@ class Image extends require "magick.base_image"
     handle_result @,
       lib.MagickSetImageFormat @wand, format
 
+  get_depth: =>
+    tonumber lib.MagickGetImageDepth @wand
+
+  set_depth: (d) =>
+    handle_result @,
+      lib.MagickSetImageDepth @wand, d
+
   get_quality: => lib.MagickGetImageCompressionQuality @wand
   set_quality: (quality) =>
     handle_result @,
