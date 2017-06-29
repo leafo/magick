@@ -45,7 +45,7 @@ class BaseImage
     import parse_size_str from require "magick.thumb"
 
     src_w, src_h = @get_width!, @get_height!
-    opts = parse_size_str size_str, src_w, src_h
+    opts = assert parse_size_str size_str, src_w, src_h
 
     if opts.center_crop
       @resize_and_crop opts.w, opts.h

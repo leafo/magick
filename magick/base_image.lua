@@ -45,7 +45,7 @@ do
       local parse_size_str
       parse_size_str = require("magick.thumb").parse_size_str
       local src_w, src_h = self:get_width(), self:get_height()
-      local opts = parse_size_str(size_str, src_w, src_h)
+      local opts = assert(parse_size_str(size_str, src_w, src_h))
       if opts.center_crop then
         self:resize_and_crop(opts.w, opts.h)
       elseif opts.crop_x then
