@@ -170,8 +170,8 @@ describe "magick", ->
 
     it "extents", ->
       img2 = img\extent 200, 300, 0, 0
-      assert.same 200, img\get_width!
-      assert.same 300, img\get_height!
+      assert.same 200, img2\get_width!
+      assert.same 300, img2\get_height!
 
   describe "color_image", ->
     import load_image from magick
