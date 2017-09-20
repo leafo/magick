@@ -114,6 +114,12 @@ ffi.cdef([[  typedef void MagickWand;
   MagickBooleanType MagickSetImageDepth(MagickWand *,const unsigned long);
   unsigned long MagickGetImageDepth(MagickWand *);
 
+  unsigned char *MagickGetImageProfile(MagickWand *wand,const char *name,
+  size_t *length);
+
+  MagickBooleanType MagickSetImageProfile(MagickWand *wand,const char *name,
+  const void *profile,const size_t length);
+
 ]])
 local get_flags
 get_flags = function()

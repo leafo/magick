@@ -238,6 +238,14 @@ do
       itype = assert(interlace:to_int(itype), "invalid interlace type")
       return lib.MagickSetImageInterlaceScheme(self.wand, itype)
     end,
+    get_profile = function(self, profile)
+      local len = ffi.new("size_t[1]", 0)
+      local blob = ffi.gc(lib.MagickGetImageProfile(self.wand, profile, len), lib.MagickRelinquishMemory)
+      return ffi.string(blob, len[0])
+    end,
+    set_profile = function(self, profile, value)
+      return handle_result(self, lib.MagickSetImageProfile(self.wand, profile, value, #value))
+    end,
     auto_orient = function(self)
       return handle_result(self, lib.MagickAutoOrientImage(self.wand))
     end,
