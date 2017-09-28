@@ -10,6 +10,7 @@ ffi.cdef([[  typedef void MagickWand;
   typedef int GravityType;
   typedef int OrientationType;
   typedef int InterlaceType;
+  typedef int FilterType;
 
   void MagickWandGenesis();
   MagickWand* NewMagickWand();
@@ -133,41 +134,7 @@ get_flags = function()
 end
 local get_filters
 get_filters = function()
-  local fname = "magick/resample.h"
-  local prefixes = {
-    "/usr/include/ImageMagick",
-    "/usr/local/include/ImageMagick",
-    unpack((function()
-      local _accum_0 = { }
-      local _len_0 = 1
-      for p in get_flags():gmatch("-I([^%s]+)") do
-        _accum_0[_len_0] = p
-        _len_0 = _len_0 + 1
-      end
-      return _accum_0
-    end)())
-  }
-  for _index_0 = 1, #prefixes do
-    local p = prefixes[_index_0]
-    local full = tostring(p) .. "/" .. tostring(fname)
-    do
-      local f = io.open(full)
-      if f then
-        local content
-        do
-          local _with_0 = f:read("*a")
-          f:close()
-          content = _with_0
-        end
-        local filter_types = content:match("(typedef enum.-FilterTypes;)")
-        if filter_types then
-          ffi.cdef(filter_types)
-          return true
-        end
-      end
-    end
-  end
-  return false
+  return true
 end
 local get_filter
 get_filter = function(name)
@@ -177,7 +144,7 @@ local can_resize
 if get_filters() then
   ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
       const size_t, const size_t,
-      const FilterTypes, const double);
+      const FilterType, const double);
   ]])
   can_resize = true
 end

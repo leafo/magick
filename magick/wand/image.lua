@@ -4,10 +4,11 @@ do
   local _obj_0 = require("magick.wand.lib")
   lib, can_resize, get_filter = _obj_0.lib, _obj_0.can_resize, _obj_0.get_filter
 end
-local composite_operators, gravity, orientation, interlace
+local composite_operators, gravity, orientation, interlace, filtertype
 do
   local _obj_0 = require("magick.wand.data")
   composite_operators, gravity, orientation, interlace = _obj_0.composite_operators, _obj_0.gravity, _obj_0.orientation, _obj_0.interlace
+  filtertype = _obj_0.filtertype
 end
 local get_exception
 get_exception = function(wand)
@@ -101,7 +102,7 @@ do
         error("Failed to load filter list, can't resize")
       end
       w, h = self:_keep_aspect(w, h)
-      return handle_result(self, lib.MagickResizeImage(self.wand, w, h, get_filter(f), blur))
+      return handle_result(self, lib.MagickResizeImage(self.wand, w, h, filtertype:to_int(f .. 'Filter'), blur))
     end,
     adaptive_resize = function(self, w, h)
       w, h = self:_keep_aspect(w, h)
