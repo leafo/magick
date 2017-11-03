@@ -108,6 +108,7 @@ local interlace = enum({
 local filtertype = enum({
   [0] = "UndefinedFilter",
   "PointFilter",
+  "BoxFilter",
   "TriangleFilter",
   "HermiteFilter",
   "HannFilter",
@@ -144,5 +145,5 @@ return {
   gravity = gravity,
   orientation = orientation,
   interlace = interlace,
-    filtertype = filtertype
+  filtertype = filtertype
 }
