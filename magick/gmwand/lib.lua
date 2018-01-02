@@ -37,6 +37,9 @@ ffi.cdef([[  void InitializeMagick( const char *path );
   MagickPassFail MagickBlurImage(MagickWand*, const double, const double);
   MagickPassFail MagickModulateImage(MagickWand*, const double, const double, const double);
 
+  MagickPassFail MagickSharpenImage(MagickWand *wand,
+    const double radius,const double sigma);
+
   char *MagickGetImageFormat(MagickWand *);
   MagickPassFail MagickSetImageFormat(MagickWand *wand,const char *format);
 

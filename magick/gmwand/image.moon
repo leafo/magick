@@ -90,6 +90,10 @@ class Image extends require "magick.base_image"
     handle_result @,
       lib.MagickCompositeImage @wand, blob, op, x, y
 
+  sharpen: (sigma, radius=0) =>
+    handle_result @,
+      lib.MagickSharpenImage @wand, radius, sigma
+
   get_blob: =>
     len = ffi.new "size_t[1]", 0
     blob = ffi.gc lib.MagickWriteImageBlob(@wand, len),

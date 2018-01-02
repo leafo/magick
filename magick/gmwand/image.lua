@@ -105,6 +105,12 @@ do
       op = assert(data.composite_operators:to_int(op), "invalid operator type")
       return handle_result(self, lib.MagickCompositeImage(self.wand, blob, op, x, y))
     end,
+    sharpen = function(self, sigma, radius)
+      if radius == nil then
+        radius = 0
+      end
+      return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
+    end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)
       local blob = ffi.gc(lib.MagickWriteImageBlob(self.wand, len), lib.MagickRelinquishMemory)

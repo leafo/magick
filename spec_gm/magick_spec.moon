@@ -61,6 +61,10 @@ describe "magick", ->
       assert img\blur 3, 10
       assert img\write out_path "blur.png"
 
+    it "sharpen", ->
+      assert img\sharpen 3, 10
+      assert img\write out_path "sharp.png"
+
     it "scale", ->
       assert img\scale 80
       assert img\write out_path "scale.png"
