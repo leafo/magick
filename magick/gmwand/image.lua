@@ -111,6 +111,9 @@ do
       end
       return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
     end,
+    set_quality = function(self, quality)
+      return handle_result(self, lib.MagickSetCompressionQuality(self.wand, quality))
+    end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)
       local blob = ffi.gc(lib.MagickWriteImageBlob(self.wand, len), lib.MagickRelinquishMemory)

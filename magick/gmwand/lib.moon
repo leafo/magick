@@ -49,6 +49,8 @@ ffi.cdef [[
 
   MagickPassFail MagickSetImageDepth(MagickWand *,const unsigned long);
   unsigned long MagickGetImageDepth(MagickWand *);
+
+  MagickPassFail MagickSetCompressionQuality(MagickWand *wand,const unsigned long quality);
 ]]
 
 gmwand = ffi.load "GraphicsMagickWand"

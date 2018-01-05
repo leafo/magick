@@ -94,6 +94,10 @@ class Image extends require "magick.base_image"
     handle_result @,
       lib.MagickSharpenImage @wand, radius, sigma
 
+  set_quality: (quality) =>
+    handle_result @,
+      lib.MagickSetCompressionQuality @wand, quality
+
   get_blob: =>
     len = ffi.new "size_t[1]", 0
     blob = ffi.gc lib.MagickWriteImageBlob(@wand, len),
