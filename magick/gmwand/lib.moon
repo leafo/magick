@@ -11,6 +11,10 @@ ffi.cdef [[
     UndefinedFilter
   } FilterTypes;
 
+  typedef enum {
+    UndefinedOrientation
+  } OrientationType;
+
   MagickWand *NewMagickWand();
   MagickWand *CloneMagickWand(const MagickWand *wand);
 
@@ -46,6 +50,8 @@ ffi.cdef [[
   MagickPassFail MagickSetImageFormat(MagickWand *wand,const char *format);
 
   unsigned int MagickSetImagePage(MagickWand *wand, const unsigned long width,const unsigned long height,const long x, const long y);
+
+  unsigned int MagickAutoOrientImage(MagickWand *wand,const OrientationType);
 
   MagickPassFail MagickSetImageDepth(MagickWand *,const unsigned long);
   unsigned long MagickGetImageDepth(MagickWand *);

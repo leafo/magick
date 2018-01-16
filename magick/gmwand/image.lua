@@ -119,6 +119,9 @@ do
       local blob = ffi.gc(lib.MagickWriteImageBlob(self.wand, len), lib.MagickRelinquishMemory)
       return ffi.string(blob, len[0])
     end,
+    auto_orient = function(self)
+      return handle_result(self, lib.MagickAutoOrientImage(self.wand, 0))
+    end,
     reset_page = function(self)
       return lib.MagickSetImagePage(self.wand, self:get_width(), self:get_height(), 0, 0)
     end,

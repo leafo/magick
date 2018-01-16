@@ -105,6 +105,9 @@ class Image extends require "magick.base_image"
 
     ffi.string blob, len[0]
 
+  auto_orient: =>
+    handle_result @, lib.MagickAutoOrientImage @wand, 0
+
   reset_page: =>
     lib.MagickSetImagePage @wand, @get_width!, @get_height!, 0, 0
 
