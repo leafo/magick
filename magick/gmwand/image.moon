@@ -105,6 +105,14 @@ class Image extends require "magick.base_image"
 
     ffi.string blob, len[0]
 
+  get_colorspace: =>
+    out = lib.MagickGetImageColorspace @wand
+    data.colorspaces\to_str tonumber out
+
+  set_colorspace: (colorspace) =>
+    op = assert data.colorspaces\to_int(colorspace), "invalid operator type"
+    handle_result @, lib.MagickSetImageColorspace @wand, colorspace
+
   auto_orient: =>
     handle_result @, lib.MagickAutoOrientImage @wand, 0
 

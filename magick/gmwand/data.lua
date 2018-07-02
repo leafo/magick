@@ -68,7 +68,30 @@ local composite_operators = enum({
   "PinLightCompositeOp",
   "HardMixCompositeOp"
 })
+local colorspaces = enum({
+  [0] = "UndefinedColorspace",
+  "RGBColorspace",
+  "GRAYColorspace",
+  "TransparentColorspace",
+  "OHTAColorspace",
+  "XYZColorspace",
+  "YCCColorspace",
+  "YIQColorspace",
+  "YPbPrColorspace",
+  "YUVColorspace",
+  "CMYKColorspace",
+  "sRGBColorspace",
+  "HSLColorspace",
+  "HWBColorspace",
+  "LABColorspace",
+  "CineonLogRGBColorspace",
+  "Rec601LumaColorspace",
+  "Rec601YCbCrColorspace",
+  "Rec709LumaColorspace",
+  "Rec709YCbCrColorspace"
+})
 return {
   filters = filters,
-  composite_operators = composite_operators
+  composite_operators = composite_operators,
+  colorspaces = colorspaces
 }

@@ -15,6 +15,10 @@ ffi.cdef [[
     UndefinedOrientation
   } OrientationType;
 
+  typedef enum {
+    UndefinedColorspace,
+  } ColorspaceType;
+
   MagickWand *NewMagickWand();
   MagickWand *CloneMagickWand(const MagickWand *wand);
 
@@ -57,6 +61,9 @@ ffi.cdef [[
   unsigned long MagickGetImageDepth(MagickWand *);
 
   MagickPassFail MagickSetCompressionQuality(MagickWand *wand,const unsigned long quality);
+
+  ColorspaceType MagickGetImageColorspace(MagickWand *);
+  MagickPassFail MagickSetImageColorspace(MagickWand *, const ColorspaceType);
 ]]
 
 gmwand = ffi.load "GraphicsMagickWand"

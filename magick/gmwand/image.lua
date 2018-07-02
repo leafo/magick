@@ -119,6 +119,14 @@ do
       local blob = ffi.gc(lib.MagickWriteImageBlob(self.wand, len), lib.MagickRelinquishMemory)
       return ffi.string(blob, len[0])
     end,
+    get_colorspace = function(self)
+      local out = lib.MagickGetImageColorspace(self.wand)
+      return data.colorspaces:to_str(tonumber(out))
+    end,
+    set_colorspace = function(self, colorspace)
+      local op = assert(data.colorspaces:to_int(colorspace), "invalid operator type")
+      return handle_result(self, lib.MagickSetImageColorspace(self.wand, colorspace))
+    end,
     auto_orient = function(self)
       return handle_result(self, lib.MagickAutoOrientImage(self.wand, 0))
     end,
