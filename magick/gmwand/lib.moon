@@ -64,6 +64,7 @@ ffi.cdef [[
 
   ColorspaceType MagickGetImageColorspace(MagickWand *);
   MagickPassFail MagickSetImageColorspace(MagickWand *, const ColorspaceType);
+  MagickPassFail MagickLevelImage(MagickWand *,const double,const double,const double);
 ]]
 
 gmwand = ffi.load "GraphicsMagickWand"

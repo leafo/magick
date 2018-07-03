@@ -110,8 +110,11 @@ class Image extends require "magick.base_image"
     data.colorspaces\to_str tonumber out
 
   set_colorspace: (colorspace) =>
-    op = assert data.colorspaces\to_int(colorspace), "invalid operator type"
+    colorspace = assert data.colorspaces\to_int(colorspace), "invalid operator type"
     handle_result @, lib.MagickSetImageColorspace @wand, colorspace
+
+  level_image: (black, gamma, white) =>
+    handle_result @, lib.MagickLevelImage @wand, black, gamma, white
 
   auto_orient: =>
     handle_result @, lib.MagickAutoOrientImage @wand, 0

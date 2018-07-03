@@ -62,6 +62,7 @@ ffi.cdef([[  void InitializeMagick( const char *path );
 
   ColorspaceType MagickGetImageColorspace(MagickWand *);
   MagickPassFail MagickSetImageColorspace(MagickWand *, const ColorspaceType);
+  MagickPassFail MagickLevelImage(MagickWand *,const double,const double,const double);
 ]])
 local gmwand = ffi.load("GraphicsMagickWand")
 return {

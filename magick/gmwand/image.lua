@@ -124,8 +124,11 @@ do
       return data.colorspaces:to_str(tonumber(out))
     end,
     set_colorspace = function(self, colorspace)
-      local op = assert(data.colorspaces:to_int(colorspace), "invalid operator type")
+      colorspace = assert(data.colorspaces:to_int(colorspace), "invalid operator type")
       return handle_result(self, lib.MagickSetImageColorspace(self.wand, colorspace))
+    end,
+    level_image = function(self, black, gamma, white)
+      return handle_result(self, lib.MagickLevelImage(self.wand, black, gamma, white))
     end,
     auto_orient = function(self)
       return handle_result(self, lib.MagickAutoOrientImage(self.wand, 0))
