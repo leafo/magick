@@ -2,17 +2,23 @@
 tonumber = tonumber
 parse_size_str = (str, src_w, src_h) ->
   w, h, rest = str\match "^(%d*%%?)x(%d*%%?)(.*)$"
-  return nil, "failed to parse string (#{str})" if not w
+  return nil, "failed to parse string (#{str})" unless w
 
-  if p = w\match "(%d+)%%"
-    w = tonumber(p) / 100 * src_w
-  else
-    w = tonumber w
+  w = if p = w\match "(%d+)%%"
+    unless src_w
+      return nil, "missing source width for percentage scale"
 
-  if p = h\match "(%d+)%%"
-    h = tonumber(p) / 100 * src_h
+    tonumber(p) / 100 * src_w
   else
-    h = tonumber h
+    tonumber w
+
+  h = if p = h\match "(%d+)%%"
+    unless src_h
+      return nil, "missing source height for percentage scale"
+
+    tonumber(p) / 100 * src_h
+  else
+    tonumber h
 
   center_crop = rest\match"#" and true
 
@@ -22,7 +28,7 @@ parse_size_str = (str, src_w, src_h) ->
     crop_y = tonumber crop_y
   else
     -- by default we use the dimensions as max sizes
-    if w and h and not center_crop
+    if w and h and not center_crop and src_w and src_h
       unless rest\match"!"
         if src_w/src_h > w/h
           h = nil

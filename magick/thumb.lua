@@ -2,12 +2,15 @@ local tonumber = tonumber
 local parse_size_str
 parse_size_str = function(str, src_w, src_h)
   local w, h, rest = str:match("^(%d*%%?)x(%d*%%?)(.*)$")
-  if not w then
+  if not (w) then
     return nil, "failed to parse string (" .. tostring(str) .. ")"
   end
   do
     local p = w:match("(%d+)%%")
     if p then
+      if not (src_w) then
+        return nil, "missing source width for percentage scale"
+      end
       w = tonumber(p) / 100 * src_w
     else
       w = tonumber(w)
@@ -16,6 +19,9 @@ parse_size_str = function(str, src_w, src_h)
   do
     local p = h:match("(%d+)%%")
     if p then
+      if not (src_h) then
+        return nil, "missing source height for percentage scale"
+      end
       h = tonumber(p) / 100 * src_h
     else
       h = tonumber(h)
@@ -27,7 +33,7 @@ parse_size_str = function(str, src_w, src_h)
     crop_x = tonumber(crop_x)
     crop_y = tonumber(crop_y)
   else
-    if w and h and not center_crop then
+    if w and h and not center_crop and src_w and src_h then
       if not (rest:match("!")) then
         if src_w / src_h > w / h then
           h = nil

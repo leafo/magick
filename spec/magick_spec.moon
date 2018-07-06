@@ -23,8 +23,25 @@ describe "magick", ->
     }
 
     for {size_str, expected} in *tests
-      it "should parse size string correctly", ->
+      it "parses #{size_str} with source size (#{src_w}, #{src_h})", ->
         assert.same expected, parse_size_str size_str, src_w, src_h
+
+    more_tests = {
+      {"10x10", {w: 10, h: 10}}
+      {"10x10#", {w: 10, h: 10, center_crop: true}}
+      {"50%x50%", nil, "missing source width for percentage scale"}
+      {"50%x50%!", nil, "missing source width for percentage scale"}
+      {"x10", {h: 10}}
+      {"10x%", {w: 10}}
+      {"10x10%#", nil, "missing source height for percentage scale"}
+      {"200x300", {w: 200, h: 300}}
+      {"200x300!", {w: 200, h: 300}}
+      {"200x300+10+20", {w: 200, h: 300, crop_x: 10, crop_y: 20}}
+    }
+
+    for {size_str, expected, err} in *more_tests
+      it "parses #{size_str} with no source size", ->
+        assert.same {expected, err}, {parse_size_str size_str}
 
   describe "image", ->
     import load_image, load_image_from_blob from magick
