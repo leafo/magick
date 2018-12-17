@@ -129,13 +129,23 @@ class Image extends require "magick.base_image"
     res = { handle_result @, lib.MagickRotateImage @wand, pixel, degrees }
     unpack res
 
-  composite: (blob, x, y, op="OverCompositeOp") =>
+  composite: (blob, x, y, op="OverCompositeOp", clip_to_self=true) =>
     if type(blob) == "table" and blob.__class == Image
       blob = blob.wand
 
     op = assert composite_operators\to_int(op), "invalid operator type"
     handle_result @,
-      lib.MagickCompositeImage @wand, blob, op, x, y
+      lib.MagickCompositeImage @wand, blob, op, clip_to_self, x, y
+
+  composite_gravity: (blob, op="OverCompositeOp", gtype="NorthWestGravity") =>
+    if type(blob) == "table" and blob.__class == Image
+      blob = blob.wand
+
+    op = assert composite_operators\to_int(op), "invalid operator type"
+    gtype = assert gravity:to_int(gtype), "invalid gravity type"
+
+    handle_result @,
+      lib.MagickCompositeImageGravity @wand, blob, op, gtype
 
   get_blob: =>
     len = ffi.new "size_t[1]", 0

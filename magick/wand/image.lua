@@ -163,15 +163,33 @@ do
       }
       return unpack(res)
     end,
-    composite = function(self, blob, x, y, op)
+    composite = function(self, blob, x, y, op, clip_to_self)
       if op == nil then
         op = "OverCompositeOp"
+      end
+      if clip_to_self == nil then
+        clip_to_self = true
       end
       if type(blob) == "table" and blob.__class == Image then
         blob = blob.wand
       end
       op = assert(composite_operators:to_int(op), "invalid operator type")
-      return handle_result(self, lib.MagickCompositeImage(self.wand, blob, op, x, y))
+      return handle_result(self, lib.MagickCompositeImage(self.wand, blob, op, clip_to_self, x, y))
+    end,
+    composite_gravity = function(self, blob, op, gtype)
+      if op == nil then
+        op = "OverCompositeOp"
+      end
+      if gtype == nil then
+        gtype = "NorthWestGravity"
+      end
+      if type(blob) == "table" and blob.__class == Image then
+        blob = blob.wand
+      end
+      op = assert(composite_operators:to_int(op), "invalid operator type")
+      gtype = assert(gravity:to_int(gtype), "invalid gravity type")
+
+      return handle_result(self, lib.MagickCompositeImageGravity(self.wand, blob, op, gtype))
     end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)

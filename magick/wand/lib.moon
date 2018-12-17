@@ -65,7 +65,12 @@ ffi.cdef [[
 
   MagickBooleanType MagickCompositeImage(MagickWand *wand,
     const MagickWand *source_wand,const CompositeOperator compose,
+    const MagickBooleanType clip_to_self,
     const ssize_t x,const ssize_t y);
+
+  MagickBooleanType MagickCompositeImageGravity(MagickWand *wand,
+    const MagickWand *source_wand,const CompositeOperator compose,
+    const GravityType gravity)
 
   GravityType MagickGetImageGravity(MagickWand *wand);
   MagickBooleanType MagickSetImageGravity(MagickWand *wand,
