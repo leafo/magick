@@ -66,7 +66,7 @@ ffi.cdef([[  typedef void MagickWand;
 
   MagickBooleanType MagickCompositeImageGravity(MagickWand *wand,
     const MagickWand *source_wand,const CompositeOperator compose,
-    const GravityType gravity)
+    const GravityType gravity);
 
   GravityType MagickGetImageGravity(MagickWand *wand);
   MagickBooleanType MagickSetImageGravity(MagickWand *wand,
