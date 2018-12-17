@@ -187,9 +187,7 @@ do
         blob = blob.wand
       end
       op = assert(composite_operators:to_int(op), "invalid operator type")
-      gtype = assert({
-        gravity = to_int(gtype)
-      }, "invalid gravity type")
+      gtype = assert(gravity:to_int(gtype), "invalid gravity type")
       return handle_result(self, lib.MagickCompositeImageGravity(self.wand, blob, op, gtype))
     end,
     get_blob = function(self)

@@ -142,7 +142,7 @@ class Image extends require "magick.base_image"
       blob = blob.wand
 
     op = assert composite_operators\to_int(op), "invalid operator type"
-    gtype = assert gravity:to_int(gtype), "invalid gravity type"
+    gtype = assert gravity\to_int(gtype), "invalid gravity type"
 
     handle_result @,
       lib.MagickCompositeImageGravity @wand, blob, op, gtype
