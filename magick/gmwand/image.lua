@@ -127,8 +127,17 @@ do
       colorspace = assert(data.colorspaces:to_int(colorspace), "invalid operator type")
       return handle_result(self, lib.MagickSetImageColorspace(self.wand, colorspace))
     end,
-    level_image = function(self, black, gamma, white)
+    level_image = function(self, ...)
+      return self:level(...)
+    end,
+    level = function(self, black, gamma, white)
       return handle_result(self, lib.MagickLevelImage(self.wand, black, gamma, white))
+    end,
+    hald_clut = function(self, clut_wand)
+      if type(clut_wand) == "table" and clut_wand.__class == Image then
+        clut_wand = clut_wand.wand
+      end
+      return handle_result(self, lib.MagickHaldClutImage(self.wand, clut_wand))
     end,
     auto_orient = function(self)
       return handle_result(self, lib.MagickAutoOrientImage(self.wand, 0))

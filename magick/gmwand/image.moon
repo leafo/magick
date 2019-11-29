@@ -113,8 +113,18 @@ class Image extends require "magick.base_image"
     colorspace = assert data.colorspaces\to_int(colorspace), "invalid operator type"
     handle_result @, lib.MagickSetImageColorspace @wand, colorspace
 
-  level_image: (black, gamma, white) =>
+  -- redirect method for old name
+  level_image: (...) => @level ...
+
+  -- this method is broken in graphics magic, arguments are swapped in C
+  level: (black, gamma, white) =>
     handle_result @, lib.MagickLevelImage @wand, black, gamma, white
+
+  hald_clut: (clut_wand) =>
+    if type(clut_wand) == "table" and clut_wand.__class == Image
+      clut_wand = clut_wand.wand
+
+    handle_result @, lib.MagickHaldClutImage @wand, clut_wand
 
   auto_orient: =>
     handle_result @, lib.MagickAutoOrientImage @wand, 0
