@@ -87,7 +87,7 @@ do
       return Image(wand, self.path)
     end,
     coalesce = function(self)
-      self.wand = ffi.gc(lib.MagickCoalesceImages(self.wand), ffi.DestroyMagickWand)
+      self.wand = ffi.gc(lib.MagickCoalesceImages(self.wand), lib.DestroyMagickWand)
       return true
     end,
     resize = function(self, w, h, f, blur)

@@ -84,7 +84,7 @@ class Image extends require "magick.base_image"
     Image wand, @path
 
   coalesce: =>
-    @wand = ffi.gc lib.MagickCoalesceImages(@wand), ffi.DestroyMagickWand
+    @wand = ffi.gc lib.MagickCoalesceImages(@wand), lib.DestroyMagickWand
     true
 
   resize: (w,h, f="Lanczos2", blur=1.0) =>
