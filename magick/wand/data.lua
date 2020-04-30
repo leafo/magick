@@ -105,9 +105,45 @@ local interlace = enum({
   "JPEGInterlace",
   "PNGInterlace"
 })
+local filtertype = enum({
+  [0] = "UndefinedFilter",
+  "PointFilter",
+  "BoxFilter",
+  "TriangleFilter",
+  "HermiteFilter",
+  "HannFilter",
+  "HammingFilter",
+  "BlackmanFilter",
+  "GaussianFilter",
+  "QuadraticFilter",
+  "CubicFilter",
+  "CatromFilter",
+  "MitchellFilter",
+  "JincFilter",
+  "SincFilter",
+  "SincFastFilter",
+  "KaiserFilter",
+  "WelchFilter",
+  "ParzenFilter",
+  "BohmanFilter",
+  "BartlettFilter",
+  "LagrangeFilter",
+  "LanczosFilter",
+  "LanczosSharpFilter",
+  "Lanczos2Filter",
+  "Lanczos2SharpFilter",
+  "RobidouxFilter",
+  "RobidouxSharpFilter",
+  "CosineFilter",
+  "SplineFilter",
+  "LanczosRadiusFilter",
+  "CubicSplineFilter",
+  "SentinelFilter"
+})
 return {
   composite_operators = composite_operators,
   gravity = gravity,
   orientation = orientation,
-  interlace = interlace
+  interlace = interlace,
+  filtertype = filtertype
 }
