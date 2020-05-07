@@ -115,7 +115,6 @@ describe "magick", ->
       assert img\write out_path "composite.png"
 
     it "modulate", ->
-      img2 = img\clone!
       assert img\modulate 50, 50, 50
       assert img\write out_path "modulate.png"
 
@@ -185,6 +184,11 @@ describe "magick", ->
       img2 = img\clone!
       img2\set_depth 16
 
+    it "extents", ->
+      img2 = img\clone!
+      assert img2\extent 200, 300, 0, 0
+      assert.same 200, img2\get_width!
+      assert.same 300, img2\get_height!
 
   describe "color_image", ->
     import load_image from magick

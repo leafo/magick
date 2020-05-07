@@ -244,6 +244,9 @@ do
     reset_page = function(self)
       return handle_result(self, lib.MagickResetImagePage(self.wand, nil))
     end,
+    extent = function(self, w, h, x, y)
+      return handle_result(self, lib.MagickExtentImage(self.wand, w, h, x, y))
+    end,
     __tostring = function(self)
       return "Image<" .. tostring(self.path) .. ", " .. tostring(self.wand) .. ">"
     end

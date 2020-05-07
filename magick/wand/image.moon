@@ -208,6 +208,10 @@ class Image extends require "magick.base_image"
   reset_page: =>
     handle_result @, lib.MagickResetImagePage @wand, nil
 
+  extent: (w, h, x, y) =>
+    handle_result @,
+      lib.MagickExtentImage @wand, w, h, x, y
+
   __tostring: =>
     "Image<#{@path}, #{@wand}>"
 
