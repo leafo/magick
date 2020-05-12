@@ -144,7 +144,7 @@ do
       end
       return handle_result(self, lib.MagickSharpenImage(self.wand, radius, sigma))
     end,
-    rotate = function(self, degrees, r, g, b)
+    rotate = function(self, degrees, r, g, b, a)
       if r == nil then
         r = 0
       end
@@ -154,10 +154,14 @@ do
       if b == nil then
         b = 0
       end
+      if a == nil then
+        a = 0
+      end
       local pixel = ffi.gc(lib.NewPixelWand(), lib.DestroyPixelWand)
       lib.PixelSetRed(pixel, r)
       lib.PixelSetGreen(pixel, g)
       lib.PixelSetBlue(pixel, b)
+      lib.PixelSetAlpha(pixel, a)
       local res = {
         handle_result(self, lib.MagickRotateImage(self.wand, pixel, degrees))
       }
