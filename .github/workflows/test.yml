@@ -1,0 +1,41 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        luaVersion: ["luajit", "luajit-openresty"]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - uses: leafo/gh-actions-lua@master
+      with:
+        luaVersion: ${{ matrix.luaVersion }}
+
+    - uses: leafo/gh-actions-luarocks@master
+
+    - name: build
+      run: |
+        sudo apt-get install libmagickwand-dev
+        sudo apt-get install libgraphicsmagick1-dev
+        luarocks install busted
+        luarocks install moonscript
+        luarocks make
+
+    - name: show libs
+      run: |
+        Magick-config  --libs
+        GraphicsMagick-config --libs
+
+    - name: test
+      run: |
+        busted -o utfTerminal
+        busted -o utfTerminal spec_gm
+        make lint
+
