@@ -116,8 +116,8 @@ describe "magick", ->
 
     it "modulate", ->
       img2 = img\clone!
-      assert img\modulate 50, 50, 50
-      assert img\write out_path "modulate.png"
+      assert img2\modulate 50, 50, 50
+      assert img2\write out_path "modulate.png"
 
     it "repage", ->
       img2 = img\clone!
