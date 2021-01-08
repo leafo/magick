@@ -30,7 +30,7 @@ jobs:
 
     - name: show libs
       run: |
-        Magick-config  --libs
+        MagickWand-config  --libs
         GraphicsMagick-config --libs
 
     - name: test
