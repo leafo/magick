@@ -228,9 +228,6 @@ describe "magick", ->
 
   describe "automatic orientation", ->
     it "should automatically orient", ->
-      if os.getenv "TRAVIS"
-        return pending "not available on travis"
-
       import load_image from magick
       img = load_image "spec/auto_orient_test.jpg"
       assert.same "BottomRightOrientation", img\get_orientation!
