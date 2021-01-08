@@ -28,10 +28,10 @@ jobs:
         luarocks install moonscript
         luarocks make
 
-    # - name: show libs
-    #   run: |
-    #     MagickWand-config  --libs
-    #     GraphicsMagick-config --libs
+    - name: show libs
+      run: |
+        $(find . | grep '\bMagickWand-config\b') --libs
+        $(find . | grep '\bGraphicsMagick-config\b') --libs
 
     - name: test
       run: |
