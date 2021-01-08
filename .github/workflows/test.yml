@@ -30,8 +30,8 @@ jobs:
 
     - name: show libs
       run: |
-        $(find . | grep '\bMagickWand-config\b') --libs
-        $(find . | grep '\bGraphicsMagick-config\b') --libs
+        /usr/lib/x86_64-linux-gnu/ImageMagick*/bin*/MagickWand-config --libs
+        GraphicsMagickWand-config --libs
 
     - name: test
       run: |
