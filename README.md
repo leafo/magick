@@ -271,6 +271,17 @@ $ busted
 
 # Changelog
 
+### 1.6.0 - Tue Feb  2 01:18:06 PM PST 2021
+
+* Support ImageMagick 7
+* Fix memory leak with `coalesce` for ImageMagick
+* Add `sharpen`, `set_quality`, `auto_orient`, `get_colorspace`, `set_colorspace`, `level_image`, `hald_clut` for GraphicsMagick
+* Throw error if size string can not be parsed in `thumb`, handle case when source size is missing, more specs for `thumb`
+* Update test suite to GitHub actions, remove TravisCI
+  * Test suite runs for luajit beta and OpenResty's luajit fork
+  * Currently runs on ImageMagick 6
+  * Fix broken spec for `modulate`
+
 ### 1.5.0 - Tue Jun 20 13:33:41 PDT 2017
 
 * Add `get_depth` and `set_depth` to GraphicsMagick & ImageMagick
