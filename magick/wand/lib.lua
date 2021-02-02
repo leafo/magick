@@ -127,7 +127,10 @@ get_flags = function()
 end
 local get_filters
 get_filters = function()
-  local fname = "magick/resample.h"
+  local suffixes = {
+    "magick/resample.h",
+    "MagickCore/resample.h"
+  }
   local prefixes = {
     "/usr/include/ImageMagick",
     "/usr/local/include/ImageMagick",
@@ -143,20 +146,26 @@ get_filters = function()
   }
   for _index_0 = 1, #prefixes do
     local p = prefixes[_index_0]
-    local full = tostring(p) .. "/" .. tostring(fname)
-    do
-      local f = io.open(full)
-      if f then
-        local content
-        do
-          local _with_0 = f:read("*a")
-          f:close()
-          content = _with_0
-        end
-        local filter_types = content:match("(typedef enum.-FilterTypes;)")
-        if filter_types then
-          ffi.cdef(filter_types)
-          return true
+    for _index_1 = 1, #suffixes do
+      local suffix = suffixes[_index_1]
+      local full = tostring(p) .. "/" .. tostring(suffix)
+      do
+        local f = io.open(full)
+        if f then
+          local content
+          do
+            local _with_0 = f:read("*a")
+            f:close()
+            content = _with_0
+          end
+          local filter_types = content:match("(typedef enum.-FilterTypes?;)")
+          if filter_types then
+            ffi.cdef(filter_types)
+            if filter_types:match("FilterTypes;") then
+              return "FilterTypes"
+            end
+            return "FilterType"
+          end
         end
       end
     end
@@ -168,12 +177,15 @@ get_filter = function(name)
   return lib[name .. "Filter"]
 end
 local can_resize
-if get_filters() then
-  ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
+do
+  local enum_name = get_filters()
+  if enum_name then
+    ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
       const size_t, const size_t,
-      const FilterTypes, const double);
+      const ]] .. enum_name .. [[, const double);
   ]])
-  can_resize = true
+    can_resize = true
+  end
 end
 local try_to_load
 try_to_load = function(...)

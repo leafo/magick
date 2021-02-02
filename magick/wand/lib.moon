@@ -128,8 +128,14 @@ get_flags = ->
   proc\close!
   flags
 
+-- ImageMagick 7 renamed FilterTypes -> FilterType, this will return the name
+-- of the enum that should be used for the filter types (FilterTypes or FilterType)
 get_filters = ->
-  fname = "magick/resample.h"
+  suffixes = {
+    "magick/resample.h" -- ImageMagick 6
+    "MagickCore/resample.h" -- ImageMagick 7
+  }
+
   prefixes = {
     "/usr/include/ImageMagick"
     "/usr/local/include/ImageMagick"
@@ -137,24 +143,29 @@ get_filters = ->
   }
 
   for p in *prefixes
-    full = "#{p}/#{fname}"
-    if f = io.open full
-      content = with f\read "*a" do f\close!
-      filter_types = content\match "(typedef enum.-FilterTypes;)"
-      if filter_types
-        ffi.cdef filter_types
-        return true
+    for suffix in *suffixes
+      full = "#{p}/#{suffix}"
+      if f = io.open full
+        content = with f\read "*a" do f\close!
+        filter_types = content\match "(typedef enum.-FilterTypes?;)"
+        if filter_types
+          ffi.cdef filter_types
+
+          if filter_types\match "FilterTypes;"
+            return "FilterTypes"
+
+          return "FilterType"
 
   false
 
 get_filter = (name) ->
   lib[name .. "Filter"]
 
-can_resize = if get_filters!
+can_resize = if enum_name = get_filters!
   ffi.cdef [[
     MagickBooleanType MagickResizeImage(MagickWand*,
       const size_t, const size_t,
-      const FilterTypes, const double);
+      const ]] .. enum_name ..[[, const double);
   ]]
   true
 
