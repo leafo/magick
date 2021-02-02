@@ -30,8 +30,8 @@ jobs:
 
     - name: show libs
       run: |
-        /usr/lib/x86_64-linux-gnu/ImageMagick*/bin*/MagickWand-config --libs
-        GraphicsMagickWand-config --libs
+        /usr/lib/x86_64-linux-gnu/ImageMagick*/bin*/MagickWand-config --libs --cflags
+        GraphicsMagickWand-config --libs --cflags
 
     - name: test
       run: |
