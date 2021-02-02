@@ -3,8 +3,6 @@ set -e
 set -o pipefail
 set -o xtrace
 
-luarocks --lua-version=5.1 --local install busted
-luarocks --lua-version=5.1 --local install moonscript
 luarocks --lua-version=5.1 --local make
 eval $(luarocks --lua-version=5.1 --local path)
 
