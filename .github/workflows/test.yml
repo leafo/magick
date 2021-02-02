@@ -3,7 +3,7 @@ name: test
 on: [push, pull_request]
 
 jobs:
-  test:
+  ubuntu:
     strategy:
       fail-fast: false
       matrix:
@@ -40,3 +40,16 @@ jobs:
         busted -o utfTerminal spec_gm
         make lint
 
+  archlinux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: build
+      run: |
+        docker build -t magick-test .
+
+    - name: test
+      run: |
+        docker run magick-test
