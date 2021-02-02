@@ -280,7 +280,7 @@ $ busted
 * Throw error if size string can not be parsed in `thumb`, handle case when source size is missing, more specs for `thumb`
 * Update test suite to GitHub actions, remove TravisCI
   * Test suite runs for LuaJIT beta and OpenResty's LuaJIT fork
-  * Currently runs on ImageMagick 6, GraphicsMagick 1.3.35
+  * Currently runs on ImageMagick 6.9.10, GraphicsMagick 1.3.35
   * Fix broken spec for `modulate`
 
 ### 1.5.0 - Tue Jun 20 13:33:41 PDT 2017

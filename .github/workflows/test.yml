@@ -33,7 +33,6 @@ jobs:
         /usr/lib/x86_64-linux-gnu/ImageMagick*/bin*/MagickWand-config --libs --cflags
         GraphicsMagickWand-config --libs --cflags
         convert -version
-        gm -version
 
     - name: test
       run: |
