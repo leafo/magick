@@ -68,8 +68,11 @@ All functions contained in the table returned by `require("magick")`.
 
 #### `thumb(input_fname, size_str, out_fname=nil)`
 
-Loads and resizes image. Write output to `out_fname` if provided, otherwise
-return image blob. (`input_fname` can optionally be an instance of `Image`)
+Loads and resizes image. Write output to `out_fname` if provided, otherwise a
+string is returned with the binary data of the resulting image.
+(`input_fname` can optionally be an instance of `Image`)
+
+`size_str` is a described above under `thumb`.
 
 #### `load_image(fname)`
 
@@ -102,12 +105,11 @@ call `destroy` on the image object as soon as possible.
 
 ### Using GraphicsMagick
 
-
-ImageMagick and GraphicsMagick implement the same interface. By default the
-`magick` module will include ImageMagick. You can specify which library you use
-by calling `require` on the module for the appropriate library. At the moment
-it's impossible to include both libraries into the same process due to
-collision of function names in the C namespace.
+ImageMagick and GraphicsMagick implement (mostly) the same interface. By
+default the `magick` module will include ImageMagick. You can specify which
+library you use by calling `require` on the module for the appropriate library.
+At the moment it's impossible to include both libraries into the same process
+due to collision of function names in the C namespace.
 
 Load ImageMagick directly:
 
@@ -122,11 +124,10 @@ Load GraphicsMagick directly:
 magick = requrie "magick.gmwand"
 local img = magick.load_image("some_image.png")
 ```
-
-> **Note:** not all methods on Image for ImageMagick are available in
-> GraphicsMagick right now. Pull requests welcome.
-
 ### Methods
+
+> **Note:** Not all the functionality of the respective image libraries is
+> exposted on the Image interface. Pull requests welcome.
 
 Methods mutate the current image when appropriate. Use `clone` to get an
 independent copy.
@@ -145,7 +146,7 @@ Crops image to `w`,`h` where the top left is `x`, `y`
 
 #### `img:blur(sigma, radius=0)`
 
-Blurs the image with specified paramaters. See [Blur Arguments](http://www.imagemagick.org/Usage/blur/#blur_args)
+Blurs the image with specified parameters. See [Blur Arguments](http://www.imagemagick.org/Usage/blur/#blur_args)
 
 #### `img:rotate(degrees, r=0, g=0, b)`
 
@@ -166,12 +167,12 @@ maintain its aspect ratio.
 #### `img:get_blob()`
 
 Returns Lua string containing the binary data of the image. The blob is
-formatated the same as the image's current format (eg. PNG, Gif, etc.). Use
+formatted the same as the image's current format (eg. PNG, Gif, etc.). Use
 `image:set_format` to change the format.
 
 #### `img:write(fname)`
 
-Writes the the image to disk
+Writes the image to the specified filename
 
 #### `img:get_width()`
 
@@ -255,9 +256,9 @@ at the top of this README.
 
 #### `img:destroy()`
 
-Immediately frees the memory associated with the image, it is invalid to use the
-image after calling this method. It is unecessary to call this method normally
-as images are tracked by the garbage collector.
+Immediately frees the memory associated with the image, it is invalid to use
+the image after calling this method. It is unnecessary to call this method
+normally as images are tracked by the garbage collector.
 
 # Tests
 
@@ -278,8 +279,8 @@ $ busted
 * Add `sharpen`, `set_quality`, `auto_orient`, `get_colorspace`, `set_colorspace`, `level_image`, `hald_clut` for GraphicsMagick
 * Throw error if size string can not be parsed in `thumb`, handle case when source size is missing, more specs for `thumb`
 * Update test suite to GitHub actions, remove TravisCI
-  * Test suite runs for luajit beta and OpenResty's luajit fork
-  * Currently runs on ImageMagick 6
+  * Test suite runs for LuaJIT beta and OpenResty's LuaJIT fork
+  * Currently runs on ImageMagick 6, GraphicsMagick 1.3.30
   * Fix broken spec for `modulate`
 
 ### 1.5.0 - Tue Jun 20 13:33:41 PDT 2017
