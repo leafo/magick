@@ -135,7 +135,7 @@ class Image extends require "magick.base_image"
 
     op = assert composite_operators\to_int(op), "invalid operator type"
     handle_result @,
-      lib.MagickCompositeImage @wand, blob, op, x, y
+      lib.MagickCompositeImage @wand, blob, op, 1, x, y
 
   get_blob: =>
     len = ffi.new "size_t[1]", 0
