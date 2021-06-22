@@ -32,6 +32,7 @@ describe "magick", ->
       {"50%x50%", nil, "missing source width for percentage scale"}
       {"50%x50%!", nil, "missing source width for percentage scale"}
       {"x10", {h: 10}}
+      {"10x", {w: 10}}
       {"10x%", {w: 10}}
       {"10x10%#", nil, "missing source height for percentage scale"}
       {"200x300", {w: 200, h: 300}}
