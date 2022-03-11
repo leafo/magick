@@ -232,11 +232,11 @@ do
       return lib.MagickSetImageOrientation(self.wand, otype)
     end,
     get_interlace_scheme = function(self)
-      return interlace:to_str(lib.MagickGetImageInterlaceScheme(self.wand))
+      return interlace:to_str(lib.MagickGetInterlaceScheme(self.wand))
     end,
     set_interlace_scheme = function(self, itype)
       itype = assert(interlace:to_int(itype), "invalid interlace type")
-      return lib.MagickSetImageInterlaceScheme(self.wand, itype)
+      return lib.MagickSetInterlaceScheme(self.wand, itype)
     end,
     auto_orient = function(self)
       return handle_result(self, lib.MagickAutoOrientImage(self.wand))

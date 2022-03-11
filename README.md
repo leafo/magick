@@ -209,6 +209,16 @@ Sets the image's gravity type:
 
 `gravity` can be one of the values listed in [data.moon](https://github.com/leafo/magick/blob/master/magick/wand/data.moon#L77)
 
+#### `img:get_interlace_scheme()`
+
+Gets the image interlace scheme.
+
+#### `img:set_interlace_scheme(scheme)`
+
+Sets the image's interlace scheme:
+
+`scheme` can be one of the values listed in [data.moon](https://github.com/leafo/magick/blob/master/magick/wand/data.moon#L104)
+
 #### `img:get_option(magick, key)`
 
 Returns all the option names that match the specified pattern associated with a
@@ -316,7 +326,6 @@ $ busted
 
 # Contact
 
-Author: Leaf Corcoran (leafo) ([@moonscript](http://twitter.com/moonscript))  
-Email: leafot@gmail.com  
-Homepage: <http://leafo.net>  
-
+Author: Leaf Corcoran (leafo) ([@moonscript](http://twitter.com/moonscript))
+Email: leafot@gmail.com
+Homepage: <http://leafo.net>
