@@ -171,7 +171,7 @@ do
         blob = blob.wand
       end
       op = assert(composite_operators:to_int(op), "invalid operator type")
-      return handle_result(self, lib.MagickCompositeImage(self.wand, blob, op, x, y))
+      return handle_result(self, lib.MagickCompositeImage(self.wand, blob, op, 1, x, y))
     end,
     get_blob = function(self)
       local len = ffi.new("size_t[1]", 0)
