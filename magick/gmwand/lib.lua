@@ -1,6 +1,7 @@
 local ffi = require("ffi")
 ffi.cdef([[  void InitializeMagick( const char *path );
   typedef void MagickWand;
+  typedef void PixelWand;
   typedef unsigned int MagickPassFail;
   typedef int CompositeOperator;
   typedef int ExceptionType;
@@ -64,6 +65,26 @@ ffi.cdef([[  void InitializeMagick( const char *path );
   MagickPassFail MagickSetImageColorspace(MagickWand *, const ColorspaceType);
   MagickPassFail MagickLevelImage(MagickWand *,const double,const double,const double);
   MagickPassFail MagickHaldClutImage(MagickWand *wand,const MagickWand *clut_wand);
+
+  PixelWand *NewPixelWand( void );
+  MagickPassFail DestroyPixelWand( PixelWand *wand );
+
+  double PixelGetRed( const PixelWand *wand );
+  double PixelGetGreen( const PixelWand *wand );
+  double PixelGetBlue( const PixelWand *wand );
+  double PixelGetOpacity( const PixelWand *wand );
+
+  void PixelSetRed(PixelWand *,const double);
+  void PixelSetGreen(PixelWand *,const double);
+  void PixelSetBlue(PixelWand *,const double);
+  void PixelSetOpacity(PixelWand *,const double);
+
+  char *PixelGetColorAsString( PixelWand *wand );
+
+  MagickPassFail MagickGetImageBackgroundColor(MagickWand *,PixelWand *);
+  MagickPassFail MagickSetImageBackgroundColor(MagickWand *,const PixelWand *);
+  MagickPassFail MagickSetSize(MagickWand *,const unsigned long,const unsigned long);
+
 ]])
 local gmwand = ffi.load("GraphicsMagickWand")
 return {
