@@ -2,6 +2,8 @@
 magick = require "magick.gmwand"
 
 describe "magick", ->
+  out_path = (fname) -> "spec_gm/output_images/#{fname}"
+
   it "has a version", ->
     assert.truthy magick.VERSION
 
@@ -25,9 +27,24 @@ describe "magick", ->
       assert.same 64, image\get_width!
       assert.same 64, image\get_height!
 
+    it "creates blank image", ->
+      image = magick.Image\blank_image 120, 20
+
+      assert.same 120, image\get_width!
+      assert.same 20, image\get_height!
+
+      assert image\write out_path "blank_transparent.png"
+
+    it "creates blank image with color", ->
+      image = magick.Image\blank_image 145, 88, "red"
+
+      assert.same 145, image\get_width!
+      assert.same 88, image\get_height!
+
+      assert image\write out_path "blank_red.jpg"
+
   describe "with image", ->
     import load_image, load_image_from_blob from magick
-    out_path = (fname) -> "spec_gm/output_images/#{fname}"
 
     local img
 

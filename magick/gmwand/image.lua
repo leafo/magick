@@ -31,6 +31,9 @@ do
     end,
     get_format = function(self)
       local format = lib.MagickGetImageFormat(self.wand)
+      if format == nil then
+        return nil
+      end
       do
         local _with_0 = ffi.string(format):lower()
         lib.MagickRelinquishMemory(format)
@@ -178,6 +181,23 @@ do
   })
   _base_0.__class = _class_0
   local self = _class_0
+  self.blank_image = function(self, width, height, fill)
+    if fill == nil then
+      fill = "none"
+    end
+    local wand = ffi.gc(lib.NewMagickWand(), lib.DestroyMagickWand)
+    if 0 == lib.MagickSetSize(wand, width, height) then
+      local code, msg = get_exception(wand)
+      return nil, msg, code
+    end
+    if fill then
+      if 0 == lib.MagickReadImage(wand, "xc:" .. tostring(fill)) then
+        local code, msg = get_exception(wand)
+        return nil, msg, code
+      end
+    end
+    return self(wand, "<blank_image>")
+  end
   self.load = function(self, path)
     local wand = ffi.gc(lib.NewMagickWand(), lib.DestroyMagickWand)
     if 0 == lib.MagickReadImage(wand, path) then

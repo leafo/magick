@@ -18,6 +18,25 @@ handle_result = (img_or_wand, status) ->
     true
 
 class Image extends require "magick.base_image"
+  @blank_image: (width, height, fill="none") =>
+    wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
+
+    if 0 == lib.MagickSetSize wand, width, height
+      code, msg = get_exception wand
+      return nil, msg, code
+
+    if fill
+      -- this will fill the image with an initial image, transparent with the default `none`
+      -- set to false to make a wand with no images in it
+      -- example values:
+      -- "#00FF00FF" for transparent green
+      -- "red" for solid red
+      if 0 == lib.MagickReadImage wand, "xc:#{fill}"
+        code, msg = get_exception wand
+        return nil, msg, code
+
+    @ wand, "<blank_image>"
+
   @load: (path) =>
     wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
     if 0 == lib.MagickReadImage wand, path
@@ -41,6 +60,9 @@ class Image extends require "magick.base_image"
 
   get_format: =>
     format = lib.MagickGetImageFormat(@wand)
+    if format == nil
+      return nil
+
     with ffi.string(format)\lower!
       lib.MagickRelinquishMemory format
 
