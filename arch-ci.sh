@@ -3,10 +3,10 @@ set -e
 set -o pipefail
 set -o xtrace
 
-luarocks --lua-version=5.1 --local make
-eval $(luarocks --lua-version=5.1 --local path)
+luarocks --lua-version=5.4 --local make
+eval $(luarocks --lua-version=5.4 --local path)
 
-cat $(which busted) | sed 's/\/usr\/bin\/lua5\.1/\/usr\/local\/openresty\/luajit\/bin\/luajit/' > busted
+cat $(which busted) | sed 's/\/usr\/bin\/lua5\.4/\/usr\/local\/openresty\/luajit\/bin\/luajit/' > busted
 chmod +x busted
 
 ./busted -o utfTerminal

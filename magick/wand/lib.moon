@@ -1,15 +1,14 @@
 
-ffi = require "ffi"
+cffi = require "cffi"
 
 local lib
 
-ffi.cdef [[
+cffi.cdef [[
   typedef void MagickWand;
   typedef void PixelWand;
 
   typedef int MagickBooleanType;
   typedef int ExceptionType;
-  typedef int ssize_t;
   typedef int CompositeOperator;
   typedef int GravityType;
   typedef int OrientationType;
@@ -139,7 +138,7 @@ get_filters = ->
   prefixes = {
     "/usr/include/ImageMagick"
     "/usr/local/include/ImageMagick"
-    unpack [p for p in get_flags!\gmatch "-I([^%s]+)"]
+    table.unpack [p for p in get_flags!\gmatch "-I([^%s]+)"]
   }
 
   for p in *prefixes
@@ -149,7 +148,7 @@ get_filters = ->
         content = with f\read "*a" do f\close!
         filter_types = content\match "(typedef enum.-FilterTypes?;)"
         if filter_types
-          ffi.cdef filter_types
+          cffi.cdef filter_types
 
           if filter_types\match "FilterTypes;"
             return "FilterTypes"
@@ -162,7 +161,7 @@ get_filter = (name) ->
   lib[name .. "Filter"]
 
 can_resize = if enum_name = get_filters!
-  ffi.cdef [[
+  cffi.cdef [[
     MagickBooleanType MagickResizeImage(MagickWand*,
       const size_t, const size_t,
       const ]] .. enum_name ..[[, const double);
@@ -177,16 +176,16 @@ try_to_load = (...) ->
       continue unless name
 
     return out if pcall ->
-      out = ffi.load name
+      out = cffi.load name
 
   error "Failed to load ImageMagick (#{...})"
 
 lib = try_to_load "MagickWand", ->
   lname = get_flags!\match "-l(MagickWand[^%s]*)"
   local suffix
-  if ffi.os == "OSX"
+  if cffi.os == "OSX"
      suffix = ".dylib"
-  elseif ffi.os == "Windows"
+  elseif cffi.os == "Windows"
      suffix = ".dll"
   else
      suffix = ".so"

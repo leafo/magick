@@ -1,11 +1,11 @@
 
-ffi = require "ffi"
+cffi = require "cffi"
 import lib from require "magick.gmwand.lib"
 data = require "magick.gmwand.data"
 
 get_exception = (wand) ->
-  etype = ffi.new "ExceptionType[1]", 0
-  msg = ffi.string ffi.gc lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory
+  etype = cffi.new "ExceptionType[1]", 0
+  msg = cffi.string cffi.gc lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory
   etype[0], msg
 
 
@@ -19,7 +19,7 @@ handle_result = (img_or_wand, status) ->
 
 class Image extends require "magick.base_image"
   @blank_image: (width, height, fill="none") =>
-    wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
+    wand = cffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
 
     if 0 == lib.MagickSetSize wand, width, height
       code, msg = get_exception wand
@@ -38,7 +38,7 @@ class Image extends require "magick.base_image"
     @ wand, "<blank_image>"
 
   @load: (path) =>
-    wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
+    wand = cffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
     if 0 == lib.MagickReadImage wand, path
       code, msg = get_exception wand
       return nil, msg, code
@@ -46,7 +46,7 @@ class Image extends require "magick.base_image"
     @ wand, path
 
   @load_from_blob: (blob) =>
-    wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
+    wand = cffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
     if 0 == lib.MagickReadImageBlob wand, blob, #blob
       code, msg = get_exception wand
       return nil, msg, code
@@ -55,15 +55,15 @@ class Image extends require "magick.base_image"
 
   new: (@wand, @path) =>
 
-  get_width: => tonumber lib.MagickGetImageWidth @wand
-  get_height: => tonumber lib.MagickGetImageHeight @wand
+  get_width: => cffi.tonumber lib.MagickGetImageWidth @wand
+  get_height: => cffi.tonumber lib.MagickGetImageHeight @wand
 
   get_format: =>
     format = lib.MagickGetImageFormat(@wand)
     if format == nil
       return nil
 
-    with ffi.string(format)\lower!
+    with cffi.string(format)\lower!
       lib.MagickRelinquishMemory format
 
   set_format: (format) =>
@@ -71,14 +71,14 @@ class Image extends require "magick.base_image"
       lib.MagickSetImageFormat @wand, format
 
   get_depth: =>
-    tonumber lib.MagickGetImageDepth @wand
+    cffi.tonumber lib.MagickGetImageDepth @wand
 
   set_depth: (d) =>
     handle_result @,
       lib.MagickSetImageDepth @wand, d
 
   clone: =>
-    wand = ffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand
+    wand = cffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand
     Image wand, @path
 
   resize: (w,h, filter="Lanczos", blur=1.0) =>
@@ -121,15 +121,15 @@ class Image extends require "magick.base_image"
       lib.MagickSetCompressionQuality @wand, quality
 
   get_blob: =>
-    len = ffi.new "size_t[1]", 0
-    blob = ffi.gc lib.MagickWriteImageBlob(@wand, len),
+    len = cffi.new "size_t[1]", 0
+    blob = cffi.gc lib.MagickWriteImageBlob(@wand, len),
       lib.MagickRelinquishMemory
 
-    ffi.string blob, len[0]
+    cffi.string blob, len[0]
 
   get_colorspace: =>
     out = lib.MagickGetImageColorspace @wand
-    data.colorspaces\to_str tonumber out
+    data.colorspaces\to_str cffi.tonumber out
 
   set_colorspace: (colorspace) =>
     colorspace = assert data.colorspaces\to_int(colorspace), "invalid operator type"

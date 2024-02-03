@@ -5,7 +5,7 @@ test:
 	busted
 
 local: build
-	luarocks --lua-version=5.1 make --local magick-dev-1.rockspec
+	luarocks --lua-version=5.4 make --local magick-dev-1.rockspec
 
 build:
 	moonc magick

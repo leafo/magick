@@ -1,5 +1,5 @@
-local ffi = require("ffi")
-ffi.cdef([[  void InitializeMagick( const char *path );
+local cffi = require("cffi")
+cffi.cdef([[  void InitializeMagick( const char *path );
   typedef void MagickWand;
   typedef void PixelWand;
   typedef unsigned int MagickPassFail;
@@ -86,7 +86,7 @@ ffi.cdef([[  void InitializeMagick( const char *path );
   MagickPassFail MagickSetSize(MagickWand *,const unsigned long,const unsigned long);
 
 ]])
-local gmwand = ffi.load("GraphicsMagickWand")
+local gmwand = cffi.load("GraphicsMagickWand")
 return {
   lib = gmwand
 }

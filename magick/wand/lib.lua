@@ -1,11 +1,10 @@
-local ffi = require("ffi")
+local cffi = require("cffi")
 local lib
-ffi.cdef([[  typedef void MagickWand;
+cffi.cdef([[  typedef void MagickWand;
   typedef void PixelWand;
 
   typedef int MagickBooleanType;
   typedef int ExceptionType;
-  typedef int ssize_t;
   typedef int CompositeOperator;
   typedef int GravityType;
   typedef int OrientationType;
@@ -134,7 +133,7 @@ get_filters = function()
   local prefixes = {
     "/usr/include/ImageMagick",
     "/usr/local/include/ImageMagick",
-    unpack((function()
+    table.unpack((function()
       local _accum_0 = { }
       local _len_0 = 1
       for p in get_flags():gmatch("-I([^%s]+)") do
@@ -160,7 +159,7 @@ get_filters = function()
           end
           local filter_types = content:match("(typedef enum.-FilterTypes?;)")
           if filter_types then
-            ffi.cdef(filter_types)
+            cffi.cdef(filter_types)
             if filter_types:match("FilterTypes;") then
               return "FilterTypes"
             end
@@ -180,7 +179,7 @@ local can_resize
 do
   local enum_name = get_filters()
   if enum_name then
-    ffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
+    cffi.cdef([[    MagickBooleanType MagickResizeImage(MagickWand*,
       const size_t, const size_t,
       const ]] .. enum_name .. [[, const double);
   ]])
@@ -205,7 +204,7 @@ try_to_load = function(...)
         end
       end
       if pcall(function()
-        out = ffi.load(name)
+        out = cffi.load(name)
       end) then
         return out
       end
@@ -220,9 +219,9 @@ end
 lib = try_to_load("MagickWand", function()
   local lname = get_flags():match("-l(MagickWand[^%s]*)")
   local suffix
-  if ffi.os == "OSX" then
+  if cffi.os == "OSX" then
     suffix = ".dylib"
-  elseif ffi.os == "Windows" then
+  elseif cffi.os == "Windows" then
     suffix = ".dll"
   else
     suffix = ".so"
