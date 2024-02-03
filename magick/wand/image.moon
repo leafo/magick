@@ -1,11 +1,11 @@
 
-ffi = require "ffi"
+cffi = require "cffi"
 import lib, can_resize, get_filter from require "magick.wand.lib"
 import composite_operators, gravity, orientation, interlace from require "magick.wand.data"
 
 get_exception = (wand) ->
-  etype = ffi.new "ExceptionType[1]", 0
-  msg = ffi.string ffi.gc lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory
+  etype = cffi.new "ExceptionType[1]", 0
+  msg = cffi.string cffi.gc lib.MagickGetException(wand, etype), lib.MagickRelinquishMemory
   etype[0], msg
 
 handle_result = (img_or_wand, status) ->
@@ -18,7 +18,7 @@ handle_result = (img_or_wand, status) ->
 
 class Image extends require "magick.base_image"
   @load: (path) =>
-    wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
+    wand = cffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
     if 0 == lib.MagickReadImage wand, path
       code, msg = get_exception wand
       return nil, msg, code
@@ -26,7 +26,7 @@ class Image extends require "magick.base_image"
     @ wand, path
 
   @load_from_blob: (blob) =>
-    wand = ffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
+    wand = cffi.gc lib.NewMagickWand!, lib.DestroyMagickWand
     if 0 == lib.MagickReadImageBlob wand, blob, #blob
       code, msg = get_exception wand
       return nil, msg, code
@@ -39,7 +39,7 @@ class Image extends require "magick.base_image"
   get_height: => lib.MagickGetImageHeight @wand
   get_format: =>
     format = lib.MagickGetImageFormat(@wand)
-    with ffi.string(format)\lower!
+    with cffi.string(format)\lower!
       lib.MagickRelinquishMemory format
 
   set_format: (format) =>
@@ -47,13 +47,14 @@ class Image extends require "magick.base_image"
       lib.MagickSetImageFormat @wand, format
 
   get_depth: =>
-    tonumber lib.MagickGetImageDepth @wand
+    cffi.tonumber lib.MagickGetImageDepth @wand
 
   set_depth: (d) =>
     handle_result @,
       lib.MagickSetImageDepth @wand, d
 
-  get_quality: => lib.MagickGetImageCompressionQuality @wand
+  get_quality: =>
+    cffi.tonumber lib.MagickGetImageCompressionQuality @wand
   set_quality: (quality) =>
     handle_result @,
       lib.MagickSetImageCompressionQuality @wand, quality
@@ -61,7 +62,7 @@ class Image extends require "magick.base_image"
   get_option: (magick, key) =>
     format = magick .. ":" .. key
     option_str = lib.MagickGetOption(@wand, format)
-    with ffi.string option_str
+    with cffi.string option_str
       lib.MagickRelinquishMemory option_str
 
   set_option: (magick, key, value) =>
@@ -80,11 +81,11 @@ class Image extends require "magick.base_image"
      lib.MagickStripImage @wand
 
   clone: =>
-    wand = ffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand
+    wand = cffi.gc lib.CloneMagickWand(@wand), lib.DestroyMagickWand
     Image wand, @path
 
   coalesce: =>
-    @wand = ffi.gc lib.MagickCoalesceImages(@wand), lib.DestroyMagickWand
+    @wand = cffi.gc lib.MagickCoalesceImages(@wand), lib.DestroyMagickWand
     true
 
   resize: (w,h, f="Lanczos2", blur=1.0) =>
@@ -120,14 +121,14 @@ class Image extends require "magick.base_image"
       lib.MagickSharpenImage @wand, radius, sigma
 
   rotate: (degrees, r=0, g=0, b=0) =>
-    pixel = ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    pixel = cffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
 
     lib.PixelSetRed pixel, r
     lib.PixelSetGreen pixel, g
     lib.PixelSetBlue pixel, b
 
     res = { handle_result @, lib.MagickRotateImage @wand, pixel, degrees }
-    unpack res
+    table.unpack res
 
   composite: (blob, x, y, op="OverCompositeOp") =>
     if type(blob) == "table" and blob.__class == Image
@@ -138,26 +139,26 @@ class Image extends require "magick.base_image"
       lib.MagickCompositeImage @wand, blob, op, x, y
 
   get_blob: =>
-    len = ffi.new "size_t[1]", 0
-    blob = ffi.gc lib.MagickGetImageBlob(@wand, len),
+    len = cffi.new "size_t[1]", 0
+    blob = cffi.gc lib.MagickGetImageBlob(@wand, len),
       lib.MagickRelinquishMemory
 
-    ffi.string blob, len[0]
+    cffi.string blob, len[0]
 
   write: (fname) =>
     handle_result @, lib.MagickWriteImage @wand, fname
 
   destroy: =>
     if @wand
-      lib.DestroyMagickWand ffi.gc @wand, nil
+      lib.DestroyMagickWand cffi.gc @wand, nil
       @wand = nil
 
     if @pixel_wand
-      lib.DestroyPixelWand ffi.gc @pixel_wand, nil
+      lib.DestroyPixelWand cffi.gc @pixel_wand, nil
       @pixel_wand = nil
 
   get_pixel: (x,y) =>
-    @pixel_wand or= ffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
+    @pixel_wand or= cffi.gc lib.NewPixelWand!, lib.DestroyPixelWand
     assert lib.MagickGetImagePixelColor(@wand, x,y, @pixel_wand),
       "failed to get pixel"
 
@@ -178,7 +179,7 @@ class Image extends require "magick.base_image"
   get_property: (property) =>
     res = lib.MagickGetImageProperty @wand, property
     if nil != res
-      with ffi.string res
+      with cffi.string res
         lib.MagickRelinquishMemory res
     else
       code, msg = get_exception @wand

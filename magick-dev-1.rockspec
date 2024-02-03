@@ -12,7 +12,7 @@ description = {
 }
 
 dependencies = {
-  "lua == 5.1", -- how to do luajit?
+  "lua == 5.4", -- how to do luajit?
 }
 
 build = {

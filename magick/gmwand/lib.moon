@@ -1,10 +1,10 @@
-ffi = require "ffi"
+cffi = require "cffi"
 
 -- /usr/include/GraphicsMagick/magick/api.h
 -- /usr/include/GraphicsMagick/wand/magick_wand.h
 -- /usr/include/GraphicsMagick/wand/pixel_wand.h
 
-ffi.cdef [[
+cffi.cdef [[
   void InitializeMagick( const char *path );
   typedef void MagickWand;
   typedef void PixelWand;
@@ -93,7 +93,7 @@ ffi.cdef [[
 
 ]]
 
-gmwand = ffi.load "GraphicsMagickWand"
+gmwand = cffi.load "GraphicsMagickWand"
 
 { lib: gmwand }
 
